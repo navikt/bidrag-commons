@@ -27,6 +27,11 @@
     <maven-surefire.version>2.22.0</maven-surefire.version>
   </properties>
 
+  <scm>
+    <url>https://github.com/navikt/bidrag-commons</url>
+    <developerConnection>scm:git:https://github.com/navikt/bidrag-commons</developerConnection>
+  </scm>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -89,6 +94,31 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>local-releases</id>
+      <name>Local stuff</name>
+      <url>https://repo.adeo.no/repository/maven-releases</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>m2internal</id>
+      <name>NAV Maven2 Internal Repository</name>
+      <url>http://maven.adeo.no/nexus/content/repositories/m2internal</url>
+    </repository>
+    <snapshotRepository>
+      <id>m2snapshot</id>
+      <name>NAV Maven2 Snapshot Repository</name>
+      <url>http://maven.adeo.no/nexus/content/repositories/m2snapshot</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
   <build>
     <plugins>
