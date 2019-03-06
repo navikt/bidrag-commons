@@ -31,10 +31,12 @@ public class HttpHeaderRestTemplate extends RestTemplate {
   }
 
   private <T> HttpEntity<T> newEntityWithAdditionalHttpHeaders(Object o) {
-    HttpEntity<T> httpEntity = o != null ? mapToHttpEntity(o) : new HttpEntity<>(null, null);
-    MultiValueMap<String, String> allHeaders = combineHeaders(httpEntity.getHeaders());
+    if (o != null) {
+      HttpEntity<T> httpEntity = mapToHttpEntity(o);
+      return new HttpEntity<>(httpEntity.getBody(), combineHeaders(httpEntity.getHeaders()));
+    }
 
-    return new HttpEntity<>(httpEntity.getBody(), allHeaders);
+    return new HttpEntity<>(null, combineHeaders(new HttpHeaders()));
   }
 
   @SuppressWarnings("unchecked")
