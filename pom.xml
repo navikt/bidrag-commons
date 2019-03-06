@@ -23,8 +23,8 @@
     <java.version>11</java.version>
 
     <!-- plugins -->
-    <maven.compiler.version>3.8.0</maven.compiler.version>
-    <maven.surefire.version>2.22.0</maven.surefire.version>
+    <maven-compiler.version>3.8.0</maven-compiler.version>
+    <maven-surefire.version>2.22.0</maven-surefire.version>
   </properties>
 
   <dependencyManagement>
@@ -81,10 +81,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -92,12 +94,12 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven.surefire.version}</version>
+        <version>${maven-surefire.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven.compiler.version}</version>
+        <version>${maven-compiler.version}</version>
         <configuration>
           <release>${java.version}</release>
         </configuration>
