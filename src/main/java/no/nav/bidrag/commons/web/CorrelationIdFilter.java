@@ -19,7 +19,8 @@ public class CorrelationIdFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
   private static final String CORRELATION_ID_MDC = "correlationId";
-  private static final String CORRELATION_ID_HEADER = "X_CORRELATION_ID";
+  public static final String CORRELATION_ID_HEADER = "X_CORRELATION_ID";
+  public static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -38,6 +39,7 @@ public class CorrelationIdFilter implements Filter {
       }
 
       MDC.put(CORRELATION_ID_MDC, correlationId);
+      CORRELATION_ID_VALUE.set(correlationId);
 
       LOGGER.info("Prosessing {} {}", method, requestURI);
     }
@@ -71,5 +73,9 @@ public class CorrelationIdFilter implements Filter {
         .map(uri -> uri.substring(uri.lastIndexOf('/') + 1))
         .findFirst()
         .orElse(requestUri);
+  }
+
+  public static String fetchCorrelationIdForThread() {
+    return CORRELATION_ID_VALUE.get();
   }
 }
