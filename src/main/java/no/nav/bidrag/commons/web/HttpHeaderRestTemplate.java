@@ -56,7 +56,7 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
     headerGenerators.stream()
         .map(HeaderGenerator::generate)
-        .forEach(header -> allHeaders.add(header.name(), header.value()));
+        .forEach(header -> allHeaders.add(header.name, header.valueGenerator.generate()));
 
     return allHeaders;
   }
@@ -71,10 +71,20 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     Header generate();
   }
 
-  public interface Header {
+  public static class Header {
 
-    String name();
+    final String name;
+    final ValueGenerator valueGenerator;
 
-    String value();
+    public Header(String name, ValueGenerator valueGenerator) {
+      this.name = name;
+      this.valueGenerator = valueGenerator;
+    }
+  }
+
+  @FunctionalInterface
+  public interface ValueGenerator {
+
+    String generate();
   }
 }

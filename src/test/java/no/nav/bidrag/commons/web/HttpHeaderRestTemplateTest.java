@@ -13,6 +13,7 @@ import ch.qos.logback.core.Appender;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
+import no.nav.bidrag.commons.web.HttpHeaderRestTemplate.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,6 @@ class HttpHeaderRestTemplateTest {
 
   @Mock
   private Appender appenderMock;
-  @Mock
-  private HttpHeaderRestTemplate.Header headerMock;
   @Mock
   private Type typeMock;
 
@@ -55,9 +54,7 @@ class HttpHeaderRestTemplateTest {
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge hvilke http headers den bruker")
   void skalLoggeBrukAvHttpHeader() {
-    when(headerMock.name()).thenReturn("JUNIT_HEADER");
-    when(headerMock.value()).thenReturn("header value");
-    httpHeaderRestTemplate.addHeaderGenerator(() -> headerMock);
+    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("JUNIT_HEADER", () -> "header value"));
 
     httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
 
@@ -79,10 +76,7 @@ class HttpHeaderRestTemplateTest {
     HttpHeaders existingHttpHeaders = new HttpHeaders();
     existingHttpHeaders.add("EXISTING_HEADER", "existing value");
 
-    when(headerMock.name()).thenReturn("ADDITIONAL_HEADER");
-    when(headerMock.value()).thenReturn("additional value");
-
-    httpHeaderRestTemplate.addHeaderGenerator(() -> headerMock);
+    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("ADDITIONAL_HEADER", () -> "additional value"));
 
     httpHeaderRestTemplate.httpEntityCallback(new HttpEntity<>(null, existingHttpHeaders), typeMock);
 
@@ -107,7 +101,7 @@ class HttpHeaderRestTemplateTest {
   @Test
   @DisplayName("skal feile når httpEntityCallback brukes med request body som ikke er en HttpEntity")
   void skalFeileNaarHttpEntityCallbackBrukesMedTypeSomIkkeErAvHttpEntity() {
-    httpHeaderRestTemplate.addHeaderGenerator(() -> headerMock);
+    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("na", () -> "na"));
 
     assertThatIllegalStateException()
         .isThrownBy(() -> httpHeaderRestTemplate.httpEntityCallback("a request body", typeMock))
