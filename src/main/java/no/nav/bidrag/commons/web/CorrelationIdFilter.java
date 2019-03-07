@@ -19,8 +19,9 @@ public class CorrelationIdFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
   private static final String CORRELATION_ID_MDC = "correlationId";
+  private static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
+
   public static final String CORRELATION_ID_HEADER = "X_CORRELATION_ID";
-  public static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
