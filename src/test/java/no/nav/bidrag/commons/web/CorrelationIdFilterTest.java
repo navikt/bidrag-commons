@@ -140,4 +140,57 @@ class CorrelationIdFilterTest {
 
     assertThat(correlationCaptor.getValue()).contains("(journalpost)");
   }
+
+  @Test
+  @DisplayName("skal legge correlation id på ThreadLocal som kan leses for konfigurasjon")
+  void skalLeggeCorrelationIdPaaThreadLocal() throws InterruptedException {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("go somewhere");
+
+    CorrelationIdThread aCorrelationIdThread = new CorrelationIdThread(
+        () -> correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock)
+    );
+
+    CorrelationIdThread anotherCorrelationIdThread = new CorrelationIdThread(
+        () -> correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock)
+    );
+
+    aCorrelationIdThread.start();
+    anotherCorrelationIdThread.start();
+    aCorrelationIdThread.join();
+    anotherCorrelationIdThread.join();
+
+    assertAll(
+        () -> assertThat(aCorrelationIdThread.correlationId).as("a correlation id")
+            .isNotNull().isNotEqualTo(anotherCorrelationIdThread.correlationId),
+        () -> assertThat(anotherCorrelationIdThread.correlationId).as("another correlation id")
+            .isNotNull().isNotEqualTo(aCorrelationIdThread.correlationId)
+    );
+  }
+
+  class CorrelationIdThread extends Thread {
+
+    private final FilterExecutor filterExecutor;
+    String correlationId;
+
+    CorrelationIdThread(FilterExecutor filterExecutor) {
+      this.filterExecutor = filterExecutor;
+    }
+
+    @Override
+    public void run() {
+      try {
+        filterExecutor.doFilter();
+        correlationId = CorrelationIdFilter.fetchCorrelationIdForThread();
+        Thread.sleep(1); // to be sure the value is not from the same millis
+      } catch (IOException | ServletException | InterruptedException e) {
+        throw new AssertionError(e);
+      }
+    }
+  }
+
+  @FunctionalInterface
+  interface FilterExecutor {
+
+    void doFilter() throws IOException, SecurityException, ServletException;
+  }
 }
