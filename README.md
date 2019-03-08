@@ -8,5 +8,6 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | beskrivelse
 --------|------------------------
+0.0.6   | `CorrelationIdFilter` legger generert id på ThreadLocal
 0.0.4   | `HttpHeaderRestTemplate.Header` fra et interface til en klasse for enklere bruk
 0.0.1   | opprettet med `CorrelationIdFilter` og `HttpHeaderRestTemplate`
