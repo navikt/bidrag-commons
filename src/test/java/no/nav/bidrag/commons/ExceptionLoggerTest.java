@@ -69,6 +69,22 @@ class ExceptionLoggerTest {
     );
   }
 
+  @Test
+  @DisplayName("skal logge exception cause når den finnes")
+  void skalLoggeExceptionCauseNaarDenFinnes() {
+    exceptionLogger.logException(
+        new Exception("blew up", new IllegalStateException("in common code", new IllegalArgumentException("with stupid arguments"))),
+        "junit test"
+    );
+
+    assertAll(
+        () -> assertThat(verifiserLogging()).isTrue(),
+        () -> assertThat(String.join("\n", logMeldinger)).contains("blew up"),
+        () -> assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.IllegalStateException: in common code."),
+        () -> assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.IllegalArgumentException: with stupid arguments")
+    );
+  }
+
   @SuppressWarnings("unchecked")
   private boolean verifiserLogging() {
     verify(appenderMock, atLeastOnce()).doAppend(
