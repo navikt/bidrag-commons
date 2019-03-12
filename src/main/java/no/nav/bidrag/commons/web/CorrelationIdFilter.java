@@ -9,6 +9,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import no.nav.bidrag.commons.CorrelationId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -19,7 +20,6 @@ public class CorrelationIdFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
   private static final String CORRELATION_ID_MDC = "correlationId";
-  private static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
 
   public static final String CORRELATION_ID_HEADER = "X_CORRELATION_ID";
 
@@ -31,16 +31,17 @@ public class CorrelationIdFilter implements Filter {
     var requestURI = httpServletRequest.getRequestURI();
 
     if (isNotRequestToActuatorEndpoint(requestURI)) {
-      String correlationId;
+      CorrelationId correlationId;
 
       if (httpServletResponse.containsHeader(CORRELATION_ID_HEADER)) {
-        correlationId = httpServletResponse.getHeader(CORRELATION_ID_HEADER);
+        correlationId = new CorrelationId(httpServletResponse.getHeader(CORRELATION_ID_HEADER));
       } else {
-        correlationId = addCorreleationIdToHttpHeader(httpServletResponse, fetchedTimestamped(requestURI));
+        correlationId = addCorreleationIdToHttpHeader(
+            httpServletResponse, new CorrelationId(() -> fetchLastPartOfRequestUri(requestURI))
+        );
       }
 
-      MDC.put(CORRELATION_ID_MDC, correlationId);
-      CORRELATION_ID_VALUE.set(correlationId);
+      MDC.put(CORRELATION_ID_MDC, correlationId.get());
 
       LOGGER.info("Prosessing {} {}", method, requestURI);
     }
@@ -57,15 +58,10 @@ public class CorrelationIdFilter implements Filter {
     return !requestURI.contains("/actuator/");
   }
 
-  private String addCorreleationIdToHttpHeader(HttpServletResponse httpServletResponse, String correlationId) {
-    httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId);
+  private CorrelationId addCorreleationIdToHttpHeader(HttpServletResponse httpServletResponse, CorrelationId correlationId) {
+    httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId.get());
 
     return correlationId;
-  }
-
-  private String fetchedTimestamped(String requestUri) {
-    String currentTimeAsString = Long.toHexString(System.currentTimeMillis());
-    return currentTimeAsString + '(' + fetchLastPartOfRequestUri(requestUri) + ')';
   }
 
   private String fetchLastPartOfRequestUri(String requestUri) {
@@ -77,6 +73,6 @@ public class CorrelationIdFilter implements Filter {
   }
 
   public static String fetchCorrelationIdForThread() {
-    return CORRELATION_ID_VALUE.get();
+    return CorrelationId.fetchCorrelationIdForThread();
   }
 }
