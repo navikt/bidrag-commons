@@ -19,11 +19,11 @@ public class ExceptionLogger {
     this.application = application;
   }
 
-  public void logException(Exception exception, String defaultLocation) {
+  public void logException(Throwable throwable, String defaultLocation) {
     LOGGER.error("Exception caught in {} within {}", application, defaultLocation);
-    LOGGER.error("Failed by {}: {}", exception.getClass().getName(), exception.getMessage());
+    LOGGER.error("Failed by {}: {}", throwable.getClass().getName(), throwable.getMessage());
 
-    logCause(exception.getCause());
+    logCause(throwable.getCause());
 
     StackWalker.getInstance().walk(
         stackFrameStream -> stackFrameStream
