@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | beskrivelse
 --------|------------------------
+0.0.13  | `CorrelationId` as value bean
 0.0.11  | `ExceptionLogger` logger `Throwable` type
 0.0.9   | `ExceptionLogger` logger Exception cause
 0.0.8   | `ExceptionLogger` er opprettet
