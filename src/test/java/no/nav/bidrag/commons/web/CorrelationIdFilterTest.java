@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @DisplayName("CorrelationIdFilter")
 class CorrelationIdFilterTest {
 
-  private static final String CORRELATION_ID = "X_CORRELATION_ID";
+  private static final String CORRELATION_ID = "X-Correlation-ID";
 
   private CorrelationIdFilter correlationIdFilter = new CorrelationIdFilter();
   private Set<String> logMeldinger = new HashSet<>();

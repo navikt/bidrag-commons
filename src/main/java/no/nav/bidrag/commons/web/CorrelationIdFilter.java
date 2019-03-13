@@ -1,6 +1,7 @@
 package no.nav.bidrag.commons.web;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -21,7 +22,7 @@ public class CorrelationIdFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
   private static final String CORRELATION_ID_MDC = "correlationId";
 
-  public static final String CORRELATION_ID_HEADER = "X_CORRELATION_ID";
+  public static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -33,10 +34,10 @@ public class CorrelationIdFilter implements Filter {
     if (isNotRequestToActuatorEndpoint(requestURI)) {
       CorrelationId correlationId;
 
-      if (httpServletResponse.containsHeader(CORRELATION_ID_HEADER)) {
-        correlationId = new CorrelationId(httpServletResponse.getHeader(CORRELATION_ID_HEADER));
+      if (Optional.ofNullable(httpServletRequest.getHeader(CORRELATION_ID_HEADER)).isPresent()) {
+        correlationId = new CorrelationId(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
       } else {
-        correlationId = addCorreleationIdToHttpHeader(
+        correlationId = generateCorreleationIdToHttpHeaderOnResponse(
             httpServletResponse, new CorrelationId(() -> fetchLastPartOfRequestUri(requestURI))
         );
       }
@@ -58,7 +59,7 @@ public class CorrelationIdFilter implements Filter {
     return !requestURI.contains("/actuator/");
   }
 
-  private CorrelationId addCorreleationIdToHttpHeader(HttpServletResponse httpServletResponse, CorrelationId correlationId) {
+  private CorrelationId generateCorreleationIdToHttpHeaderOnResponse(HttpServletResponse httpServletResponse, CorrelationId correlationId) {
     httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId.get());
 
     return correlationId;
