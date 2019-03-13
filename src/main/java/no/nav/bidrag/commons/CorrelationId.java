@@ -2,6 +2,7 @@ package no.nav.bidrag.commons;
 
 public class CorrelationId {
 
+  public static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
   private static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
 
   private final String idValue;

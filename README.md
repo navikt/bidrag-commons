@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | beskrivelse
 --------|------------------------
+0.0.15  | Check correlation id header on request and name of header X_CORRELATION_ID -> X-Correlation-ID
 0.0.13  | `CorrelationId` as value bean
 0.0.11  | `ExceptionLogger` logger `Throwable` type
 0.0.9   | `ExceptionLogger` logger `Exception` cause

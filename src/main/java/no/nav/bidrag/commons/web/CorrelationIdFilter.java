@@ -22,7 +22,7 @@ public class CorrelationIdFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
   private static final String CORRELATION_ID_MDC = "correlationId";
 
-  public static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
+  public static final String CORRELATION_ID_HEADER = CorrelationId.CORRELATION_ID_HEADER;
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
