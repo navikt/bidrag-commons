@@ -35,10 +35,10 @@ public class CorrelationIdFilter implements Filter {
       CorrelationId correlationId;
 
       if (Optional.ofNullable(httpServletRequest.getHeader(CORRELATION_ID_HEADER)).isPresent()) {
-        correlationId = new CorrelationId(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
+        correlationId = CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
       } else {
         correlationId = generateCorreleationIdToHttpHeaderOnResponse(
-            httpServletResponse, new CorrelationId(() -> fetchLastPartOfRequestUri(requestURI))
+            httpServletResponse, CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI))
         );
       }
 

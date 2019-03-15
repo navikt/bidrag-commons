@@ -108,7 +108,7 @@ class CorrelationIdFilterTest {
   @Test
   @DisplayName("skal ikke legge HttpHeader.CORRELATION_ID på response når den allerede eksisterer")
   void skalIkkeLeggeHttpHeaderCorrelationIdPaaResponseNaarDenAlleredeEksisterer() throws IOException, ServletException {
-    when(httpServletRequestMock.getRequestURI()).thenReturn("somewhere");
+    when(httpServletRequestMock.getRequestURI()).thenReturn("somewhere else");
     when(httpServletRequestMock.getHeader(CORRELATION_ID)).thenReturn("svada");
     when(httpServletResponseMock.containsHeader(CORRELATION_ID)).thenReturn(true);
 
