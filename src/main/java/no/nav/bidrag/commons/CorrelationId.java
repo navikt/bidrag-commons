@@ -7,15 +7,9 @@ public class CorrelationId {
 
   private final String idValue;
 
-  public CorrelationId(String correlationId) {
+  private CorrelationId(String correlationId) {
     idValue = correlationId;
     CORRELATION_ID_VALUE.set(idValue);
-  }
-
-  public CorrelationId(IdValue idValue) {
-    String currentTimeAsString = Long.toHexString(System.currentTimeMillis());
-    this.idValue = currentTimeAsString + '(' + idValue.get() + ')';
-    CORRELATION_ID_VALUE.set(this.idValue);
   }
 
   public String get() {
@@ -26,9 +20,12 @@ public class CorrelationId {
     return CORRELATION_ID_VALUE.get();
   }
 
-  @FunctionalInterface
-  public interface IdValue {
+  public static CorrelationId existing(String value) {
+    return new CorrelationId(value);
+  }
 
-    String get();
+  public static CorrelationId generateTimestamped(String value) {
+    String currentTimeAsString = Long.toHexString(System.currentTimeMillis());
+    return new CorrelationId(currentTimeAsString + '(' + value + ')');
   }
 }

@@ -1,8 +1,11 @@
 package no.nav.bidrag.commons.web;
 
+import static java.util.Arrays.asList;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,10 +38,10 @@ public class CorrelationIdFilter implements Filter {
       CorrelationId correlationId;
 
       if (Optional.ofNullable(httpServletRequest.getHeader(CORRELATION_ID_HEADER)).isPresent()) {
-        correlationId = new CorrelationId(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
+        correlationId = CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
       } else {
         correlationId = generateCorreleationIdToHttpHeaderOnResponse(
-            httpServletResponse, new CorrelationId(() -> fetchLastPartOfRequestUri(requestURI))
+            httpServletResponse, CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI))
         );
       }
 
@@ -66,11 +69,30 @@ public class CorrelationIdFilter implements Filter {
   }
 
   private String fetchLastPartOfRequestUri(String requestUri) {
-    return Stream.of(requestUri)
-        .filter(uri -> uri.contains("/"))
-        .map(uri -> uri.substring(uri.lastIndexOf('/') + 1))
-        .findFirst()
-        .orElse(requestUri);
+    if (requestUri.contains("/")) {
+      return fetchLastPartOfRequestUriContainingPlainText(requestUri);
+    }
+
+    return requestUri;
+  }
+
+  private String fetchLastPartOfRequestUriContainingPlainText(String requestUri) {
+    ArrayList<String> reversedUriParts = reverseUriPartsBySlash(requestUri);
+    String lastUriPsty = reversedUriParts.get(0);
+
+    if (lastUriPsty.matches("^[a-zA-Z]+$")) {
+      return lastUriPsty;
+    }
+
+    return reversedUriParts.get(1) + '/' + lastUriPsty;
+  }
+
+  private ArrayList<String> reverseUriPartsBySlash(String requestUri) {
+    String[] uriArray = requestUri.split("/");
+    var uriParts = new ArrayList<>(asList(uriArray));
+    Collections.reverse(uriParts);
+
+    return uriParts;
   }
 
   public static String fetchCorrelationIdForThread() {

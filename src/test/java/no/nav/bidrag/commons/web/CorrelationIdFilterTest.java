@@ -108,7 +108,7 @@ class CorrelationIdFilterTest {
   @Test
   @DisplayName("skal ikke legge HttpHeader.CORRELATION_ID på response når den allerede eksisterer")
   void skalIkkeLeggeHttpHeaderCorrelationIdPaaResponseNaarDenAlleredeEksisterer() throws IOException, ServletException {
-    when(httpServletRequestMock.getRequestURI()).thenReturn("somewhere");
+    when(httpServletRequestMock.getRequestURI()).thenReturn("somewhere else");
     when(httpServletRequestMock.getHeader(CORRELATION_ID)).thenReturn("svada");
     when(httpServletResponseMock.containsHeader(CORRELATION_ID)).thenReturn(true);
 
@@ -130,8 +130,8 @@ class CorrelationIdFilterTest {
   }
 
   @Test
-  @DisplayName("skal bruke siste del av request uri som correlation id")
-  void skalBrukeSisteDelAvRequestUriSomCorrelationId() throws IOException, ServletException {
+  @DisplayName("skal lage correlation id av siste del fra request uri")
+  void skalLageCorrelationIdAvSisteDelFraRequestUri() throws IOException, ServletException {
     when(httpServletRequestMock.getRequestURI()).thenReturn("/en/forbanna/journalpost");
     correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
@@ -139,6 +139,30 @@ class CorrelationIdFilterTest {
     verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
 
     assertThat(correlationCaptor.getValue()).contains("(journalpost)");
+  }
+
+  @Test
+  @DisplayName("skal lage correlation id av siste del fra request uri som er ren tekst, samt legge på eventuelle tall")
+  void skalLageCorrelationIdAvSisteDelFraRequestUriSomHarRenTekstSamtEventuelleTall() throws IOException, ServletException {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("/en/identifisert/journalpost/1001");
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+    ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
+    verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
+
+    assertThat(correlationCaptor.getValue()).contains("(journalpost/1001)");
+  }
+
+  @Test
+  @DisplayName("skal lage correlation id av siste del fra request uri som er ren tekst, samt legge på eventuelle prefiksede tall")
+  void skalLageCorrelationIdAvSisteDelFraRequestUriSomHarRenTekstSamtEventuellePrefiksedeTall() throws IOException, ServletException {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("/en/identifisert/journalpost/BID-1001");
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+    ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
+    verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
+
+    assertThat(correlationCaptor.getValue()).contains("(journalpost/BID-1001)");
   }
 
   @Test
@@ -156,6 +180,7 @@ class CorrelationIdFilterTest {
 
     aCorrelationIdThread.start();
     anotherCorrelationIdThread.start();
+    Thread.sleep(1); // to be sure the value is not from the same millis
     aCorrelationIdThread.join();
     anotherCorrelationIdThread.join();
 
@@ -181,8 +206,7 @@ class CorrelationIdFilterTest {
       try {
         filterExecutor.doFilter();
         correlationId = CorrelationIdFilter.fetchCorrelationIdForThread();
-        Thread.sleep(1); // to be sure the value is not from the same millis
-      } catch (IOException | ServletException | InterruptedException e) {
+      } catch (IOException | ServletException e) {
         throw new AssertionError(e);
       }
     }
