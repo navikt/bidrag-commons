@@ -1,8 +1,8 @@
 package no.nav.bidrag.commons.web;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpHeaderRestTemplate.class);
 
-  private Set<HeaderGenerator> headerGenerators = new HashSet<>();
+  private Map<String, ValueGenerator> headerGenerators = new HashMap<>();
 
   @Override
   public <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
@@ -54,32 +54,13 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     HttpHeaders allHeaders = new HttpHeaders();
     existingHeaders.forEach((name, listValue) -> listValue.forEach(value -> allHeaders.add(name, value)));
 
-    headerGenerators.stream()
-        .map(HeaderGenerator::generate)
-        .forEach(header -> allHeaders.add(header.name, header.valueGenerator.generate()));
+    headerGenerators.forEach((key, value) -> allHeaders.add(key, value.generate()));
 
     return allHeaders;
   }
 
-  public void addHeaderGenerator(HeaderGenerator headerGenerator) {
-    headerGenerators.add(headerGenerator);
-  }
-
-  @FunctionalInterface
-  public interface HeaderGenerator {
-
-    Header generate();
-  }
-
-  public static class Header {
-
-    final String name;
-    final ValueGenerator valueGenerator;
-
-    public Header(String name, ValueGenerator valueGenerator) {
-      this.name = name;
-      this.valueGenerator = valueGenerator;
-    }
+  public void addHeaderGenerator(String headerName, ValueGenerator valueGenerator) {
+    headerGenerators.put(headerName, valueGenerator);
   }
 
   @FunctionalInterface

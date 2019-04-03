@@ -13,7 +13,6 @@ import ch.qos.logback.core.Appender;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
-import no.nav.bidrag.commons.web.HttpHeaderRestTemplate.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,7 @@ class HttpHeaderRestTemplateTest {
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge hvilke http headers den bruker")
   void skalLoggeBrukAvHttpHeader() {
-    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("JUNIT_HEADER", () -> "header value"));
+    httpHeaderRestTemplate.addHeaderGenerator("JUNIT_HEADER", () -> "header value");
 
     httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
 
@@ -76,7 +75,7 @@ class HttpHeaderRestTemplateTest {
     HttpHeaders existingHttpHeaders = new HttpHeaders();
     existingHttpHeaders.add("EXISTING_HEADER", "existing value");
 
-    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("ADDITIONAL_HEADER", () -> "additional value"));
+    httpHeaderRestTemplate.addHeaderGenerator("ADDITIONAL_HEADER", () -> "additional value");
 
     httpHeaderRestTemplate.httpEntityCallback(new HttpEntity<>(null, existingHttpHeaders), typeMock);
 
@@ -101,7 +100,7 @@ class HttpHeaderRestTemplateTest {
   @Test
   @DisplayName("skal feile når httpEntityCallback brukes med request body som ikke er en HttpEntity")
   void skalFeileNaarHttpEntityCallbackBrukesMedTypeSomIkkeErAvHttpEntity() {
-    httpHeaderRestTemplate.addHeaderGenerator(() -> new Header("na", () -> "na"));
+    httpHeaderRestTemplate.addHeaderGenerator("na", () -> "na");
 
     assertThatIllegalStateException()
         .isThrownBy(() -> httpHeaderRestTemplate.httpEntityCallback("a request body", typeMock))
