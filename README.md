@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | beskrivelse
 --------|------------------------
+0.0.21  | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!
 0.0.19  | Correlation Id without public constructors and the CorrelationIdFilter will always have the last part of the request uri containing plain text
 0.0.17  | Header name of correlation id is also present on the value bean
 0.0.15  | Check correlation id header on request and name of header X_CORRELATION_ID -> X-Correlation-ID
