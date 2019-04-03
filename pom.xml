@@ -5,7 +5,7 @@
 
   <groupId>no.nav.bidrag</groupId>
   <artifactId>bidrag-commons</artifactId>
-  <version>0.0.20-SNAPSHOT</version>
+  <version>0.0.21-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <description>Bibliotek for komponenter som brukes på tvers av applikasjoner i no.nav.bidrag</description>
