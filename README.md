@@ -8,7 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
--       | opprettet    | nytt java miljø - java 12
+0.0.23  | opprettet    | nytt java miljø - java 12
 0.0.21  | slettet      | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!
 0.0.19  | endring      | Correlation Id without public constructors and the CorrelationIdFilter will always have the last part of the request uri containing plain text
 0.0.17  | endring      | Header name of correlation id is also present on the value bean
