@@ -20,7 +20,7 @@
     <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
 
     <!-- language -->
-    <java.version>11</java.version>
+    <java.version>12</java.version>
 
     <!-- plugins -->
     <maven-compiler.version>3.8.0</maven-compiler.version>
