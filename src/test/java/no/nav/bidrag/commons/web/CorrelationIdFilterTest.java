@@ -180,7 +180,7 @@ class CorrelationIdFilterTest {
 
     aCorrelationIdThread.start();
     anotherCorrelationIdThread.start();
-    Thread.sleep(1); // to be sure the value is not from the same millis
+    Thread.sleep(2); // to be sure the value is not from the same millis
     aCorrelationIdThread.join();
     anotherCorrelationIdThread.join();
 
