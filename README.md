@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.0.24  | opprettet    | `HttpStatusResult` for å videresende HttpStatus sammen med resultat fra consumer
 0.0.23  | endring      | ny java baseline - java 12
 0.0.21  | slettet      | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!
 0.0.19  | endring      | Correlation Id without public constructors and the CorrelationIdFilter will always have the last part of the request uri containing plain text
