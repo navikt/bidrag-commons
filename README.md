@@ -8,7 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
-0.0.26  | endring      | `HttpStatusResponse`: metode (`toString()`)
+0.0.27  | endring      | `HttpStatusResponse`: metode (`toString()`)
 0.0.25  | opprettet    | `HttpStatusResponse` for å videresende HttpStatus sammen med resultat fra consumer
 0.0.23  | endring      | ny java baseline - java 12
 0.0.21  | slettet      | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!
