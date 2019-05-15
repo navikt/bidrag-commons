@@ -13,6 +13,14 @@ public class HttpStatusResponse<T> {
     this.body = body;
   }
 
+  @Override
+  public String toString() {
+    return "HttpStatusResponse{" +
+        "httpStatus=" + httpStatus +
+        ", body=" + body +
+        '}';
+  }
+
   public Optional<T> fetchOptionalResult() {
     return Optional.ofNullable(body);
   }
