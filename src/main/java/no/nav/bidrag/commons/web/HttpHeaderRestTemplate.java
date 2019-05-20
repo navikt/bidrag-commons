@@ -41,13 +41,11 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
   @SuppressWarnings("unchecked")
   private <T> HttpEntity<T> mapToHttpEntity(Object o) {
-    return Stream.of(o)
-        .filter(obj -> obj instanceof HttpEntity)
-        .map(obj -> (HttpEntity<T>) obj)
-        .findFirst()
-        .orElseThrow(() -> new IllegalStateException(
-            String.format("%s cannot be used as a request body for a HttpEntityCallback", o.getClass().getSimpleName())
-        ));
+    if (o instanceof HttpEntity) {
+      return (HttpEntity<T>) o;
+    }
+
+    return new HttpEntity<>((T) o);
   }
 
   private MultiValueMap<String, String> combineHeaders(HttpHeaders existingHeaders) {
