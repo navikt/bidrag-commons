@@ -2,12 +2,15 @@ package no.nav.bidrag.commons.web;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +20,17 @@ public class HttpHeaderRestTemplate extends RestTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpHeaderRestTemplate.class);
 
   private Map<String, ValueGenerator> headerGenerators = new HashMap<>();
+
+  public HttpHeaderRestTemplate() {
+  }
+
+  public HttpHeaderRestTemplate(ClientHttpRequestFactory requestFactory) {
+    super(requestFactory);
+  }
+
+  public HttpHeaderRestTemplate(List<HttpMessageConverter<?>> messageConverters) {
+    super(messageConverters);
+  }
 
   @Override
   public <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
