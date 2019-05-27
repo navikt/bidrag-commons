@@ -1,4 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project [
+  <!ELEMENT project (modelVersion|groupId|artifactId|version|packaging|description|properties|scm|dependencyManagement|dependencies|repositories|distributionManagement|build)*>
+  <!ATTLIST project
+    xmlns CDATA #REQUIRED
+    xmlns:xsi CDATA #REQUIRED
+    xsi:schemaLocation CDATA #REQUIRED>
+  <!ELEMENT modelVersion (#PCDATA)>
+  <!ELEMENT groupId (#PCDATA)>
+  <!ELEMENT artifactId (#PCDATA)>
+  <!ELEMENT version (#PCDATA)>
+  <!ELEMENT packaging (#PCDATA)>
+  <!ELEMENT description (#PCDATA)>
+  <!ELEMENT properties (project.build.sourceEncoding|project.reporting.outputEncoding|logback-encoder.version|spring-boot.version|java.version|maven-compiler.version|maven-surefire.version)*>
+  <!ELEMENT project.build.sourceEncoding (#PCDATA)>
+  <!ELEMENT project.reporting.outputEncoding (#PCDATA)>
+  <!ELEMENT logback-encoder.version (#PCDATA)>
+  <!ELEMENT spring-boot.version (#PCDATA)>
+  <!ELEMENT java.version (#PCDATA)>
+  <!ELEMENT maven-compiler.version (#PCDATA)>
+  <!ELEMENT maven-surefire.version (#PCDATA)>
+  <!ELEMENT scm (url|developerConnection)*>
+  <!ELEMENT url (#PCDATA)>
+  <!ELEMENT developerConnection (#PCDATA)>
+  <!ELEMENT dependencyManagement (dependencies)*>
+  <!ELEMENT dependencies (dependency)*>
+  <!ELEMENT dependency (groupId|artifactId|version|type|scope|exclusions)*>
+  <!ELEMENT type (#PCDATA)>
+  <!ELEMENT scope (#PCDATA)>
+  <!ELEMENT exclusions (exclusion)*>
+  <!ELEMENT exclusion (groupId|artifactId)*>
+  <!ELEMENT repositories (repository)*>
+  <!ELEMENT repository (id|name|url|snapshots)*>
+  <!ELEMENT id (#PCDATA)>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT snapshots (enabled)*>
+  <!ELEMENT enabled (#PCDATA)>
+  <!ELEMENT distributionManagement (repository|snapshotRepository)*>
+  <!ELEMENT snapshotRepository (id|name|url|uniqueVersion)*>
+  <!ELEMENT uniqueVersion (#PCDATA)>
+  <!ELEMENT build (plugins)*>
+  <!ELEMENT plugins (plugin)*>
+  <!ELEMENT plugin (artifactId|version|groupId|configuration)*>
+  <!ELEMENT configuration (release)*>
+  <!ELEMENT release (#PCDATA)>
+  ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -40,12 +85,6 @@
         <version>${spring-boot.version}</version>
         <type>pom</type>
         <scope>import</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>com.fasterxml.jackson</groupId>
-            <artifactId>jackson-databind</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -110,6 +149,13 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <!-- dependency to overwrite vulnerable dependency of jackson-databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.9</version>
     </dependency>
   </dependencies>
 
