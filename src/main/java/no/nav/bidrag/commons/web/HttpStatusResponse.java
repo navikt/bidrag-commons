@@ -32,4 +32,8 @@ public class HttpStatusResponse<T> {
   public T getBody() {
     return body;
   }
+
+  public boolean isEmpty() {
+    return fetchOptionalResult().isEmpty();
+  }
 }
