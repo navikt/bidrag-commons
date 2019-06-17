@@ -179,8 +179,8 @@ class CorrelationIdFilterTest {
     );
 
     aCorrelationIdThread.start();
-    anotherCorrelationIdThread.start();
     Thread.sleep(10); // to be sure the value is not from the same millis
+    anotherCorrelationIdThread.start();
     aCorrelationIdThread.join();
     anotherCorrelationIdThread.join();
 
