@@ -1,7 +1,9 @@
 package no.nav.bidrag.commons.web;
 
+import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +17,7 @@ public class EnhetFilter implements Filter {
   public static final String X_ENHETSNR_HEADER = "X-Enhetsnummer";
 
   @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) {
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
     if (servletRequest instanceof HttpServletRequest) {
       var httpServletRequest = (HttpServletRequest) servletRequest;
       var enhetsnummer = httpServletRequest.getHeader(X_ENHETSNR_HEADER);
@@ -27,5 +29,7 @@ public class EnhetFilter implements Filter {
         LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", httpServletRequest.getRequestURI());
       }
     }
+
+    filterChain.doFilter(servletRequest, servletResponse);
   }
 }
