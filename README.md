@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.0.32  | endret       | `EnhetFilter`: logger ikke kall mot "actuator"-tjenester
 0.0.31  | endret       | `EnhetFilter`: fortsetter filtrering med `javax.servlet.FilterChain`
 0.0.30  | opprettet    | `EnhetFilter`: et `javax.servlet.Filter` som videresender header med enhetsnummer
 0.0.29  | endring      | `HttpStatusResponse`: konstruktør bare for `HttpStatus`
