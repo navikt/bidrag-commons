@@ -10,7 +10,9 @@ import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import java.io.IOException;
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +58,7 @@ class EnhetFilterTest {
 
   @Test
   @DisplayName("skal videresende X_ENHETSNR_HEADER fra request til response")
-  void skalVideresendeHeaderMedEnhetsnummer() {
+  void skalVideresendeHeaderMedEnhetsnummer() throws IOException, ServletException {
     when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("enhetsnummer");
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
@@ -69,7 +71,7 @@ class EnhetFilterTest {
 
   @Test
   @DisplayName("skal ikke videresende X_ENHETSNR_HEADER fra request til response når headerverdi ikke finnes på request")
-  void skalIkkeVideresendeHeaderMedEnhetsnummerNarDetIkkeFinnes() {
+  void skalIkkeVideresendeHeaderMedEnhetsnummerNarDetIkkeFinnes() throws IOException, ServletException {
     when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn(null);
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
@@ -83,7 +85,7 @@ class EnhetFilterTest {
   @Test
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge enhetsnummer som videresendes")
-  void skalLoggeEnhetsnummerSomVideresendes() {
+  void skalLoggeEnhetsnummerSomVideresendes() throws IOException, ServletException {
     when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("007");
     when(httpServletRequestMock.getRequestURI()).thenReturn("noe");
 
@@ -100,7 +102,7 @@ class EnhetFilterTest {
   @Test
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge at enhetsnummer ikke videresendes")
-  void skalLoggeAtEnhetsnummerIkkeVideresendes() {
+  void skalLoggeAtEnhetsnummerIkkeVideresendes() throws IOException, ServletException {
     when(httpServletRequestMock.getRequestURI()).thenReturn("noe");
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
@@ -111,5 +113,13 @@ class EnhetFilterTest {
 
     assertThat(loggingEvent).isNotNull();
     assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'noe' uten informasjon om enhetsnummer");
+  }
+
+  @Test
+  @DisplayName("skal fortsette filtrering av request etter at filter er kjørt")
+  void skalFortsetteFiltrering() throws IOException, ServletException {
+    enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+    verify(filterChainMock).doFilter(httpServletRequestMock, httpServletResponseMock);
   }
 }
