@@ -46,6 +46,7 @@ class EnhetFilterTest {
   void initMocksAndMockLogAppender() {
     MockitoAnnotations.initMocks(this);
     mockLogAppender();
+    mockRequestUri();
   }
 
   @SuppressWarnings("unchecked")
@@ -54,6 +55,10 @@ class EnhetFilterTest {
     when(appenderMock.getName()).thenReturn("MOCK");
     when(appenderMock.isStarted()).thenReturn(true);
     logger.addAppender(appenderMock);
+  }
+
+  private void mockRequestUri() {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("some url");
   }
 
   @Test
@@ -87,7 +92,6 @@ class EnhetFilterTest {
   @DisplayName("skal logge enhetsnummer som videresendes")
   void skalLoggeEnhetsnummerSomVideresendes() throws IOException, ServletException {
     when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("007");
-    when(httpServletRequestMock.getRequestURI()).thenReturn("noe");
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
@@ -96,15 +100,13 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'noe' for enhet med enhetsnummer 007");
+    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'some url' for enhet med enhetsnummer 007");
   }
 
   @Test
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge at enhetsnummer ikke videresendes")
   void skalLoggeAtEnhetsnummerIkkeVideresendes() throws IOException, ServletException {
-    when(httpServletRequestMock.getRequestURI()).thenReturn("noe");
-
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
     var logCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
@@ -112,7 +114,7 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'noe' uten informasjon om enhetsnummer");
+    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'some url' uten informasjon om enhetsnummer");
   }
 
   @Test
