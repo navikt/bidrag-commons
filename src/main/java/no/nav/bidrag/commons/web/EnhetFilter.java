@@ -20,16 +20,28 @@ public class EnhetFilter implements Filter {
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
     if (servletRequest instanceof HttpServletRequest) {
       var httpServletRequest = (HttpServletRequest) servletRequest;
-      var enhetsnummer = httpServletRequest.getHeader(X_ENHETSNR_HEADER);
+      var requestURI = httpServletRequest.getRequestURI();
 
-      if (enhetsnummer != null) {
-        ((HttpServletResponse) servletResponse).addHeader(X_ENHETSNR_HEADER, enhetsnummer);
-        LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", httpServletRequest.getRequestURI(), enhetsnummer);
-      } else {
-        LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", httpServletRequest.getRequestURI());
+      if (isNotRequestToActuatorEndpoint(requestURI)) {
+        var enhetsnummer = httpServletRequest.getHeader(X_ENHETSNR_HEADER);
+
+        if (enhetsnummer != null) {
+          ((HttpServletResponse) servletResponse).addHeader(X_ENHETSNR_HEADER, enhetsnummer);
+          LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
+        } else {
+          LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
+        }
       }
     }
 
     filterChain.doFilter(servletRequest, servletResponse);
+  }
+
+  private boolean isNotRequestToActuatorEndpoint(String requestURI) {
+    if (requestURI == null) {
+      throw new IllegalStateException("should only use this class in an web environment which receives requestUri!!!");
+    }
+
+    return !requestURI.contains("/actuator/");
   }
 }
