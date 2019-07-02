@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.0.30  | opprettet    | `EnhetFilter`: et `javax.servlet.Filter` som videresender header med enhetsnummer
 0.0.29  | endring      | `HttpStatusResponse`: konstruktør bare for `HttpStatus`
 0.0.28  | endring      | `HttpStatusResponse`: metode (`isEmpty()`)
 0.0.28  | endring      | `HttpHeaderRestTemplate`: akspeterer at et "callback" ikke gjøres med en `HttpEntity`
