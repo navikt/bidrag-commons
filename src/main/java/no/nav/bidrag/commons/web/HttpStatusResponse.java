@@ -40,4 +40,8 @@ public class HttpStatusResponse<T> {
   public boolean isEmpty() {
     return fetchOptionalResult().isEmpty();
   }
+
+  public boolean isPresent() {
+    return fetchOptionalResult().isPresent();
+  }
 }
