@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.1   | slettet      | `HttpStatusResponse`: metode `fetchBody()`
 0.1.0   | endring      | `HttpStatusResponse`: navn på metoder (`isEmpty()` -> `isBodyEmpty`)
 0.1.0   | endring      | `HttpStatusResponse`: ny metode (`fetchBody()`)
 0.1.0   | endring      | `HttpStatusResponse`: ny metode (`isBodyPresent()`)
