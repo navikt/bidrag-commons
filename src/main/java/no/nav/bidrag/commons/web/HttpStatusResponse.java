@@ -37,11 +37,15 @@ public class HttpStatusResponse<T> {
     return body;
   }
 
-  public boolean isEmpty() {
+  public boolean isBodyEmpty() {
     return fetchOptionalResult().isEmpty();
   }
 
-  public boolean isPresent() {
+  public boolean isBodyPresent() {
+    return fetchOptionalResult().isPresent();
+  }
+
+  public boolean fetchBody() {
     return fetchOptionalResult().isPresent();
   }
 }
