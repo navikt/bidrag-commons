@@ -33,19 +33,15 @@ public class HttpStatusResponse<T> {
     return httpStatus;
   }
 
-  public T getBody() {
-    return body;
-  }
-
   public boolean isBodyEmpty() {
-    return fetchOptionalResult().isEmpty();
+    return body == null;
   }
 
   public boolean isBodyPresent() {
-    return fetchOptionalResult().isPresent();
+    return body != null;
   }
 
-  public boolean fetchBody() {
-    return fetchOptionalResult().isPresent();
+  public T getBody() {
+    return body;
   }
 }
