@@ -50,11 +50,9 @@ class ExceptionLoggerTest {
   void skalLoggeException() {
     new Service().simulerServiceSomFeilerMedLoggingAvException();
 
-    assertAll(
-        () -> assertThat(verifiserLogging()).isTrue(),
-        () -> assertThat(String.join("\n", logMeldinger)).contains("Exception caught in bidrag-commons within ExceptionLoggerTest"),
-        () -> assertThat(String.join("\n", logMeldinger)).contains("Failed by java.lang.IllegalStateException: test exception")
-    );
+    verifiserLogging();
+    assertThat(String.join("\n", logMeldinger))
+        .contains("Exception caught in bidrag-commons within ExceptionLoggerTest - java.lang.IllegalStateException: test exception");
   }
 
   @Test
@@ -62,39 +60,48 @@ class ExceptionLoggerTest {
   void skalLoggeStackFrames() {
     new Service().simulerServiceSomFeilerMedLoggingAvException();
 
+    verifiserLogging();
+
     assertAll(
-        () -> assertThat(verifiserLogging()).isTrue(),
         () -> assertThat(String.join("\n", logMeldinger)).contains(" - no.nav.bidrag.commons.ExceptionLoggerTest$Service(line:"),
         () -> assertThat(String.join("\n", logMeldinger)).contains(" - no.nav.bidrag.commons.ExceptionLoggerTest(line:")
     );
   }
 
   @Test
-  @DisplayName("skal logge exception cause når den finnes")
-  void skalLoggeExceptionCauseNaarDenFinnes() {
+  @DisplayName("skal logge root exception cause")
+  void skalLoggeRootExceptionCause() {
     exceptionLogger.logException(
-        new Exception("blew up", new IllegalStateException("in common code", new IllegalArgumentException("with stupid arguments"))),
+        new Exception("blew up", new IllegalStateException("in common code", new IllegalArgumentException("because of stupid arguments"))),
         "junit test"
     );
 
+    verifiserLogging();
+
     assertAll(
-        () -> assertThat(verifiserLogging()).isTrue(),
         () -> assertThat(String.join("\n", logMeldinger)).contains("blew up"),
-        () -> assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.IllegalStateException: in common code."),
-        () -> assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.IllegalArgumentException: with stupid arguments")
+        () -> assertThat(String.join("\n", logMeldinger))
+            .contains(" ...caused by IllegalStateException, IllegalArgumentException: because of stupid arguments")
     );
   }
 
+  @Test
+  @DisplayName("skal logge exception når exception cause mangler")
+  void skalLoggeExceptionNarCauseMangler() {
+    exceptionLogger.logException(new Exception("the service blew up"), "junit test");
+
+    verifiserLogging();
+    assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.Exception: the service blew up");
+  }
+
   @SuppressWarnings("unchecked")
-  private boolean verifiserLogging() {
+  private void verifiserLogging() {
     verify(appenderMock, atLeastOnce()).doAppend(
         argThat((ArgumentMatcher) argument -> {
           logMeldinger.add(((ILoggingEvent) argument).getFormattedMessage());
 
           return true;
         }));
-
-    return true;
   }
 
   private class Service {

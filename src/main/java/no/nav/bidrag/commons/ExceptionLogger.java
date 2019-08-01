@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -20,10 +21,8 @@ public class ExceptionLogger {
   }
 
   public void logException(Throwable throwable, String defaultLocation) {
-    LOGGER.error("Exception caught in {} within {}", application, defaultLocation);
-    LOGGER.error("Failed by {}: {}", throwable.getClass().getName(), throwable.getMessage());
-
-    logCause(throwable.getCause());
+    LOGGER.error("Exception caught in {} within {} - {}: {}", application, defaultLocation, throwable.getClass().getName(), throwable.getMessage());
+    log(throwable);
 
     StackWalker.getInstance().walk(
         stackFrameStream -> stackFrameStream
@@ -35,13 +34,26 @@ public class ExceptionLogger {
     );
   }
 
-  private void logCause(Throwable cause) {
-    Optional<Throwable> possibleCause = Optional.ofNullable(cause);
+  private void log(Throwable throwable) {
+    var possibleCause = Optional.ofNullable(throwable.getCause());
 
-    while (possibleCause.isPresent()) {
-      Throwable theCause = possibleCause.get();
-      LOGGER.error(String.format(CAUSED_BY_MSG, theCause.getClass().getName(), theCause.getMessage()), theCause);
-      possibleCause = Optional.ofNullable(theCause.getCause());
+    if (possibleCause.isPresent()) {
+      logCause(possibleCause.get());
+    } else {
+      LOGGER.error(String.format(CAUSED_BY_MSG, throwable.getClass().getName(), throwable.getMessage()), throwable);
     }
+  }
+
+  private void logCause(Throwable cause) {
+    var exceptionTypes = new ArrayList<String>();
+
+    exceptionTypes.add(cause.getClass().getSimpleName());
+
+    while (cause.getCause() != null) {
+      exceptionTypes.add(cause.getCause().getClass().getSimpleName());
+      cause = cause.getCause();
+    }
+
+    LOGGER.error(String.format(CAUSED_BY_MSG, String.join(", ", exceptionTypes), cause.getMessage()), cause);
   }
 }
