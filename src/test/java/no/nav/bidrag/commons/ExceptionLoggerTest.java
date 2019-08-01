@@ -56,19 +56,6 @@ class ExceptionLoggerTest {
   }
 
   @Test
-  @DisplayName("skal logge stack frames som starter på no.nav")
-  void skalLoggeStackFrames() {
-    new Service().simulerServiceSomFeilerMedLoggingAvException();
-
-    verifiserLogging();
-
-    assertAll(
-        () -> assertThat(String.join("\n", logMeldinger)).contains(" - no.nav.bidrag.commons.ExceptionLoggerTest$Service(line:"),
-        () -> assertThat(String.join("\n", logMeldinger)).contains(" - no.nav.bidrag.commons.ExceptionLoggerTest(line:")
-    );
-  }
-
-  @Test
   @DisplayName("skal logge root exception cause")
   void skalLoggeRootExceptionCause() {
     exceptionLogger.logException(
@@ -81,7 +68,9 @@ class ExceptionLoggerTest {
     assertAll(
         () -> assertThat(String.join("\n", logMeldinger)).contains("blew up"),
         () -> assertThat(String.join("\n", logMeldinger))
-            .contains(" ...caused by IllegalStateException, IllegalArgumentException: because of stupid arguments")
+            .contains(
+                "...caused by java.lang.Exception, java.lang.IllegalStateException, java.lang.IllegalArgumentException: because of stupid arguments"
+            )
     );
   }
 
@@ -91,7 +80,20 @@ class ExceptionLoggerTest {
     exceptionLogger.logException(new Exception("the service blew up"), "junit test");
 
     verifiserLogging();
-    assertThat(String.join("\n", logMeldinger)).contains(" ...caused by java.lang.Exception: the service blew up");
+    assertThat(String.join("\n", logMeldinger)).contains("...caused by java.lang.Exception: the service blew up");
+  }
+
+  @Test
+  @DisplayName("skal logge StackTraceElement fra no.nav før exception")
+  void skalLoggeStackTraceElementFraNavForException() {
+    exceptionLogger.logException(
+        new Exception("blew up", new IllegalStateException("in common code", new IllegalArgumentException("because of stupid arguments"))),
+        "junit test"
+    );
+
+    verifiserLogging();
+    assertThat(String.join("\n", logMeldinger))
+        .contains("Exception sett fra nav: no.nav.bidrag.commons.ExceptionLoggerTest.skalLoggeStackTraceElementFraNavForException(line:");
   }
 
   @SuppressWarnings("unchecked")
