@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.3   | endring      | `ExceptionLogger`: logger siste StackTraceElement fra no.nav før exception og skipper logging fra stack 
 0.1.2   | endring      | `ExceptionLogger`: utbedret logging, samt redusert logging til å bare logge full stack på root causeœ 
 0.1.1   | slettet      | `HttpStatusResponse`: metode `fetchBody()`
 0.1.0   | endring      | `HttpStatusResponse`: navn på metoder (`isEmpty()` -> `isBodyEmpty`)
