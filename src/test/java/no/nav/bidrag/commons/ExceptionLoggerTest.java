@@ -52,7 +52,9 @@ class ExceptionLoggerTest {
 
     verifiserLogging();
     assertThat(String.join("\n", logMeldinger))
-        .contains("Exception caught in bidrag-commons within ExceptionLoggerTest - java.lang.IllegalStateException: test exception");
+        .contains(
+            "Exception caught in bidrag-commons within ExceptionLoggerTest has no cause exception - java.lang.IllegalStateException: test exception"
+        );
   }
 
   @Test
@@ -68,9 +70,7 @@ class ExceptionLoggerTest {
     assertAll(
         () -> assertThat(String.join("\n", logMeldinger)).contains("blew up"),
         () -> assertThat(String.join("\n", logMeldinger))
-            .contains(
-                "...caused by java.lang.Exception, java.lang.IllegalStateException, java.lang.IllegalArgumentException: because of stupid arguments"
-            )
+            .contains("...caused by java.lang.IllegalStateException, java.lang.IllegalArgumentException: because of stupid arguments")
     );
   }
 
@@ -80,7 +80,8 @@ class ExceptionLoggerTest {
     exceptionLogger.logException(new Exception("the service blew up"), "junit test");
 
     verifiserLogging();
-    assertThat(String.join("\n", logMeldinger)).contains("Exception is without cause - java.lang.Exception: the service blew up");
+    assertThat(String.join("\n", logMeldinger))
+        .contains("Exception caught in bidrag-commons within junit test has no cause exception - java.lang.Exception: the service blew up");
   }
 
   @Test

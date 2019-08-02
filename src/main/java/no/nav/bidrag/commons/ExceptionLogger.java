@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
   private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
-  private static final String EXCEPTION_WITHOUT_CAUSE_MSG = "Exception is without cause - %s: %s.";
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -25,26 +25,36 @@ public class ExceptionLogger {
   }
 
   public void logException(Throwable throwable, String defaultLocation) {
-    LOGGER.error("Exception caught in {} within {} - {}: {}", application, defaultLocation, throwable.getClass().getName(), throwable.getMessage());
-    log(throwable);
+    var exceptionClassName = throwable.getClass().getName();
+    var exceptionMessage = throwable.getMessage();
+    var possibleCause = Optional.ofNullable(throwable.getCause());
+
+    if (possibleCause.isPresent()) {
+      LOGGER.error("Exception caught in {} within {} - {}: {}", application, defaultLocation, exceptionClassName, exceptionMessage);
+      logCause(throwable.getCause());
+    } else {
+      var message = String.format(
+          "Exception caught in %s within %s has no cause exception - %s: %s", application, defaultLocation, exceptionClassName, exceptionMessage
+      );
+
+      LOGGER.error(message, throwable);
+    }
   }
 
-  private void log(Throwable throwable) {
-    var throwables = fetchAllThrowables(throwable);
+  private void logCause(Throwable cause) {
+    var throwables = fetchAllThrowables(cause);
     var exceptionTypes = throwables.stream()
         .map(aThrowable -> aThrowable.getClass().getName())
         .collect(Collectors.joining(", "));
 
     Collections.reverse(throwables);
 
-    for (Throwable aThrowable : throwables) {
-      if (aThrowable.getCause() == null) {
-        LOGGER.error(
-            String.format(throwables.size() > 1 ? CAUSED_BY_MSG : EXCEPTION_WITHOUT_CAUSE_MSG, exceptionTypes, aThrowable.getMessage()), aThrowable)
-        ;
+    for (Throwable throwable : throwables) {
+      if (throwable.getCause() == null) {
+        LOGGER.error(String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage()), throwable);
       }
 
-      if (logFirstStackTraceElementFromNav(Arrays.stream(aThrowable.getStackTrace()))) {
+      if (logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()))) {
         return;
       }
     }
