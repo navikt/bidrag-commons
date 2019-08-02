@@ -13,6 +13,7 @@ public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
   private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
+  private static final String EXCEPTION_WITHOUT_CAUSE_MSG = "Exception is without cause - %s: %s.";
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -36,9 +37,11 @@ public class ExceptionLogger {
 
     Collections.reverse(throwables);
 
-    for(Throwable aThrowable : throwables) {
+    for (Throwable aThrowable : throwables) {
       if (aThrowable.getCause() == null) {
-        LOGGER.error(String.format(CAUSED_BY_MSG, exceptionTypes, aThrowable.getMessage()), aThrowable);
+        LOGGER.error(
+            String.format(throwables.size() > 1 ? CAUSED_BY_MSG : EXCEPTION_WITHOUT_CAUSE_MSG, exceptionTypes, aThrowable.getMessage()), aThrowable)
+        ;
       }
 
       if (logFirstStackTraceElementFromNav(Arrays.stream(aThrowable.getStackTrace()))) {
@@ -54,7 +57,7 @@ public class ExceptionLogger {
     do {
       allThrowables.add(cause);
       cause = cause.getCause();
-    } while(cause != null);
+    } while (cause != null);
 
     return allThrowables;
   }

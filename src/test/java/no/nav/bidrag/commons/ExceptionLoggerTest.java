@@ -75,12 +75,12 @@ class ExceptionLoggerTest {
   }
 
   @Test
-  @DisplayName("skal logge exception når exception cause mangler")
-  void skalLoggeExceptionNarCauseMangler() {
+  @DisplayName("skal logge exception selv om exception cause mangler")
+  void skalLoggeExceptionSelvOmCauseMangler() {
     exceptionLogger.logException(new Exception("the service blew up"), "junit test");
 
     verifiserLogging();
-    assertThat(String.join("\n", logMeldinger)).contains("...caused by java.lang.Exception: the service blew up");
+    assertThat(String.join("\n", logMeldinger)).contains("Exception is without cause - java.lang.Exception: the service blew up");
   }
 
   @Test
