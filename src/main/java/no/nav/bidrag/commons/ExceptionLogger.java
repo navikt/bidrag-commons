@@ -38,6 +38,7 @@ public class ExceptionLogger {
       );
 
       LOGGER.error(message, throwable);
+      logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()));
     }
   }
 
