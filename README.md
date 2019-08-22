@@ -8,6 +8,8 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.8   | opprettet    | `KildesystemIdenfikator`: til å identifisere  
+0.1.7   | endring      | fix vulnerabilities reported on snyk.io 
 0.1.6   | endring      | `ExceptionLogger`: logger exception sett fra nav kode uten exception cause også 
 0.1.5   | endring      | `ExceptionLogger`: logger ikke egne innslag for exception uten cause 
 0.1.3   | endring      | `ExceptionLogger`: logger siste StackTraceElement fra no.nav før exception og skipper logging fra stack 
