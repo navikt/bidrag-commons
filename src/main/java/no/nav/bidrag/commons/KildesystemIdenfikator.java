@@ -5,7 +5,9 @@ public class KildesystemIdenfikator {
   public static final String DELIMTER = "-";
   private static final String NON_DIGITS = "\\D+";
   public static final String PREFIX_BIDRAG = "BID";
+  public static final String PREFIX_BIDRAG_COMPLETE = PREFIX_BIDRAG + DELIMTER;
   public static final String PREFIX_JOARK = "JOARK";
+  public static final String PREFIX_JOARK_COMPLETE = PREFIX_JOARK + DELIMTER;
   private static final ThreadLocal<KildesystemIdenfikator> KILDESYSTEM_IDENFIKATOR_THREAD_LOCAL = ThreadLocal.withInitial(() -> null);
 
   private final String prefiksetJournalpostId;
@@ -34,9 +36,9 @@ public class KildesystemIdenfikator {
 
   public Kildesystem hentKildesystem() {
     if (kildesystem == null && prefiksetJournalpostId != null) {
-      if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_BIDRAG + DELIMTER)) {
+      if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_BIDRAG_COMPLETE)) {
         kildesystem = Kildesystem.BIDRAG;
-      } else if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_JOARK + DELIMTER)) {
+      } else if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_JOARK_COMPLETE)) {
         kildesystem = Kildesystem.JOARK;
       } else {
         kildesystem = Kildesystem.UKJENT;
@@ -46,7 +48,7 @@ public class KildesystemIdenfikator {
     return kildesystem;
   }
 
-  public Integer hentJournalpostId() {
+  private Integer fetchJournalpostId() {
     if (journalpostId == null) {
       journalpostId = Integer.valueOf(prefiksetJournalpostId.replaceAll(NON_DIGITS, ""));
     }
@@ -73,6 +75,10 @@ public class KildesystemIdenfikator {
     }
 
     return kildesystemIdenfikator;
+  }
+
+  public static Integer hentJournalpostId() {
+    return hent().fetchJournalpostId();
   }
 
   public enum Kildesystem {
