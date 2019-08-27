@@ -17,16 +17,20 @@ public class HttpStatusResponse<T> {
     this.body = body;
   }
 
+  public Optional<T> fetchOptionalResult() {
+    return Optional.ofNullable(body);
+  }
+
+  public boolean isNotSuccessful() {
+    return !httpStatus.is2xxSuccessful();
+  }
+
   @Override
   public String toString() {
     return "HttpStatusResponse{" +
         "httpStatus=" + httpStatus +
         ", body=" + body +
         '}';
-  }
-
-  public Optional<T> fetchOptionalResult() {
-    return Optional.ofNullable(body);
   }
 
   public HttpStatus getHttpStatus() {

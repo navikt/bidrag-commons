@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.10  | opprettet    | `HttpStatusResponse.isNotSuccessful()`:   
 0.1.9   | opprettet    | `KildesystemIdenfikator.hentJournalpostId()`:   
 0.1.8   | opprettet    | `KildesystemIdenfikator`: til å identifisere  
 0.1.7   | endring      | fix vulnerabilities reported on snyk.io 
