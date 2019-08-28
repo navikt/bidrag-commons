@@ -89,7 +89,7 @@ class EnhetFilterTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  @DisplayName("skal logge enhetsnummer som videresendes")
+  @DisplayName("skal logge enhetsnummer som skal videresendes")
   void skalLoggeEnhetsnummerSomVideresendes() throws IOException, ServletException {
     when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("007");
 
@@ -100,12 +100,13 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'some url' for enhet med enhetsnummer 007");
+    assertThat(loggingEvent.getFormattedMessage()).as("log").contains("Behandler request 'some url' for enhet med enhetsnummer 007");
+    assertThat(EnhetFilter.fetchForThread()).as("enhetsnummer").isEqualTo("007");
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  @DisplayName("skal logge at enhetsnummer ikke videresendes")
+  @DisplayName("skal logge når et enhetsnummer ikke kan videresendes")
   void skalLoggeAtEnhetsnummerIkkeVideresendes() throws IOException, ServletException {
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 

@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 public class EnhetFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EnhetFilter.class);
+  private static final ThreadLocal<String> ENHETSNUMMER_VALUE = new ThreadLocal<>();
+
   public static final String X_ENHETSNR_HEADER = "X-Enhetsnummer";
 
   @Override
@@ -26,6 +28,7 @@ public class EnhetFilter implements Filter {
         var enhetsnummer = httpServletRequest.getHeader(X_ENHETSNR_HEADER);
 
         if (enhetsnummer != null) {
+          ENHETSNUMMER_VALUE.set(enhetsnummer);
           ((HttpServletResponse) servletResponse).addHeader(X_ENHETSNR_HEADER, enhetsnummer);
           LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
         } else {
@@ -46,5 +49,9 @@ public class EnhetFilter implements Filter {
     }
 
     return !requestURI.contains("/actuator/");
+  }
+
+  public static String fetchForThread() {
+    return ENHETSNUMMER_VALUE.get();
   }
 }
