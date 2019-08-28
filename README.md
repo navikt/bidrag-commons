@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.11  | endring      | `EnhetFilter`: error logger hvis ServletRequest ikke er en HttpServletRequest     
 0.1.10  | opprettet    | `HttpStatusResponse.isNotSuccessful()`:   
 0.1.9   | opprettet    | `KildesystemIdenfikator.hentJournalpostId()`:   
 0.1.8   | opprettet    | `KildesystemIdenfikator`: til å identifisere  
