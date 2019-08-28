@@ -32,6 +32,9 @@ public class EnhetFilter implements Filter {
           LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
         }
       }
+    } else {
+      String filterRequest = servletRequest != null ? servletRequest.getClass().getSimpleName() : "null";
+      LOGGER.error("Filtrering gjøres ikke av en HttpServletRequest: " + filterRequest);
     }
 
     filterChain.doFilter(servletRequest, servletResponse);
