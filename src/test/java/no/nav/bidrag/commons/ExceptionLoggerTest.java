@@ -99,12 +99,8 @@ class ExceptionLoggerTest {
 
   @SuppressWarnings("unchecked")
   private void verifiserLogging() {
-    verify(appenderMock, atLeastOnce()).doAppend(
-        argThat((ArgumentMatcher) argument -> {
-          logMeldinger.add(((ILoggingEvent) argument).getFormattedMessage());
-
-          return true;
-        }));
+    verify(appenderMock, atLeastOnce())
+        .doAppend(argThat((ArgumentMatcher) argument -> logMeldinger.add(((ILoggingEvent) argument).getFormattedMessage())));
   }
 
   private class Service {
