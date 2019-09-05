@@ -8,6 +8,7 @@ gjenbruke komponenter til enhetstesting.
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.14  | opprettet    | `SoapSamlCallback`: feil ved deploy
 0.1.13  | opprettet    | `SoapSamlCallback`: `SoapActionCallback` i en web service med et saml-token
 0.1.12  | endring      | `EnhetFilter`: tar vare på enhetsinformasjon i ThreadLocal     
 0.1.11  | endring      | `EnhetFilter`: error logger hvis ServletRequest ikke er en HttpServletRequest     
