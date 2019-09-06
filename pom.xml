@@ -69,11 +69,11 @@
           <groupId>junit</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>com.sun.xml.messaging.saaj</artifactId>
-          <groupId>saaj-impl</groupId>
+          <artifactId>saaj-impl</artifactId>
+          <groupId>com.sun.xml.messaging.saaj</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>mimepull:</artifactId>
+          <artifactId>mimepull</artifactId>
           <groupId>org.jvnet.mimepull</groupId>
         </exclusion>
         <exclusion>
