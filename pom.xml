@@ -63,6 +63,24 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web-services</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>com.sun.xml.messaging.saaj</artifactId>
+          <groupId>saaj-impl</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>mimepull:</artifactId>
+          <groupId>org.jvnet.mimepull</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>stax-ex</artifactId>
+          <groupId>org.jvnet.staxex</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
