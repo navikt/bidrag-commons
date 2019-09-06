@@ -18,7 +18,7 @@
     <!-- dependencies -->
     <jackson-databind.version>2.9.9.3</jackson-databind.version>
     <logback-encoder.version>6.1</logback-encoder.version>
-    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+    <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
 
     <!-- language -->
     <java.version>12</java.version>
