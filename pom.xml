@@ -18,7 +18,7 @@
     <!-- dependencies -->
     <jackson-databind.version>2.9.9.3</jackson-databind.version>
     <logback-encoder.version>6.1</logback-encoder.version>
-    <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+    <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
 
     <!-- language -->
     <java.version>12</java.version>
@@ -63,6 +63,24 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web-services</artifactId>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>com.sun.xml.messaging.saaj</artifactId>
+          <groupId>saaj-impl</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>mimepull:</artifactId>
+          <groupId>org.jvnet.mimepull</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>stax-ex</artifactId>
+          <groupId>org.jvnet.staxex</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
