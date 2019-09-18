@@ -17,7 +17,7 @@
 
     <!-- dependencies -->
     <jackson.version>2.10.0.pr3</jackson.version>
-    <logback-encoder.version>6.1</logback-encoder.version>
+    <logback-encoder.version>6.2</logback-encoder.version>
     <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
 
     <!-- language -->
