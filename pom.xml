@@ -16,7 +16,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- dependencies -->
-    <jackson-databind.version>2.10.0.pr3</jackson-databind.version>
+    <jackson.version>2.10.0.pr3</jackson.version>
     <logback-encoder.version>6.1</logback-encoder.version>
     <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
 
@@ -50,12 +50,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <version>${spring-boot.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.fasterxml.jackson</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>compile</scope>
     </dependency>
 
@@ -80,6 +74,10 @@
           <artifactId>stax-ex</artifactId>
           <groupId>org.jvnet.staxex</groupId>
         </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -101,7 +99,7 @@
       <version>${logback-encoder.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>com.fasterxml.jackson</groupId>
+          <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-databind</artifactId>
         </exclusion>
       </exclusions>
@@ -133,13 +131,6 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
-    </dependency>
-
-    <!-- dependency to overwrite vulnerable dependency of jackson-databind -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
     </dependency>
   </dependencies>
 
