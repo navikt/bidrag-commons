@@ -15,4 +15,4 @@ inputs:
     default: 'maven:3.6.2-jdk-12'
 
 using: 'shell'
-runs: 'docker run -it -rm --name ${{ inputs.artifact}} -v ${{ inputs.workpath }}:/usr/src/maven -w /usr/src/mymaven ${{ inputs.image }} mvn -B package'
+runs: 'docker run -it -rm --name $INPUT_ARTIFACT -v $INPUT_WORKPATH:/usr/src/maven -w /usr/src/mymaven $INPUT_IMAGE mvn -B package'
