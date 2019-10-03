@@ -23,4 +23,4 @@ jobs:
           ARTIFACT: 'bidrag-commons'
           IMAGE: 'maven:3.6.2-jdk-12'
         run: |
-          docker run --rm --name "$ARTIFACT" -v "$PWD":/usr/src/maven "$IMAGE" mvn -B install
+          docker run --rm --name "$ARTIFACT" -v "$PWD":/usr/src/maven -w /usr/src/maven "$IMAGE" mvn -B install
