@@ -17,4 +17,4 @@ inputs:
 using: 'shell'
 
 runs: 'env
-  docker run -it -rm --name ${{ inputs.artifact}} -v ${{ imputs.workpath }}:/usr/src/maven {{ inputs.image }} mvn -B install'
+  docker run -it -rm --name ${{ inputs.artifact}} -v ${{ imputs.workpath }}:/usr/src/maven ${{ inputs.image }} mvn -B install'
