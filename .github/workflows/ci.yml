@@ -13,6 +13,7 @@ jobs:
 
     steps:
       - name: debug
+        uses: shell
         runs: env
       - name: init
         uses: actions/checkout@v1
