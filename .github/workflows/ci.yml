@@ -17,4 +17,5 @@ jobs:
       - name: init
         uses: actions/checkout@v1
       - name: build & test with maven
-        runs: 'docker run -it --rm --name jactor-persistence -v $GITHUB_WORKSPACE:/jactor-persistence:/usr/src/mymaven -w /usr/src/mymaven maven:3.6.2-jdk-12 mvn package'
+        uses: shell
+        runs: 'docker run -it --rm --name jactor-persistence -v $GITHUB_WORKSPACE:/jactor-persistence:/usr/src/mymaven -w /usr/src/mymaven maven:3.6.2-jdk-12 mvn install'
