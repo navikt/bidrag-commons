@@ -6,17 +6,16 @@ inputs:
   workpath:
     description: File path to the folder containing the pom.xml
     required: true
+  artifact:
+    description: Name of the artifact beeing build
+    required: true
   image:
     description: Name of the docker container to use
     required: false
     default: 'maven:3.6.2-jdk-12'
-  artifact:
-    description: Name of the artifact beeing build
-    required: false
-    default: 'bidrag-commons'
 
 using: 'shell'
 
 runs: |
   env
-  docker run -it -rm --name $INPUT_ARTIFACT -v $INPUT_WORKPATH:/usr/src/maven $INPUT_IMAGE mvn -B install
+  docker run -it -rm --name ${{ inputs.artifact}} -v ${{ imputs.workpath }}:/usr/src/maven {{ inputs.image }} mvn -B install

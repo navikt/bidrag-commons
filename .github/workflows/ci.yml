@@ -12,9 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: debug
-        runs: env
       - name: init
         uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - name: build & test with maven
-        runs: 'docker run -it --rm --name jactor-persistence -v $GITHUB_WORKSPACE:/jactor-persistence:/usr/src/mymaven -w /usr/src/mymaven maven:3.6.2-jdk-12 mvn package'
+        uses: ./.github/actions/maven
+        with:
+          workpath: $GITHUB_WORKSPACE/bidrag-commons
+          image: 'maven:3.6.2-jdk-12'
+          artifact: 'bidrag-commons'
