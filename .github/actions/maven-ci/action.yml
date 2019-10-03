@@ -1,4 +1,4 @@
-name: maven
+name: maven-ci
 author: jactor-rises
 description: A maven build using a docker container
 
@@ -16,5 +16,6 @@ inputs:
 
 using: 'shell'
 
-runs: 'env
-  docker run -it -rm --name ${{ inputs.artifact}} -v ${{ imputs.workpath }}:/usr/src/maven ${{ inputs.image }} mvn -B install'
+runs: |
+  env
+  docker run -it -rm --name ${{ inputs.artifact}} -v ${{ imputs.workpath }}:/usr/src/maven ${{ inputs.image }} mvn -B package

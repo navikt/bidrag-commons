@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: build & test with maven
-        uses: ./.github/actions/maven
+        uses: ./.github/actions/maven-ci'
         with:
           workpath: $GITHUB_WORKSPACE/bidrag-commons
           image: 'maven:3.6.2-jdk-12'
