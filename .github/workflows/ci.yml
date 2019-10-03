@@ -12,16 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: debug
-        run: env
       - name: init
         uses: actions/checkout@v1
         with:
           fetch-depth: 1
+      - name: debug
+        run: env
       - name: build & test with maven
         env:
           ARTIFACT: 'bidrag-commons'
-          WORKPATH: bidrag-commons
           IMAGE: 'maven:3.6.2-jdk-12'
         run: |
-          docker run -it -rm --name "$ARTIFACT" -v "GITHUB_WORKSPACE"/"$WORKPATH":/usr/src/maven "$IMAGE" mvn -B install
+          docker run -it --rm --name "$ARTIFACT" -v "$PWD":/usr/src/maven "$IMAGE" mvn -B install
