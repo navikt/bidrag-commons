@@ -4,6 +4,10 @@ Komponenter som brukes på tvers av applikasjoner under bidrag
 Det finnes et annet felles-bibliotek (`bidrag-commons-test`) som utelukkende er laget for å
 gjenbruke komponenter til enhetstesting. 
 
+## continuous integration and deployment
+
+Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` og `.github/actions/*` for detaljer. 
+
 ## release endringer
 
 versjon | endringstype | beskrivelse
