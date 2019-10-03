@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: init
         uses: actions/checkout@v1
-        wtih:
+        with:
           fetch-depth: 1
       - name: build & test with maven
         uses: ./.github/actions/maven
