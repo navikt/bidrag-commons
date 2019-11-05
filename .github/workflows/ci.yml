@@ -28,7 +28,7 @@ jobs:
         env:
           ARTIFACT: 'bidrag-commons'
           IMAGE: 'maven:3.6.2-jdk-12'
-          M2REPO: '~/.m2/repository'
+          M2_REPO: '~/.m2/repository'
         run: |
           docker run --rm --name "$ARTIFACT" \
             -> "$M2_REPO":/root/.m2
