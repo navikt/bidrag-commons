@@ -31,6 +31,6 @@ jobs:
           M2_REPO: '~/.m2/repository'
         run: |
           docker run --rm --name "$ARTIFACT" \
-            -> "$M2_REPO":/root/.m2
+            -v "$M2_REPO":/root/.m2 \
             -v "$PWD":/usr/src/maven \
             -w /usr/src/maven "$IMAGE" mvn -B install
