@@ -126,7 +126,7 @@ class CorrelationIdFilterTest {
     ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
     verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
 
-    assertThat(correlationCaptor.getValue()).contains("(somewhere)");
+    assertThat(correlationCaptor.getValue()).contains("-somewhere");
   }
 
   @Test
@@ -138,7 +138,7 @@ class CorrelationIdFilterTest {
     ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
     verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
 
-    assertThat(correlationCaptor.getValue()).contains("(journalpost)");
+    assertThat(correlationCaptor.getValue()).contains("-journalpost");
   }
 
   @Test
@@ -150,7 +150,7 @@ class CorrelationIdFilterTest {
     ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
     verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
 
-    assertThat(correlationCaptor.getValue()).contains("(journalpost/1001)");
+    assertThat(correlationCaptor.getValue()).contains("-journalpost/1001");
   }
 
   @Test
@@ -162,7 +162,7 @@ class CorrelationIdFilterTest {
     ArgumentCaptor<String> correlationCaptor = ArgumentCaptor.forClass(String.class);
     verify(httpServletResponseMock).addHeader(eq(CORRELATION_ID), correlationCaptor.capture());
 
-    assertThat(correlationCaptor.getValue()).contains("(journalpost/BID-1001)");
+    assertThat(correlationCaptor.getValue()).contains("-journalpost/BID-1001");
   }
 
   @Test
