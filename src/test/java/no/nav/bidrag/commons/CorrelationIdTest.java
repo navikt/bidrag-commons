@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-
 @DisplayName("CorrelationId")
 class CorrelationIdTest {
 
@@ -25,6 +24,14 @@ class CorrelationIdTest {
 
      assertThat(correlationId.get())
          .startsWith(timestamp.substring(0, timestamp.length() - 3))
-         .contains("(value)");
+         .contains("-value");
+  }
+
+  @Test
+  @DisplayName("skal generere ny verdi når gitt Correlation ID er null")
+  void skalGenerereNyVerdiNarGittVerdiErNull() {
+    var correlationId = CorrelationId.existing(null);
+
+    assertThat(correlationId.get()).contains("-correlationId");
   }
 }

@@ -12,6 +12,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` og `.g
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.1.15  | endret       | `CorrelationId`: genererer `<hex>-correlationId` når verdien som blir gitt er null
+0.1.15  | endret       | `CorrelationId`: genererer correlation id med `-` uten `()`
 0.1.14  | opprettet    | `SoapSamlCallback`: feil ved deploy av versjon 0.1.13
 0.1.13  | opprettet    | `SoapSamlCallback`: `SoapActionCallback` i en web service med et saml-token
 0.1.12  | endring      | `EnhetFilter`: tar vare på enhetsinformasjon i ThreadLocal     

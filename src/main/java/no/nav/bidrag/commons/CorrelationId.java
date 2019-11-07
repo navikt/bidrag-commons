@@ -21,11 +21,15 @@ public class CorrelationId {
   }
 
   public static CorrelationId existing(String value) {
+    if (value == null || value.equals("")) {
+      return generateTimestamped("correlationId");
+    }
+
     return new CorrelationId(value);
   }
 
   public static CorrelationId generateTimestamped(String value) {
     String currentTimeAsString = Long.toHexString(System.currentTimeMillis());
-    return new CorrelationId(currentTimeAsString + '(' + value + ')');
+    return new CorrelationId(currentTimeAsString + '-' + value);
   }
 }
