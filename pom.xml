@@ -17,7 +17,7 @@
 
     <!-- dependencies -->
     <logback-encoder.version>6.2</logback-encoder.version>
-    <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
+    <spring-boot.version>2.2.1.RELEASE</spring-boot.version>
 
     <!-- language -->
     <java.version>12</java.version>
