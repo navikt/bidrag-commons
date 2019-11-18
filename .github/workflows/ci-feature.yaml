@@ -1,8 +1,9 @@
-name: continious integration on master
+name: continious integration on features
 on:
   push:
     branches:
-      - master
+      - '**'
+      - '!master'
 
 jobs:
 
@@ -42,20 +43,3 @@ jobs:
       - name: build & test with maven
         run: |
           mvn -B install
-      - name: bump patch version on source
-        run: |
-          mvn -B release:update-versions
-          cat pom.xml | grep version | grep SNAPSHOT | \
-            sed 's:version::g' | sed 's\  \Bunped to new version: \' | sed 's:[</>]::g' > commit-message
-          cat commit-message
-      - name: commit new version
-        uses: EndBug/add-and-commit@v2.1.0
-        with:
-          author_name: Tor Egil Jacobsen
-          author_email: tor.egil.jacobsen@nav.no
-          message: "Bumped to new version"
-          path: "."
-          pattern: "pom.xml"
-          force: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
