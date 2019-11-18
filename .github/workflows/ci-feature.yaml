@@ -1,0 +1,45 @@
+name: continious integration on features
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: init
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12'
+      - name: debug
+        run: env
+      - name: cache maven dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: verify that no dependencies is of type SNAPSHOT
+        run: |
+          mvn -B dependency:tree | tee dependency.tree
+          export COUNT="$(cat dependency.tree | grep -e '|' -e '+' | grep -c SNAPSHOT)"
+          if [ $COUNT -eq 1 ]
+            then
+              >&2 echo ERROR: Found a SNAPSHOT dependency
+              exit 1;
+          elif [ $COUNT -gt 0 ]
+            then
+              >&2 echo ERROR: Found $COUNT SNAPSHOT dependencies
+              exit 1;
+          fi
+      - name: build & test with maven
+        run: |
+          mvn -B install
