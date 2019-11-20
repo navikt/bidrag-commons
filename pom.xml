@@ -4,7 +4,7 @@
 
   <groupId>no.nav.bidrag</groupId>
   <artifactId>bidrag-commons</artifactId>
-  <version>0.1.22-b8e5bd1ae7f9</version>
+  <version>0.1.23-f1cb3198de1d</version>
   <packaging>jar</packaging>
 
   <licenses>
