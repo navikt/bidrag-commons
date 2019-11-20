@@ -4,7 +4,7 @@
 
   <groupId>no.nav.bidrag</groupId>
   <artifactId>bidrag-commons</artifactId>
-  <version>0.1.21-b8e5bd1ae7f9</version>
+  <version>0.1.22-b8e5bd1ae7f9</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -37,6 +37,7 @@
 
     <!-- plugins -->
     <maven-compiler.version>3.8.1</maven-compiler.version>
+    <maven-source.version>3.2.0</maven-source.version>
     <maven-surefire.version>2.22.0</maven-surefire.version>
   </properties>
 
@@ -171,6 +172,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source.version}</version>
         <executions>
           <execution>
             <id>include-sources</id>
