@@ -39,9 +39,6 @@ jobs:
               >&2 echo ERROR: Found $COUNT SNAPSHOT dependencies
               exit 1;
           fi
-      - name: build & test with maven
-        run: |
-          mvn -B install
       - name: Run Maven release
         run: ./release.sh
         env:
