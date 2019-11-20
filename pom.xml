@@ -4,8 +4,22 @@
 
   <groupId>no.nav.bidrag</groupId>
   <artifactId>bidrag-commons</artifactId>
-  <version>0.1.21-SNAPSHOT</version>
+  <version>0.1.21-b8e5bd1ae7f9</version>
   <packaging>jar</packaging>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <organization>NAV (Arbeids- og velferdsdirektoratet) - The Norwegian Labour and Welfare Administration</organization>
+      <organizationUrl>https://www.nav.no</organizationUrl>
+    </developer>
+  </developers>
 
   <description>Bibliotek for komponenter som brukes på tvers av applikasjoner i no.nav.bidrag</description>
 
@@ -26,9 +40,18 @@
     <maven-surefire.version>2.22.0</maven-surefire.version>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/navikt/bidrag-commons</url>
+    </repository>
+  </distributionManagement>
+
   <scm>
-    <url>https://github.com/navikt/bidrag-commons</url>
-    <developerConnection>scm:git:https://github.com/navikt/bidrag-commons</developerConnection>
+    <developerConnection>scm:git:git@github.com:navikt/bidrag-commons.git</developerConnection>
+    <connection>scm:git:git@github.com:navikt/bidrag-commons.git</connection>
+    <url>https://github.com/navikt/bidrag-commons.git</url>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencyManagement>
@@ -132,31 +155,6 @@
     </dependency>
   </dependencies>
 
-  <repositories>
-    <repository>
-      <id>local-releases</id>
-      <name>Local stuff</name>
-      <url>https://repo.adeo.no/repository/maven-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <id>m2internal</id>
-      <name>NAV Maven2 Internal Repository</name>
-      <url>http://maven.adeo.no/nexus/content/repositories/m2internal</url>
-    </repository>
-    <snapshotRepository>
-      <id>m2snapshot</id>
-      <name>NAV Maven2 Snapshot Repository</name>
-      <url>http://maven.adeo.no/nexus/content/repositories/m2snapshot</url>
-      <uniqueVersion>false</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
-
   <build>
     <plugins>
       <plugin>
@@ -170,6 +168,17 @@
         <configuration>
           <release>${java.version}</release>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>include-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
