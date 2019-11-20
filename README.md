@@ -12,7 +12,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` og `.g
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
-?       | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges
+0.1.18  | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges
 0.1.15  | endret       | `CorrelationId`: genererer `<hex>-correlationId` når verdien som blir gitt er null
 0.1.15  | endret       | `CorrelationId`: genererer correlation id med `-` uten `()`
 0.1.14  | opprettet    | `SoapSamlCallback`: feil ved deploy av versjon 0.1.13
