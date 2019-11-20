@@ -53,7 +53,7 @@ class ExceptionLoggerTest {
     verifiserLogging();
     assertThat(String.join("\n", logMeldinger))
         .contains(
-            "Exception caught in bidrag-commons within ExceptionLoggerTest has no cause exception - java.lang.IllegalStateException: test exception"
+            "java.lang.IllegalStateException: test exception - Exception caught in bidrag-commons within ExceptionLoggerTest has no cause exception"
         );
   }
 
@@ -81,7 +81,7 @@ class ExceptionLoggerTest {
 
     verifiserLogging();
     assertThat(String.join("\n", logMeldinger))
-        .contains("Exception caught in bidrag-commons within junit test has no cause exception - java.lang.Exception: the service blew up");
+        .contains("java.lang.Exception: the service blew up - Exception caught in bidrag-commons within junit test has no cause exception");
   }
 
   @Test

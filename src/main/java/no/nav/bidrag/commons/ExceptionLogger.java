@@ -30,11 +30,11 @@ public class ExceptionLogger {
     var possibleCause = Optional.ofNullable(throwable.getCause());
 
     if (possibleCause.isPresent()) {
-      LOGGER.error("Exception caught in {} within {} - {}: {}", application, defaultLocation, exceptionClassName, exceptionMessage);
+      LOGGER.error("{}: {} - Exception caught in {} within {}", exceptionClassName, exceptionMessage, application, defaultLocation);
       logCause(throwable.getCause());
     } else {
       var message = String.format(
-          "Exception caught in %s within %s has no cause exception - %s: %s", application, defaultLocation, exceptionClassName, exceptionMessage
+          "%s: %s - Exception caught in %s within %s has no cause exception", exceptionClassName, exceptionMessage, application, defaultLocation
       );
 
       LOGGER.error(message, throwable);
