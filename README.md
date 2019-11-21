@@ -1,4 +1,7 @@
 # bidrag-commons
+
+ ![](https://github.com/navikt/bidrag-commons/workflows/continious%20integration%20on%20master/badge.svg)
+
 Komponenter som brukes på tvers av applikasjoner under bidrag
 
 Det finnes et annet felles-bibliotek (`bidrag-commons-test`) som utelukkende er laget for å
