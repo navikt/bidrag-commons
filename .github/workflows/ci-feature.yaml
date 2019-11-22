@@ -27,7 +27,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: navikt/bidrag-actions/verify-dependencies/Verifier@feature-verify.snap
+      - uses: navikt/bidrag-actions/verify-dependencies@feature-verify.snap
       - name: verify that no dependencies is of type SNAPSHOT
         run: |
           mvn -B dependency:tree | tee dependency.tree
