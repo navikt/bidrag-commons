@@ -29,7 +29,7 @@ jobs:
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-dependencies@master
       - name: Run Maven release
-        uses: navikt/bidrag-actions/release-mvn-pkg@feature-mvn.pkg
+        uses: navikt/bidrag-actions/release-mvn-pkg@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: commit new version

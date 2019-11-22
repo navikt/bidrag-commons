@@ -32,7 +32,3 @@ jobs:
       - name: build & test with maven
         run: |
           mvn -B install
-      - name: Run Maven release
-        uses: navikt/bidrag-actions/release-mvn-pkg@feature-mvn.pkg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
