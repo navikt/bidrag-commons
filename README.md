@@ -9,7 +9,7 @@ gjenbruke komponenter til enhetstesting.
 
 ## continuous integration and deployment
 
-Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` og `.github/actions/*` for detaljer. 
+Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for detaljer. 
 
 ## release endringer
 
