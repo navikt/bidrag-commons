@@ -42,7 +42,7 @@ jobs:
         with:
           author_name: Tor Egil Jacobsen
           author_email: tor.egil.jacobsen@nav.no
-          message: "Bumped to new version after release"
+          message: "Bumped to new version after release of ${{ steps.prepare.outputs.tagged-release }}"
           path: "."
           pattern: "pom.xml"
           force: false
