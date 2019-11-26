@@ -28,8 +28,13 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
-      - name: Run Maven release
+      - id: prepare
+        name: prepare release of maven package
+        uses: navikt/bidrag-actions/prepare-release-mvn-pkg@master
+      - name: release maven package
         uses: navikt/bidrag-actions/release-mvn-pkg@master
+        with:
+          new-snapshot-version: "${{ steps.prepare.outputs.new-snapshot-version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: commit new version
