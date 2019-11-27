@@ -30,7 +30,7 @@ jobs:
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
       - id: prepare
         name: prepare release of maven package
-        uses: navikt/bidrag-actions/prepare-release-mvn-pkg@master
+        uses: navikt/bidrag-actions/release-prepare-for-mvn@master
       - name: release maven package
         uses: navikt/bidrag-actions/release-mvn-pkg@master
         with:
