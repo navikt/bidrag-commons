@@ -29,6 +29,13 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
+      - id: verify
+        name: is artifact eligable for deployment
+        uses: navikt/bidrag-actions/release-verify-auto-deploy@feature-output
+        env:
+          CHANGELOG_FILE: README.md
+          RELEASE_VERSION_FILE: .release-version
+      - run: "echo ${{ steps.prepare.outputs.release-version }}"
       - name: build & test with maven
         run: |
           mvn -B install
