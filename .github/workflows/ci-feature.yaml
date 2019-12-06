@@ -31,11 +31,11 @@ jobs:
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
       - id: prepare
         name: prepare release of maven package
-        uses: navikt/bidrag-actions/release-prepare-for-mvn@master
+        uses: navikt/bidrag-actions/release-prepare-for-mvn@feature-output
         env:
           NEW_SNAPSHOT_VERSION_FILE: .new-snapshot-version
           RELEASE_VERSION_FILE: .release-version
-      - run: "echo ${{ steps.prepare.outputs.release-version }}"
+      - run: "echo version: ${{ steps.prepare.outputs.release-version }}"
       - name: build & test with maven
         run: |
           mvn -B install
