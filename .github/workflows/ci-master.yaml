@@ -28,31 +28,28 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
-      - id: prepare
-        name: prepare release of maven package
+      - name: prepare release of maven package
         uses: navikt/bidrag-actions/release-prepare-mvn-pkg@master
-        env:
-          NEW_SNAPSHOT_VERSION_FILE: .new-snapshot-version
-          RELEASE_VERSION_FILE: .release-version
-      - id: verify
-        name: is artifact eligable for deployment
+        with:
+          new_snapshot_version_file_name: .new-snapshot-version
+          release_version_file_name: .release-version
+      - name: is artifact eligable for deployment
         uses: navikt/bidrag-actions/release-verify-auto-deploy@master
-        env:
-          CHANGELOG_FILE: README.md
-          RELEASE_VERSION_FILE: .release-version
+        with:
+          changelog_file: README.md
+          release_version_file: .release-version
       - name: release maven package
         uses: navikt/bidrag-actions/release-mvn-pkg@master
+        with:
+          new_snapshot_version_file: .new-snapshot-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NEW_SNAPSHOT_VERSION_FILE: .new-snapshot-version
       - name: commit new version
-        uses: EndBug/add-and-commit@v2.1.0
+        if: github.ref == 'refs/heads/master'
+        uses: jactor-rises/add-and-commit@master
         with:
-          author_name: Tor Egil Jacobsen
-          author_email: tor.egil.jacobsen@nav.no
-          message: "Bumped to new SNAPSHOT version after release."
+          message: "Bumped to new SNAPSHOT version after release by ${{ github.actor }}."
           path: "."
           pattern: "pom.xml"
-          force: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
