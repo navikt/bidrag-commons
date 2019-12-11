@@ -30,5 +30,4 @@ jobs:
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-mvn-dependencies@master
       - name: build & test with maven
-        run: |
-          mvn -B install
+        run: mvn -B install
