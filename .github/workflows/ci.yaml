@@ -44,7 +44,7 @@ jobs:
           release_version_file: .release-version
       - name: release maven package
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-mvn-pkg@feature-skip-tests
+        uses: navikt/bidrag-actions/release-mvn-pkg@master
         with:
           new_snapshot_version_file: .new-snapshot-version
         env:
