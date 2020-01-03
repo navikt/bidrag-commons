@@ -51,9 +51,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: commit new version
         if: github.ref == 'refs/heads/master'
-        uses: Endbug/add-and-commit@v2.3.0
+        uses: navikt/bidrag-actions/tag-and-commit@master
         with:
-          message: "Bumped to new SNAPSHOT version after release by ${{ github.actor }}."
-          pattern: "pom.xml"
+          message: Bumped to new version after release of version {}
+          pattern: pom.xml
+          tag_file: .release-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
