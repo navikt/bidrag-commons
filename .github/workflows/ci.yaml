@@ -31,8 +31,8 @@ jobs:
       - name: build & test with maven
         run: mvn -B install
       - name: prepare release of maven package
-        if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@master
+#        if: github.ref == 'refs/heads/master'
+        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@feature-no-sha
         with:
           new_snapshot_version_file_name: .new-snapshot-version
           release_version_file_name: .release-version
