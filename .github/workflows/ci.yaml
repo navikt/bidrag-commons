@@ -27,31 +27,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
-        uses: navikt/bidrag-actions/verify-mvn-dependencies@master
+        uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.0
       - name: build & test with maven
         run: mvn -B install
       - name: prepare release of maven package
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@master
+        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.0
         with:
           new_snapshot_version_file_name: .new-snapshot-version
           release_version_file_name: .release-version
       - name: is artifact eligable for deployment
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-verify-auto-deploy@master
+        uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
         with:
           changelog_file: README.md
           release_version_file: .release-version
       - name: release maven package
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-mvn-pkg@master
+        uses: navikt/bidrag-actions/release-mvn-pkg@v1.0.0
         with:
           new_snapshot_version_file: .new-snapshot-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: commit new version
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/tag-and-commit@master
+        uses: navikt/bidrag-actions/tag-and-commit@v1.0.0
         with:
           message: Bumped to new version after release of version {}
           pattern: pom.xml
