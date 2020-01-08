@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.2.0   | -- ingen --  | Overgang til bruk av github som maven-repo
 0.1.18  | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges
 0.1.15  | endret       | `CorrelationId`: genererer `<hex>-correlationId` når verdien som blir gitt er null
 0.1.15  | endret       | `CorrelationId`: genererer correlation id med `-` uten `()`
