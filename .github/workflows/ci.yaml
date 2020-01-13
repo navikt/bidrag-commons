@@ -38,7 +38,7 @@ jobs:
           release_version_file_name: .release-version
       - name: is artifact eligable for deployment
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
+        uses: navikt/bidrag-actions/release-verify-auto-deploy@master
         with:
           changelog_file: README.md
           release_version_file: .release-version
