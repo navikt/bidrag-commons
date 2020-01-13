@@ -27,12 +27,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
-        uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.1
+        uses: navikt/bidrag-actions/verify-mvn-dependencies@vfeature-silent
       - name: build & test with maven
         run: mvn -B install
       - name: prepare release of maven package
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.1
+        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@vfeature-silent
         with:
           new_snapshot_version_file_name: .new-snapshot-version
           release_version_file_name: .release-version
