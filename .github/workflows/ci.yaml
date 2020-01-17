@@ -51,10 +51,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: commit new version
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/tag-and-commit@v1.0.0
+        uses: navikt/bidrag-actions/tag-and-commit@v2.0.1
         with:
-          message: Bumped to new version after release of version {}
+          commit_message: Bumped to new SNAPSHOT version after release of version {}
+          tag_message: Release new version {}
           pattern: pom.xml
           tag_file: .release-version
+          file_is_release: .is-release-candidate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
