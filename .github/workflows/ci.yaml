@@ -10,16 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: init
+      - name: Init
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
       - uses: actions/setup-java@v1
         with:
           java-version: '13'
-      - name: debug
+      - name: Debug
         run: env
-      - name: cache maven dependencies
+      - name: Cache maven dependencies
         uses: actions/cache@v1
         with:
           path: ~/.m2
@@ -28,37 +26,35 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Verify that no dependencies are of type SNAPSHOT
         uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.1
-      - name: build & test with maven
+      - name: Build & test with maven
         run: mvn -B install
-      - name: prepare release of maven package
+      - name: Prepare release of maven package
         if: github.ref == 'refs/heads/master'
         uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.1
         with:
           new_snapshot_version_file_name: .new-snapshot-version
           release_version_file_name: .release-version
-      - name: is artifact eligable for deployment
+      - name: Is artifact eligable for deployment
         if: github.ref == 'refs/heads/master'
         uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
         with:
           changelog_file: README.md
           release_version_file: .release-version
-      - name: release maven package
+      - name: Release maven package
         if: github.ref == 'refs/heads/master'
         uses: navikt/bidrag-actions/release-mvn-pkg@v1.0.0
         with:
           new_snapshot_version_file: .new-snapshot-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: commit new version
+      - name: Tag and commit new version
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/tag-and-commit@v3.0.0
+        uses: navikt/bidrag-actions/git-tag-n-commit@v3.0.0
         with:
-          author_email: ${{ github.head_commit.author.email }}
-          author_name: ${{ github.head_commit.author.name }}
           commit_message: Bumped to new SNAPSHOT version after release of version {}
           tag_message: Release new version {}
           pattern: pom.xml
           tag_file: .release-version
-          file_is_release: .is-release-candidate
+          is_release_file: .is-release-candidate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
