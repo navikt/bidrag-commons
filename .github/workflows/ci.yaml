@@ -49,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Tag and commit new version
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/git-tag-n-commit@v3.0.0
+        uses: navikt/bidrag-actions/git-tag-n-commit-mvn-deploy@v4.0.0
         with:
           commit_message: Bumped to new SNAPSHOT version after release of version {}
           tag_message: Release new version {}
