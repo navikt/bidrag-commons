@@ -10,46 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Init
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
           java-version: '13'
-      - name: Debug
-        run: env
-      - name: Cache maven dependencies
-        uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Verify that no dependencies are of type SNAPSHOT
-        uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.1
-      - name: Build & test with maven
-        run: mvn -B install
-      - name: Prepare release of maven package
+      - run: env
+      - uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.1
+      - run: mvn -B install -e
+      - uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.1
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.1
         with:
           new_snapshot_version_file_name: .new-snapshot-version
           release_version_file_name: .release-version
-      - name: Is artifact eligable for deployment
+      - uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
         with:
           changelog_file: README.md
           release_version_file: .release-version
-      - name: Release maven package
+      - uses: navikt/bidrag-actions/release-mvn-pkg@v1.0.0
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/release-mvn-pkg@v1.0.0
         with:
           new_snapshot_version_file: .new-snapshot-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Tag and commit new version
+      - uses: navikt/bidrag-actions/git-tag-n-commit-mvn-deploy@v4.0.0
         if: github.ref == 'refs/heads/master'
-        uses: navikt/bidrag-actions/git-tag-n-commit-mvn-deploy@v4.0.0
         with:
           commit_message: Bumped to new SNAPSHOT version after release of version {}
           tag_message: Release new version {}
