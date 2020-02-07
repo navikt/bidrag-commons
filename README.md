@@ -15,6 +15,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.3.0   | endret       | `KildesystemIdentifikator`: value bean uten statisk tilstand
+0.3.0   | endret       | `KildesystemIdentifikator`: Forholder setg ikke til heltallstype ved sjekking av gyldighet (long vs integer)
 0.2.1   | endret       | Fjernet skadelige avhengigheter rapportert av snyk.io
 0.2.0   | -- ingen --  | Overgang til bruk av github som maven-repo
 0.1.18  | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges

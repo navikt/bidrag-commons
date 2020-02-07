@@ -1,91 +1,125 @@
 package no.nav.bidrag.commons;
 
+import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringBuilder;
+import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class KildesystemIdenfikator {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(KildesystemIdenfikator.class);
+
   public static final String DELIMTER = "-";
-  private static final String NON_DIGITS = "\\D+";
   public static final String PREFIX_BIDRAG = "BID";
   public static final String PREFIX_BIDRAG_COMPLETE = PREFIX_BIDRAG + DELIMTER;
   public static final String PREFIX_JOARK = "JOARK";
   public static final String PREFIX_JOARK_COMPLETE = PREFIX_JOARK + DELIMTER;
-  private static final ThreadLocal<KildesystemIdenfikator> KILDESYSTEM_IDENFIKATOR_THREAD_LOCAL = ThreadLocal.withInitial(() -> null);
 
+  private final Kildesystem kildesystem;
   private final String prefiksetJournalpostId;
 
-  private Kildesystem kildesystem;
   private Integer journalpostId;
 
-  private KildesystemIdenfikator(String prefiksetJournalpostId) {
-    this.prefiksetJournalpostId = prefiksetJournalpostId;
-  }
-
-  private boolean harIkkeJournalpostIdSomTall() {
-    try {
-      journalpostId = Integer.valueOf(prefiksetJournalpostId.replaceAll(NON_DIGITS, ""));
-    } catch (NumberFormatException | NullPointerException e) {
-      return true;
+  public KildesystemIdenfikator(String prefiksetJournalpostId) {
+    if (prefiksetJournalpostId == null) {
+      throw new IllegalArgumentException("En prefikset journalpost Id kan ikke være null!");
     }
 
-    return false;
+    this.prefiksetJournalpostId = trimAndUpperCase(prefiksetJournalpostId);
+    kildesystem = Kildesystem.hentKildesystem(this.prefiksetJournalpostId);
   }
 
-  private boolean erUkjent() {
-    Kildesystem kildesystem = hentKildesystem();
-    return kildesystem == null || kildesystem.er(Kildesystem.UKJENT);
+  private String trimAndUpperCase(String string) {
+    return string.trim().toUpperCase();
   }
 
-  public Kildesystem hentKildesystem() {
-    if (kildesystem == null && prefiksetJournalpostId != null) {
-      if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_BIDRAG_COMPLETE)) {
-        kildesystem = Kildesystem.BIDRAG;
-      } else if (prefiksetJournalpostId.trim().toUpperCase().startsWith(PREFIX_JOARK_COMPLETE)) {
-        kildesystem = Kildesystem.JOARK;
-      } else {
-        kildesystem = Kildesystem.UKJENT;
-      }
+  public boolean erUkjentPrefixEllerHarIkkeTallEtterPrefix() {
+    boolean ugyldigPefix = kildesystem.erUkjent() || kildesystem.harIkkeJournalpostIdSomTall(prefiksetJournalpostId);
+
+    if (ugyldigPefix) {
+      LOGGER.warn("Id har ikke riktig prefix: " + prefiksetJournalpostId);
     }
 
-    return kildesystem;
+    return ugyldigPefix;
   }
 
-  private Integer fetchJournalpostId() {
+  public Integer hentJournalpostId() {
     if (journalpostId == null) {
-      journalpostId = Integer.valueOf(prefiksetJournalpostId.replaceAll(NON_DIGITS, ""));
+      journalpostId = kildesystem.hentJournalpostId(prefiksetJournalpostId);
     }
 
     return journalpostId;
+  }
+
+  public boolean erFor(Kildesystem kildesystem) {
+    return this.kildesystem.er(kildesystem);
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("prefiksetJournalpostId", prefiksetJournalpostId)
+        .append("kildesystem", kildesystem)
+        .toString();
   }
 
   public String getPrefiksetJournalpostId() {
     return prefiksetJournalpostId;
   }
 
-  public static boolean erUkjentPrefixEllerHarIkkeTallEtterPrefix(String journalpostIdMedPrefix) {
-    KildesystemIdenfikator kildesystemIdenfikator = new KildesystemIdenfikator(journalpostIdMedPrefix);
-    KILDESYSTEM_IDENFIKATOR_THREAD_LOCAL.set(kildesystemIdenfikator);
-
-    return kildesystemIdenfikator.erUkjent() || kildesystemIdenfikator.harIkkeJournalpostIdSomTall();
-  }
-
-  public static KildesystemIdenfikator hent() {
-    KildesystemIdenfikator kildesystemIdenfikator = KILDESYSTEM_IDENFIKATOR_THREAD_LOCAL.get();
-
-    if (kildesystemIdenfikator == null) {
-      throw new IllegalStateException("Prefix på journalpostId er ikke validert");
-    }
-
-    return kildesystemIdenfikator;
-  }
-
-  public static Integer hentJournalpostId() {
-    return hent().fetchJournalpostId();
+  public Kildesystem getKildesystem() {
+    return kildesystem;
   }
 
   public enum Kildesystem {
-    BIDRAG, JOARK, UKJENT;
+    BIDRAG(PREFIX_BIDRAG_COMPLETE),
+    JOARK(PREFIX_JOARK_COMPLETE),
+    UKJENT(null);
+
+    private static final String NON_DIGITS = "\\D+";
+    private final String prefixMedDelimiter;
+
+    Kildesystem(String prefixMedDelimiter) {
+      this.prefixMedDelimiter = prefixMedDelimiter;
+    }
 
     public boolean er(Kildesystem kildesystem) {
       return kildesystem == this;
+    }
+
+    boolean harIkkeJournalpostIdSomTall(String prefiksetJournalpostId) {
+      String utenPrefix = prefiksetJournalpostId.replaceAll(prefixMedDelimiter, "");
+      String bareTall = utenPrefix.replaceAll(NON_DIGITS, "");
+
+      return utenPrefix.length() != bareTall.length();
+    }
+
+    boolean erUkjent() {
+      return er(UKJENT);
+    }
+
+    static Kildesystem hentKildesystem(String prefiksetJournalpostId) {
+      if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) {
+        return BIDRAG;
+      }
+
+      if (prefiksetJournalpostId.startsWith(JOARK.prefixMedDelimiter)) {
+        return JOARK;
+      }
+
+      return UKJENT;
+    }
+
+    public Integer hentJournalpostId(String prefiksetJournalpostId) {
+      String ident = prefiksetJournalpostId.replaceAll(prefixMedDelimiter, "");
+
+      try {
+        return Integer.valueOf(ident);
+      } catch (NumberFormatException nfe) {
+        LOGGER.warn("'{}' formatert til '{}' skaper NumberFormatException: {}", prefiksetJournalpostId, ident, nfe);
+
+        return null;
+      }
     }
   }
 }
