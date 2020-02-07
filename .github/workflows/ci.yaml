@@ -33,7 +33,7 @@ jobs:
         with:
           changelog_file: README.md
           release_version_file: .release-version
-      - uses: navikt/bidrag-actions/release-mvn-pkg@v1.0.0
+      - uses: navikt/bidrag-actions/release-mvn-pkg@v4.0.5
         if: github.ref == 'refs/heads/master'
         with:
           new_snapshot_version_file: .new-snapshot-version
