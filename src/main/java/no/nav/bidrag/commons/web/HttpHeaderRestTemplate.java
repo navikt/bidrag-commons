@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -39,9 +38,17 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     }
 
     HttpEntity<T> httpEntity = newEntityWithAdditionalHttpHeaders(requestBody);
-    httpEntity.getHeaders().forEach((name, values) -> LOGGER.info("Using {}: {}", name, values.get(0)));
+    httpEntity.getHeaders().forEach(this::logButNotAuthorization);
 
     return super.httpEntityCallback(httpEntity, responseType);
+  }
+
+  private void logButNotAuthorization(String name, List<String> values) {
+    if (HttpHeaders.AUTHORIZATION.equals(name)) {
+      LOGGER.info("Using {}: ****", name);
+    } else {
+      LOGGER.info("Using {}: {}", name, values.get(0));
+    }
   }
 
   private <T> HttpEntity<T> newEntityWithAdditionalHttpHeaders(Object o) {
