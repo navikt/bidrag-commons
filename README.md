@@ -15,6 +15,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.3.2   | endret       | `HttpHeaderRestTemplate`: Logger header names (ikke values)
+0.3.2   | endret       | `SoapSamlCallback`: Logger ikke SOAP message
 0.3.1   | endret       | `HttpHeaderRestTemplate`: Logger masked Authorization header
 0.3.0   | endret       | `KildesystemIdentifikator`: value bean uten statisk tilstand
 0.3.0   | endret       | `KildesystemIdentifikator`: Forholder setg ikke til heltallstype ved sjekking av gyldighet (long vs integer)

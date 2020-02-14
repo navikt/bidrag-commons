@@ -3,6 +3,7 @@ package no.nav.bidrag.commons.ws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -136,7 +137,12 @@ class SoapSamlCallbackTest {
     assertThatNullPointerException().isThrownBy(() -> soapSamlCallback.doWithMessage(soapMessageMock));
 
     Set<String> logMsgs = fetchMessages(appenderMock);
-    assertThat(String.join("\n", logMsgs)).contains("SAML").contains("saml2:Assertion");
+    String allMsgs = String.join("\n", logMsgs);
+
+    assertAll(
+        () -> assertThat(allMsgs).contains("SAML").contains("assertion document"),
+        () -> assertThat(allMsgs).doesNotContain("SOAP Message").doesNotContain(SoapSamlCallback.WSSE_NS)
+    );
   }
 
   @Test
@@ -159,7 +165,7 @@ class SoapSamlCallbackTest {
     soapSamlCallback.doWithMessage(soapMessageMock);
 
     Set<String> logMsgs = fetchMessages(appenderMock);
-    assertThat(String.join("\n", logMsgs)).contains("SOAP Message").contains("saml2:Assertion");
+    assertThat(String.join("\n", logMsgs)).contains("SOAP Message").contains(SoapSamlCallback.WSSE_NS);
   }
 
   private Appender<ILoggingEvent> mockLogAppender() {
@@ -173,6 +179,7 @@ class SoapSamlCallbackTest {
     return appenderMock;
   }
 
+  @SuppressWarnings("rawtypes")
   private Set<String> fetchMessages(Appender appenderMock) {
     var msgs = new ArrayList<String>();
 

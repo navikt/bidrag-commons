@@ -1,7 +1,6 @@
 package no.nav.bidrag.commons.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,11 +25,11 @@ class HttpHeaderRestTemplateTest {
   private HttpHeaderRestTemplate httpHeaderRestTemplate = new HttpHeaderRestTemplate();
 
   @Mock
+  @SuppressWarnings("rawtypes")
   private Appender appenderMock;
+
   @Mock
   private Type typeMock;
-
-  private int invoke;
 
   @BeforeEach
   void initMocks() {
@@ -48,23 +47,22 @@ class HttpHeaderRestTemplateTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  @DisplayName("skal logge hvilke http headers den bruker")
-  void skalLoggeBrukAvHttpHeader() {
+  @DisplayName("skal logge hvilke http headers den lager")
+  void skalLoggeHttpHeaderDenLager() {
     httpHeaderRestTemplate.addHeaderGenerator("JUNIT_HEADER", () -> "header value");
-
     httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
 
     var argCapture = ArgumentCaptor.forClass(Object.class);
     verify(appenderMock).doAppend(argCapture.capture());
     var logMsg = String.valueOf(argCapture.getValue());
 
-    assertThat(logMsg).contains("Using JUNIT_HEADER: header value");
+    assertThat(logMsg).contains("Generate header(s): [JUNIT_HEADER]");
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  @DisplayName("skal logge eksisterende headers fra gitt request object")
-  void skalLoggeBrukAvEksisterendeHttpHeader() {
+  @DisplayName("skal logge navnet på eksisterende headers fra gitt request object")
+  void skalLoggeNavnAvEksisterendeHttpHeader() {
     var existingHttpHeaders = new HttpHeaders();
     existingHttpHeaders.add("EXISTING_HEADER", "existing value");
 
@@ -76,10 +74,7 @@ class HttpHeaderRestTemplateTest {
     verify(appenderMock, atLeastOnce()).doAppend(argCapture.capture());
     var logMsgs = argCapture.getAllValues().stream().map(Object::toString).collect(Collectors.joining("\n"));
 
-    assertAll(
-        () -> assertThat(logMsgs).contains("Using EXISTING_HEADER: existing value"),
-        () -> assertThat(logMsgs).contains("Using ADDITIONAL_HEADER: additional value")
-    );
+    assertThat(logMsgs).contains("Existing header(s): [EXISTING_HEADER]");
   }
 
   @Test
@@ -89,26 +84,5 @@ class HttpHeaderRestTemplateTest {
 
     httpHeaderRestTemplate.httpEntityCallback("a request body", typeMock);
     httpHeaderRestTemplate.httpEntityCallback(new Object(), typeMock);
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  @DisplayName("skal logge dynamisk header-verdi")
-  void skalLoggeDynamiskHeaderVerdi() {
-    httpHeaderRestTemplate.addHeaderGenerator("DYNAMIC_HEADER", () -> String.format("Header value #%d is created!!!", ++invoke));
-
-    httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
-    httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
-    httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
-
-    var argCapture = ArgumentCaptor.forClass(Object.class);
-    verify(appenderMock, atLeastOnce()).doAppend(argCapture.capture());
-    var logMsgs = argCapture.getAllValues().stream().map(Object::toString).collect(Collectors.joining("\n"));
-
-    assertAll(
-        () -> assertThat(logMsgs).contains("Header value #1 is created!!!"),
-        () -> assertThat(logMsgs).contains("Header value #2 is created!!!"),
-        () -> assertThat(logMsgs).contains("Header value #3 is created!!!")
-    );
   }
 }
