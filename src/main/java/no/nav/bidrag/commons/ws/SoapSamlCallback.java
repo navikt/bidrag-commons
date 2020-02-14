@@ -30,7 +30,7 @@ import org.xml.sax.InputSource;
 public class SoapSamlCallback extends SoapActionCallback {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SoapSamlCallback.class);
-  private static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+  static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
 
   private String samlAssertion;
   private Exception error;
@@ -62,7 +62,9 @@ public class SoapSamlCallback extends SoapActionCallback {
     result.getNode().appendChild(node);
 
     try {
-      LOGGER.debug("SOAP Message\n" + transformToString(soapMessage.getDocument()));
+      var transformed = transformToString(soapMessage.getDocument());
+      int index = transformed.indexOf('>');
+      LOGGER.debug("SOAP Message med SAML token fra {}: {}{}", WSSE_NS, transformed.substring(0, index), "...");
     } catch (TransformerException e) {
       LOGGER.error("Unable to append saml token", e);
     }
@@ -74,7 +76,9 @@ public class SoapSamlCallback extends SoapActionCallback {
       documentBuilderFactory.setNamespaceAware(true);
       DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
       Document document = documentBuilder.parse(new InputSource(new StringReader(samlAssertion)));
-      LOGGER.debug("SAML\n" + transformToString(document));
+      var transformed = transformToString(document);
+      int index = transformed.indexOf('>');
+      LOGGER.debug("SAML assertion document: {}{}", transformed.substring(0, index), "...");
 
       return document;
     } catch (Exception e) {

@@ -2,8 +2,10 @@ package no.nav.bidrag.commons.web;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -38,22 +40,17 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     }
 
     HttpEntity<T> httpEntity = newEntityWithAdditionalHttpHeaders(requestBody);
-    httpEntity.getHeaders().forEach(this::logButNotAuthorization);
+    Set<String> headerNames = new HashSet<>(headerGenerators.keySet());
+    LOGGER.info("Generate header(s): {}", headerNames);
 
     return super.httpEntityCallback(httpEntity, responseType);
-  }
-
-  private void logButNotAuthorization(String name, List<String> values) {
-    if (HttpHeaders.AUTHORIZATION.equals(name)) {
-      LOGGER.info("Using {}: ****", name);
-    } else {
-      LOGGER.info("Using {}: {}", name, values.get(0));
-    }
   }
 
   private <T> HttpEntity<T> newEntityWithAdditionalHttpHeaders(Object o) {
     if (o != null) {
       HttpEntity<T> httpEntity = mapToHttpEntity(o);
+      Set<String> headerNames = new HashSet<>(httpEntity.getHeaders().keySet());
+      LOGGER.info("Existing header(s): {}", headerNames);
       return new HttpEntity<>(httpEntity.getBody(), combineHeaders(httpEntity.getHeaders()));
     }
 
