@@ -1,4 +1,4 @@
-name: continious integration
+name: maven deploy
 on:
   push:
     branches:

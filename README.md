@@ -1,6 +1,6 @@
 # bidrag-commons
 
-![](https://github.com/navikt/bidrag-commons/workflows/continious%20integration/badge.svg)
+![](https://github.com/navikt/bidrag-commons/workflows/maven%20deploy/badge.svg)
 
 Komponenter som brukes på tvers av applikasjoner under bidrag
 
