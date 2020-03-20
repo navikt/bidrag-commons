@@ -42,8 +42,8 @@ jobs:
       - uses: navikt/bidrag-actions/release-tag-n-commit-deploy@v2.0.1-release
         if: github.ref == 'refs/heads/master'
         with:
-          commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.release_version }}
-          tag_message: Released new version ${{ steps.prepare.release_version }}
+          commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.outputs.release_version }}
+          tag_message: Released new version ${{ steps.prepare.outputs.release_version }}
           pattern: pom.xml
           is_release_cancidate: ${{ steps.verify.outputs.is_release_candidate }}
         env:
