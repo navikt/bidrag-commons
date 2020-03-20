@@ -11,41 +11,40 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v1.3.0
         with:
           java-version: '13'
-      - uses: actions/cache@v1
+      - uses: actions/cache@v1.1.2
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - run: env
-      - uses: navikt/bidrag-actions/verify-mvn-dependencies@v1.0.1
+      - uses: navikt/bidrag-actions/maven-verify-dependencies@v1.0.2-maven
       - run: mvn -B install -e
-      - uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v1.0.1
+      - uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v2-release
+        id: prepare
         if: github.ref == 'refs/heads/master'
-        with:
-          new_snapshot_version_file_name: .new-snapshot-version
-          release_version_file_name: .release-version
-      - uses: navikt/bidrag-actions/release-verify-auto-deploy@v1.0.0
+      - uses: navikt/bidrag-actions/release-verify-auto-deploy@v2-release
+        id: verify
         if: github.ref == 'refs/heads/master'
         with:
           changelog_file: README.md
-          release_version_file: .release-version
-      - uses: navikt/bidrag-actions/release-mvn-pkg@v4.0.5
-        if: github.ref == 'refs/heads/master'
+          release_version: ${{ steps.prepare.outputs.release_version }}
+      - uses: navikt/bidrag-actions/release-mvn-pkg@v2-release
+        if: github.ref == 'refs/heads/master' && steps.verify.is_release_candidate == 'true'
         with:
-          new_snapshot_version_file: .new-snapshot-version
+          is_release_candidate: ${{ steps.verify.outputs.is_release_candidate }}
+          new_snapshot_version: ${{ steps.prepare.outputs.new_snapshot_version }}
+          release_version: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: navikt/bidrag-actions/git-tag-n-commit-mvn-deploy@v4.0.0
-        if: github.ref == 'refs/heads/master'
+      - uses: navikt/bidrag-actions/release-tag-n-commit-deploy@v2.0.1-release
+        if: github.ref == 'refs/heads/master' && steps.verify.is_release_candidate == 'true'
         with:
-          commit_message: Bumped to new SNAPSHOT version after release of version {}
-          tag_message: Release new version {}
+          commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.release_version }}
+          tag_message: Released new version ${{ steps.prepare.release_version }}
           pattern: pom.xml
-          tag_file: .release-version
-          is_release_file: .is-release-candidate
+          is_release_cancidate: ${{ steps.verify.outputs.is_release_candidate }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
