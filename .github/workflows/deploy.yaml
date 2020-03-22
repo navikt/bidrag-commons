@@ -20,7 +20,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: navikt/bidrag-actions/maven-verify-dependencies@v1.0.2-maven
+      - uses: navikt/bidrag-actions/maven-verify-dependencies@v5
       - run: mvn -B install -e
       - uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v2-release
         id: prepare
@@ -46,5 +46,6 @@ jobs:
           tag_message: Released new version ${{ steps.prepare.outputs.release_version }}
           pattern: pom.xml
           is_release_cancidate: ${{ steps.verify.outputs.is_release_candidate }}
+          tag: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
