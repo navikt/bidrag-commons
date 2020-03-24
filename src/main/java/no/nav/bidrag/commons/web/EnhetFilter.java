@@ -16,7 +16,7 @@ public class EnhetFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EnhetFilter.class);
   private static final ThreadLocal<String> ENHETSNUMMER_VALUE = new ThreadLocal<>();
 
-  public static final String X_ENHETSNR_HEADER = "X-Enhetsnummer";
+  public static final String X_ENHET_HEADER = "X-Enhet";
 
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -25,11 +25,11 @@ public class EnhetFilter implements Filter {
       var requestURI = httpServletRequest.getRequestURI();
 
       if (isNotRequestToActuatorEndpoint(requestURI)) {
-        var enhetsnummer = httpServletRequest.getHeader(X_ENHETSNR_HEADER);
+        var enhetsnummer = httpServletRequest.getHeader(X_ENHET_HEADER);
 
         if (enhetsnummer != null) {
           ENHETSNUMMER_VALUE.set(enhetsnummer);
-          ((HttpServletResponse) servletResponse).addHeader(X_ENHETSNR_HEADER, enhetsnummer);
+          ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
           LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
         } else {
           LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);

@@ -64,25 +64,25 @@ class EnhetFilterTest {
   @Test
   @DisplayName("skal videresende X_ENHETSNR_HEADER fra request til response")
   void skalVideresendeHeaderMedEnhetsnummer() throws IOException, ServletException {
-    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("enhetsnummer");
+    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHET_HEADER)).thenReturn("enhetsnummer");
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
     assertAll(
-        () -> verify(httpServletRequestMock).getHeader(EnhetFilter.X_ENHETSNR_HEADER),
-        () -> verify(httpServletResponseMock).addHeader(eq(EnhetFilter.X_ENHETSNR_HEADER), eq("enhetsnummer"))
+        () -> verify(httpServletRequestMock).getHeader(EnhetFilter.X_ENHET_HEADER),
+        () -> verify(httpServletResponseMock).addHeader(eq(EnhetFilter.X_ENHET_HEADER), eq("enhetsnummer"))
     );
   }
 
   @Test
   @DisplayName("skal ikke videresende X_ENHETSNR_HEADER fra request til response når headerverdi ikke finnes på request")
   void skalIkkeVideresendeHeaderMedEnhetsnummerNarDetIkkeFinnes() throws IOException, ServletException {
-    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn(null);
+    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHET_HEADER)).thenReturn(null);
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
     assertAll(
-        () -> verify(httpServletRequestMock).getHeader(EnhetFilter.X_ENHETSNR_HEADER),
+        () -> verify(httpServletRequestMock).getHeader(EnhetFilter.X_ENHET_HEADER),
         () -> verify(httpServletResponseMock, never()).addHeader(anyString(), anyString())
     );
   }
@@ -91,7 +91,7 @@ class EnhetFilterTest {
   @SuppressWarnings("unchecked")
   @DisplayName("skal logge enhetsnummer som skal videresendes")
   void skalLoggeEnhetsnummerSomVideresendes() throws IOException, ServletException {
-    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHETSNR_HEADER)).thenReturn("007");
+    when(httpServletRequestMock.getHeader(EnhetFilter.X_ENHET_HEADER)).thenReturn("007");
 
     enhetFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
