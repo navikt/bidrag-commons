@@ -39,13 +39,13 @@ jobs:
           release_version: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: navikt/bidrag-actions/release-tag-n-commit-deploy@v2.0.1-release
+      - uses: navikt/bidrag-actions/release-tag-n-commit-deploy@v2.0.2-release
         if: github.ref == 'refs/heads/master'
         with:
           commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.outputs.release_version }}
-          tag_message: Released new version ${{ steps.prepare.outputs.release_version }}
+          tag_message: Released new version - ${{ steps.prepare.outputs.release_version }}
           pattern: pom.xml
-          is_release_cancidate: ${{ steps.verify.outputs.is_release_candidate }}
+          is_release_candidate: ${{ steps.verify.outputs.is_release_candidate }}
           tag: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
