@@ -20,18 +20,18 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: navikt/bidrag-actions/maven-verify-dependencies@v5
+      - uses: navikt/bidrag-maven/verify-dependencies@v1.0.4
       - run: mvn -B install -e
-      - uses: navikt/bidrag-actions/release-prepare-mvn-pkg@v2-release
+      - uses: navikt/bidrag-release/prepare-mvn-pkg@v3
         id: prepare
         if: github.ref == 'refs/heads/master'
-      - uses: navikt/bidrag-actions/release-verify-auto-deploy@v2-release
+      - uses: navikt/bidrag-release/verify-auto-release@3
         id: verify
         if: github.ref == 'refs/heads/master'
         with:
           changelog_file: README.md
           release_version: ${{ steps.prepare.outputs.release_version }}
-      - uses: navikt/bidrag-actions/release-mvn-pkg@v2-release
+      - uses: navikt/bidrag-release/mvn-github-pkg@v3
         if: github.ref == 'refs/heads/master'
         with:
           is_release_candidate: ${{ steps.verify.outputs.is_release_candidate }}
@@ -39,7 +39,7 @@ jobs:
           release_version: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: navikt/bidrag-actions/release-tag-n-commit-deploy@v2.0.3-release
+      - uses: navikt/bidrag-elease/tag-n-commit-release@v3
         if: github.ref == 'refs/heads/master'
         with:
           commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.outputs.release_version }}
