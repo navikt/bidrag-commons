@@ -25,7 +25,7 @@ jobs:
       - uses: navikt/bidrag-release/prepare-mvn-pkg@v3
         id: prepare
         if: github.ref == 'refs/heads/master'
-      - uses: navikt/bidrag-release/verify-auto-release@3
+      - uses: navikt/bidrag-release/verify-auto-release@v3
         id: verify
         if: github.ref == 'refs/heads/master'
         with:
