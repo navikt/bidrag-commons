@@ -39,7 +39,7 @@ jobs:
           release_version: ${{ steps.prepare.outputs.release_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: navikt/bidrag-elease/tag-n-commit-release@v3
+      - uses: navikt/bidrag-release/tag-n-commit-release@v3
         if: github.ref == 'refs/heads/master'
         with:
           commit_message: Bumped to new SNAPSHOT version after release of version ${{ steps.prepare.outputs.release_version }}
