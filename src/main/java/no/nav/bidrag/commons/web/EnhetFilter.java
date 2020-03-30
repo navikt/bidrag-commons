@@ -30,9 +30,9 @@ public class EnhetFilter implements Filter {
         if (enhetsnummer != null) {
           ENHETSNUMMER_VALUE.set(enhetsnummer);
           ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
-          LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
+          LOGGER.info("{} behandler request '{}' for enhet med enhetsnummer {}", EnhetFilter.class.getSimpleName(), requestURI, enhetsnummer);
         } else {
-          LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
+          LOGGER.info("{} bBehandler request '{}' uten informasjon om enhetsnummer.", EnhetFilter.class.getSimpleName(), requestURI);
         }
       }
     } else {

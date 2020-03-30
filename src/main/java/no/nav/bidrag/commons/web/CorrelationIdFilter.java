@@ -47,7 +47,7 @@ public class CorrelationIdFilter implements Filter {
 
       MDC.put(CORRELATION_ID_MDC, correlationId.get());
 
-      LOGGER.info("Prosessing {} {}", method, requestURI);
+      LOGGER.info("{} is prosessing {} {}", CorrelationIdFilter.class.getSimpleName(), method, requestURI);
     }
 
     filterChain.doFilter(servletRequest, servletResponse);

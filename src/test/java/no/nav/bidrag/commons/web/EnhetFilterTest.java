@@ -31,6 +31,7 @@ class EnhetFilterTest {
   private EnhetFilter enhetFilter = new EnhetFilter();
 
   @Mock
+  @SuppressWarnings("rawtypes")
   private Appender appenderMock;
 
   @Mock
@@ -100,7 +101,7 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).as("log").contains("Behandler request 'some url' for enhet med enhetsnummer 007");
+    assertThat(loggingEvent.getFormattedMessage()).as("log").contains("behandler request 'some url' for enhet med enhetsnummer 007");
     assertThat(EnhetFilter.fetchForThread()).as("enhetsnummer").isEqualTo("007");
   }
 
