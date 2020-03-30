@@ -39,6 +39,7 @@ class CorrelationIdFilterTest {
   private Set<String> logMeldinger = new HashSet<>();
 
   @Mock
+  @SuppressWarnings("rawtypes")
   private Appender appenderMock;
 
   @Mock
@@ -65,7 +66,7 @@ class CorrelationIdFilterTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @DisplayName("skal logge requests mot servlet")
   void skalLoggeRequestsMotActuatorEndpoints() throws IOException, ServletException {
     when(httpServletRequestMock.getRequestURI()).thenReturn("something");
@@ -80,7 +81,7 @@ class CorrelationIdFilterTest {
 
               return true;
             })),
-        () -> assertThat(String.join("\n", logMeldinger)).contains("Prosessing GET something")
+        () -> assertThat(String.join("\n", logMeldinger)).contains("prosessing GET something")
     );
   }
 
@@ -192,7 +193,7 @@ class CorrelationIdFilterTest {
     );
   }
 
-  class CorrelationIdThread extends Thread {
+  static class CorrelationIdThread extends Thread {
 
     private final FilterExecutor filterExecutor;
     String correlationId;
