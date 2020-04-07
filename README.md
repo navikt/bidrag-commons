@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.3.5   | endret       | `CorreleationIdFilter`: Fikse IndexOutOfBounds
 0.3.4   | endret       | `CorreleationIdFilter`: Bruker class.getSimpleName() ved logging
 0.3.4   | endret       | `EnhetFilter`: Bruker class.getSimpleName() ved logging
 0.3.3   | endret       | `EnhetFilter`: Endre navn på headerfelt X-Enhetsnummer til X-Enhet

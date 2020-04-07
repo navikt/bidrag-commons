@@ -78,9 +78,9 @@ public class CorrelationIdFilter implements Filter {
 
   private String fetchLastPartOfRequestUriContainingPlainText(String requestUri) {
     ArrayList<String> reversedUriParts = reverseUriPartsBySlash(requestUri);
-    String lastUriPsty = reversedUriParts.get(0);
+    String lastUriPsty = reversedUriParts.size() < 1 ?  "" : reversedUriParts.get(0);
 
-    if (lastUriPsty.matches("^[a-zA-Z]+$")) {
+    if (lastUriPsty.matches("^[a-zA-Z]+$") || lastUriPsty.isBlank()) {
       return lastUriPsty;
     }
 
