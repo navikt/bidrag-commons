@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.HttpStatusCodeException;
 
 public class ExceptionLogger {
 
@@ -38,6 +39,12 @@ public class ExceptionLogger {
       );
 
       LOGGER.error(message, throwable);
+
+      if (throwable instanceof HttpStatusCodeException) {
+        var statusCodeException = (HttpStatusCodeException) throwable;
+        LOGGER.error("Response body: " + statusCodeException.getResponseBodyAsString());
+      }
+
       logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()));
     }
   }

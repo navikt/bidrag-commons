@@ -19,14 +19,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
+@SuppressWarnings("rawtypes")
 @DisplayName("ExceptionLoggerTest")
 class ExceptionLoggerTest {
 
   private static final IllegalStateException ILLEGAL_STATE_EXCEPTION = new IllegalStateException("test exception");
 
-  private ExceptionLogger exceptionLogger = new ExceptionLogger("bidrag-commons");
-  private List<String> logMeldinger = new ArrayList<>();
+  private final ExceptionLogger exceptionLogger = new ExceptionLogger("bidrag-commons");
+  private final List<String> logMeldinger = new ArrayList<>();
 
   @Mock
   private Appender appenderMock;
@@ -50,7 +53,7 @@ class ExceptionLoggerTest {
   void skalLoggeException() {
     new Service().simulerServiceSomFeilerMedLoggingAvException();
 
-    verifiserLogging();
+    verifiserLoggingSamtSamleLoggMeldinger();
     assertThat(String.join("\n", logMeldinger))
         .contains(
             "java.lang.IllegalStateException: test exception - Exception caught in bidrag-commons within ExceptionLoggerTest has no cause exception"
@@ -65,7 +68,7 @@ class ExceptionLoggerTest {
         "junit test"
     );
 
-    verifiserLogging();
+    verifiserLoggingSamtSamleLoggMeldinger();
 
     assertAll(
         () -> assertThat(String.join("\n", logMeldinger)).contains("blew up"),
@@ -79,7 +82,7 @@ class ExceptionLoggerTest {
   void skalLoggeExceptionSelvOmCauseMangler() {
     exceptionLogger.logException(new Exception("the service blew up"), "junit test");
 
-    verifiserLogging();
+    verifiserLoggingSamtSamleLoggMeldinger();
     assertThat(String.join("\n", logMeldinger))
         .contains("java.lang.Exception: the service blew up - Exception caught in bidrag-commons within junit test has no cause exception");
   }
@@ -92,13 +95,23 @@ class ExceptionLoggerTest {
         "junit test"
     );
 
-    verifiserLogging();
+    verifiserLoggingSamtSamleLoggMeldinger();
     assertThat(String.join("\n", logMeldinger))
         .contains("Exception sett fra nav: no.nav.bidrag.commons.ExceptionLoggerTest.skalLoggeStackTraceElementFraNavForException(line:");
   }
 
+  @Test
+  @DisplayName("skal logge response body til et HttpStatusCodeException")
+  void skalLoggeResponseBodyTilEtHttpStatusCodeException() {
+    exceptionLogger.logException(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".getBytes(), null), "junit test");
+
+    verifiserLoggingSamtSamleLoggMeldinger();
+
+    assertThat(String.join("\n", logMeldinger)).contains("Response body: something is fishy");
+  }
+
   @SuppressWarnings("unchecked")
-  private void verifiserLogging() {
+  private void verifiserLoggingSamtSamleLoggMeldinger() {
     verify(appenderMock, atLeastOnce())
         .doAppend(argThat((ArgumentMatcher) argument -> logMeldinger.add(((ILoggingEvent) argument).getFormattedMessage())));
   }
@@ -110,7 +123,7 @@ class ExceptionLoggerTest {
     }
   }
 
-  private class OtherService {
+  private static class OtherService {
 
     private final ExceptionLogger exceptionLogger;
 
