@@ -110,6 +110,16 @@ class ExceptionLoggerTest {
     assertThat(String.join("\n", logMeldinger)).contains("Response body: something is fishy");
   }
 
+  @Test
+  @DisplayName("skal ikke logge response body til et HttpStatusCodeException når body er null")
+  void skalIkkeLoggeResponseBodyTilEtHttpStatusCodeException() {
+    exceptionLogger.logException(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", null, null), "junit test");
+
+    verifiserLoggingSamtSamleLoggMeldinger();
+
+    assertThat(String.join("\n", logMeldinger)).doesNotContain("Response body:");
+  }
+
   @SuppressWarnings("unchecked")
   private void verifiserLoggingSamtSamleLoggMeldinger() {
     verify(appenderMock, atLeastOnce())
