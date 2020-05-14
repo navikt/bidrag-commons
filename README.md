@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.3.7   | endret       | `ExceptionLogger`: Logger ikke response body fra `HttpStatusCodeException` når den mangler 
 0.3.6   | endret       | `ExceptionLogger`: Logger også response body når det er et `HttpStatusCodeException` 
 0.3.5   | endret       | `CorreleationIdFilter`: Fikse IndexOutOfBounds
 0.3.4   | endret       | `CorreleationIdFilter`: Bruker class.getSimpleName() ved logging

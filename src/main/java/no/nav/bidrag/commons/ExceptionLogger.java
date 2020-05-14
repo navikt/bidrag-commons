@@ -42,7 +42,10 @@ public class ExceptionLogger {
 
       if (throwable instanceof HttpStatusCodeException) {
         var statusCodeException = (HttpStatusCodeException) throwable;
-        LOGGER.error("Response body: " + statusCodeException.getResponseBodyAsString());
+
+        if (!"".equals(statusCodeException.getResponseBodyAsString())) {
+          LOGGER.error("Response body: " + statusCodeException.getResponseBodyAsString());
+        }
       }
 
       logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()));
