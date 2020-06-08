@@ -29,9 +29,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- dependencies -->
-    <logback-encoder.version>6.3</logback-encoder.version>
+    <logback-encoder.version>6.4</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
-    <spring-boot.version>2.2.7.RELEASE</spring-boot.version>
+    <spring-boot.version>2.3.0.RELEASE</spring-boot.version>
 
     <!-- language -->
     <java.version>12</java.version>
