@@ -3,6 +3,7 @@ package no.nav.bidrag.commons.web;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 
+@Deprecated(since = "3.8", forRemoval = true)
 public class HttpStatusResponse<T> {
 
   private final HttpStatus httpStatus;

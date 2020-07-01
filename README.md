@@ -15,6 +15,9 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.4.0   | opprettet    | `WebUtil`: Util klasse med hjelpemetoder. Første versjon: Kan initialisere `HttpHeadera` fra spring med name/value på header
+0.4.0   | opprettet    | `HttpResponse`: Mulighet for å videresende `ResponseEntity` fra spring
+0.4.0   | deprecated   | `HttpStatusResponse`: Behov for å videresende mer enn bare http status
 0.3.7   | endret       | `ExceptionLogger`: Logger ikke response body fra `HttpStatusCodeException` når den mangler 
 0.3.6   | endret       | `ExceptionLogger`: Logger også response body når det er et `HttpStatusCodeException` 
 0.3.5   | endret       | `CorreleationIdFilter`: Fikse IndexOutOfBounds
