@@ -1,7 +1,7 @@
 package no.nav.bidrag.commons.web;
 
 import java.util.Optional;
-import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,6 +26,10 @@ public class HttpResponse<T> {
     return responseEntity.getStatusCode().is2xxSuccessful();
   }
 
+  public HttpHeaders fetchHeaders() {
+    return responseEntity.getHeaders();
+  }
+
   public ResponseEntity<T> getResponseEntity() {
     return responseEntity;
   }
@@ -37,6 +41,16 @@ public class HttpResponse<T> {
 
   public static <E> HttpResponse<E> from(HttpStatus httpStatus, E body) {
     var responseEntity = new ResponseEntity<>(body, httpStatus);
+    return new HttpResponse<>(responseEntity);
+  }
+
+  public static <E> HttpResponse<E> from(HttpHeaders httpHeaders, HttpStatus httpStatus) {
+    var responseEntity = new ResponseEntity<E>(httpHeaders, httpStatus);
+    return new HttpResponse<>(responseEntity);
+  }
+
+  public static <E> HttpResponse<E> from(E body, HttpHeaders httpHeaders, HttpStatus httpStatus) {
+    var responseEntity = new ResponseEntity<>(body, httpHeaders, httpStatus);
     return new HttpResponse<>(responseEntity);
   }
 }
