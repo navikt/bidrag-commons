@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.4.3   | endret       | `pom.xml`: oppgradert spring-boot for å fjerne sårbar avhengighet
 0.4.2   | endret       | `pom.xml`: fjernet sårbar avhengighet
 0.4.1   | endret       | `HttpResponse`: Kan opprettes med "body", `HttpHeaders` og status kode, samt ny metode: `fetchHeaders`
 0.4.0   | opprettet    | `WebUtil`: Util klasse med hjelpemetoder. Første versjon: Kan initialisere `HttpHeadera` fra spring med name/value på header
