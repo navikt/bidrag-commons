@@ -20,7 +20,7 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpHeaderRestTemplate.class);
 
-  private Map<String, ValueGenerator> headerGenerators = new HashMap<>();
+  private final Map<String, ValueGenerator> headerGenerators = new HashMap<>();
 
   public HttpHeaderRestTemplate() {
   }
@@ -77,6 +77,10 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
   public void addHeaderGenerator(String headerName, ValueGenerator valueGenerator) {
     headerGenerators.put(headerName, valueGenerator);
+  }
+
+  public void removeHeaderGenerator(String headerName) {
+    headerGenerators.remove(headerName);
   }
 
   @FunctionalInterface
