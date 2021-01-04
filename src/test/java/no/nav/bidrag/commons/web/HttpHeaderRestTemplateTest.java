@@ -22,7 +22,7 @@ import org.springframework.http.HttpHeaders;
 @DisplayName("HttpHeaderRestTemplate")
 class HttpHeaderRestTemplateTest {
 
-  private HttpHeaderRestTemplate httpHeaderRestTemplate = new HttpHeaderRestTemplate();
+  private final HttpHeaderRestTemplate httpHeaderRestTemplate = new HttpHeaderRestTemplate();
 
   @Mock
   @SuppressWarnings("rawtypes")
@@ -84,5 +84,22 @@ class HttpHeaderRestTemplateTest {
 
     httpHeaderRestTemplate.httpEntityCallback("a request body", typeMock);
     httpHeaderRestTemplate.httpEntityCallback(new Object(), typeMock);
+  }
+
+  @Test
+  @DisplayName("skal fjerne header generator")
+  void skalFjerneHeaderGenerator() {
+    httpHeaderRestTemplate.addHeaderGenerator("EN_HEADER", () -> "header value");
+    httpHeaderRestTemplate.addHeaderGenerator("EN_ANNEN_HEADER", () -> "en annen header value");
+    httpHeaderRestTemplate.removeHeaderGenerator("EN_ANNEN_HEADER");
+    httpHeaderRestTemplate.httpEntityCallback(null, typeMock);
+
+    var argCapture = ArgumentCaptor.forClass(Object.class);
+    verify(appenderMock).doAppend(argCapture.capture());
+    var logMsg = String.valueOf(argCapture.getValue());
+
+    assertThat(logMsg)
+        .contains("EN_HEADER")
+        .doesNotContain("EN_ANNEN_HEADER");
   }
 }
