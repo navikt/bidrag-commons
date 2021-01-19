@@ -28,7 +28,7 @@ import org.slf4j.event.LoggingEvent;
 @DisplayName("EnhetFilter")
 class EnhetFilterTest {
 
-  private EnhetFilter enhetFilter = new EnhetFilter();
+  private final EnhetFilter enhetFilter = new EnhetFilter();
 
   @Mock
   @SuppressWarnings("rawtypes")
@@ -45,7 +45,7 @@ class EnhetFilterTest {
 
   @BeforeEach
   void initMocksAndMockLogAppender() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     mockLogAppender();
     mockRequestUri();
   }
@@ -116,7 +116,7 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'some url' uten informasjon om enhetsnummer");
+    assertThat(loggingEvent.getFormattedMessage()).contains("behandler request 'some url' uten informasjon om enhetsnummer");
   }
 
   @Test
