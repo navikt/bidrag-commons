@@ -32,7 +32,7 @@ public class EnhetFilter implements Filter {
           ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
           LOGGER.info("{} behandler request '{}' for enhet med enhetsnummer {}", EnhetFilter.class.getSimpleName(), requestURI, enhetsnummer);
         } else {
-          LOGGER.info("{} bBehandler request '{}' uten informasjon om enhetsnummer.", EnhetFilter.class.getSimpleName(), requestURI);
+          LOGGER.info("{} behandler request '{}' uten informasjon om enhetsnummer.", EnhetFilter.class.getSimpleName(), requestURI);
         }
       }
     } else {
