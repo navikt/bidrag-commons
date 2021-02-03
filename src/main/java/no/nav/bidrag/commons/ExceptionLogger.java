@@ -1,7 +1,7 @@
 package no.nav.bidrag.commons;
 
+import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +15,7 @@ public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
   private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
+  private static final String CLASS_NAME = ExceptionLogger.class.getName();
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -48,7 +49,7 @@ public class ExceptionLogger {
         }
       }
 
-      logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()));
+      logFirstStackFrameForNav();
     }
   }
 
@@ -63,10 +64,7 @@ public class ExceptionLogger {
     for (Throwable throwable : throwables) {
       if (throwable.getCause() == null) {
         LOGGER.error(String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage()), throwable);
-      }
-
-      if (logFirstStackTraceElementFromNav(Arrays.stream(throwable.getStackTrace()))) {
-        return;
+        logFirstStackFrameForNav();
       }
     }
   }
@@ -83,23 +81,23 @@ public class ExceptionLogger {
     return allThrowables;
   }
 
-  private boolean logFirstStackTraceElementFromNav(Stream<StackTraceElement> stackTraceElements) {
+  private void logFirstStackFrameForNav() {
+    StackWalker.getInstance().walk(stackFrames -> {
+      var stackFrame = stackFrames
+          .filter(elem -> !elem.getClassName().equals(CLASS_NAME))
+          .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
+          .findFirst()
+          .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
 
-    var firstElementFromNav = stackTraceElements.filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV)).findFirst();
-    var loggedStackTraceElement = false;
-
-    if (firstElementFromNav.isPresent()) {
-      StackTraceElement stackTraceElement = firstElementFromNav.get();
       LOGGER.error(
           "Exception sett fra nav: {}.{}(line:{}) - {}",
-          stackTraceElement.getClassName(),
-          stackTraceElement.getMethodName(),
-          stackTraceElement.getLineNumber(),
-          stackTraceElement.getFileName()
+          stackFrame.getClassName(),
+          stackFrame.getMethodName(),
+          stackFrame.getLineNumber(),
+          stackFrame.getFileName()
       );
-      loggedStackTraceElement = true;
-    }
 
-    return loggedStackTraceElement;
+      return null;
+    });
   }
 }
