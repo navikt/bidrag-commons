@@ -1,5 +1,7 @@
 package no.nav.bidrag.commons;
 
+import static java.util.function.Predicate.not;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +18,7 @@ public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
   private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
-  private static final String CLASS_NAME = ExceptionLogger.class.getName();
+  private static final String EXCEPTION_LOGGER_CLASS_NAME = ExceptionLogger.class.getName();
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -24,7 +26,7 @@ public class ExceptionLogger {
   private final String application;
   private final Set<String> doNotLogClasses = new HashSet<>();
 
-  public ExceptionLogger(String application, Class<?> ... doNotLogClasses) {
+  public ExceptionLogger(String application, Class<?>... doNotLogClasses) {
     this.application = application;
 
     if (doNotLogClasses != null) {
@@ -90,9 +92,10 @@ public class ExceptionLogger {
   private void logFirstStackFrameForNav() {
     StackWalker.getInstance().walk(stackFrames -> {
       var stackFrame = stackFrames
-          .filter(elem -> !elem.getClassName().equals(CLASS_NAME))
+          .filter(not(elem -> elem.getClassName().equals(EXCEPTION_LOGGER_CLASS_NAME)))
           .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
-          .filter(elem -> !doNotLogClasses.contains(elem.getClassName()))
+          .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
+          .filter(not(elem -> elem.getClassName().contains("<generated>"))) // generated proxy code
           .findFirst()
           .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
 
