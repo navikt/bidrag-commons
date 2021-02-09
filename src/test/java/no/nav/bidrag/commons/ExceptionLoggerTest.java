@@ -28,7 +28,7 @@ class ExceptionLoggerTest {
 
   private static final IllegalStateException ILLEGAL_STATE_EXCEPTION = new IllegalStateException("test exception");
 
-  private final ExceptionLogger exceptionLogger = new ExceptionLogger("bidrag-commons");
+  private ExceptionLogger exceptionLogger = new ExceptionLogger("bidrag-commons");
   private final List<String> logMeldinger = new ArrayList<>();
 
   @Mock
@@ -36,7 +36,7 @@ class ExceptionLoggerTest {
 
   @BeforeEach
   void initMocks() {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
     mockLogAppender();
   }
 
@@ -120,6 +120,16 @@ class ExceptionLoggerTest {
     assertThat(String.join("\n", logMeldinger)).doesNotContain("Response body:");
   }
 
+  @Test
+  @DisplayName("skal kunne instansiere logger med klasser som ikke skal være del av logging")
+  void skalInstansiereLoggerMedKlasserSomIkkeSkalVareDelAvLogging() {
+    exceptionLogger = new ExceptionLogger("bidrag-commons", OtherService.class);
+    new Service().simulerServiceSomFeilerMedLoggingAvException();
+
+    verifiserLoggingSamtSamleLoggMeldinger();
+    assertThat(String.join("\n", logMeldinger)).doesNotContain("OtherService");
+  }
+
   @SuppressWarnings("unchecked")
   private void verifiserLoggingSamtSamleLoggMeldinger() {
     verify(appenderMock, atLeastOnce())
@@ -137,8 +147,8 @@ class ExceptionLoggerTest {
 
     private final ExceptionLogger exceptionLogger;
 
-    OtherService(ExceptionLogger exceptionLogger) {
-      this.exceptionLogger = exceptionLogger;
+    OtherService(ExceptionLogger logger) {
+      exceptionLogger = logger;
     }
 
     void loggExceptionMedExceptionLogger() {

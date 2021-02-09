@@ -1,12 +1,13 @@
 package no.nav.bidrag.commons;
 
-import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -21,9 +22,14 @@ public class ExceptionLogger {
   );
 
   private final String application;
+  private final Set<String> doNotLogClasses = new HashSet<>();
 
-  public ExceptionLogger(String application) {
+  public ExceptionLogger(String application, Class<?> ... doNotLogClasses) {
     this.application = application;
+
+    if (doNotLogClasses != null) {
+      Arrays.stream(doNotLogClasses).forEach(aClass -> this.doNotLogClasses.add(aClass.getName()));
+    }
   }
 
   public void logException(Throwable throwable, String defaultLocation) {
@@ -86,6 +92,7 @@ public class ExceptionLogger {
       var stackFrame = stackFrames
           .filter(elem -> !elem.getClassName().equals(CLASS_NAME))
           .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
+          .filter(elem -> !doNotLogClasses.contains(elem.getClassName()))
           .findFirst()
           .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
 

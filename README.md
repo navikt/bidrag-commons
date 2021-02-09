@@ -15,7 +15,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
-0.5.1   | endret       | `ExceptionLogger`: Henter ikke stack fra exception, men StackWalker.getInstance()
+0.5.2   | endret       | `ExceptionLogger`: Kan instansieres med klasser som ikke skal være del av stack som logges
+0.5.1   | endret       | `ExceptionLogger`: Henter ikke stack fra exception, men bruker StackWalker.getInstance()
 0.5.0   | endret       | `HttpHeaderRestTemplate`: Kan fjerne header generator
 0.4.3   | endret       | `pom.xml`: oppgradert spring-boot for å fjerne sårbar avhengighet
 0.4.2   | endret       | `pom.xml`: fjernet sårbar avhengighet
