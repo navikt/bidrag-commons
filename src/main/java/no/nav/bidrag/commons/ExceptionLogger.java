@@ -95,7 +95,7 @@ public class ExceptionLogger {
           .filter(not(elem -> elem.getClassName().equals(EXCEPTION_LOGGER_CLASS_NAME)))
           .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
           .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
-          .filter(not(elem -> elem.getClassName().contains("<generated>"))) // generated proxy code
+          .filter(not(elem -> "<generated>".equals(elem.getFileName()))) // generated proxy code
           .findFirst()
           .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
 
