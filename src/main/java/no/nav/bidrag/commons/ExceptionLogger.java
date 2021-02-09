@@ -57,7 +57,7 @@ public class ExceptionLogger {
         }
       }
 
-      logFirstStackFrameForNav();
+      logFirstStackFrameForNav(throwable);
     }
   }
 
@@ -72,7 +72,7 @@ public class ExceptionLogger {
     for (Throwable throwable : throwables) {
       if (throwable.getCause() == null) {
         LOGGER.error(String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage()), throwable);
-        logFirstStackFrameForNav();
+        logFirstStackFrameForNav(throwable);
       }
     }
   }
@@ -89,25 +89,21 @@ public class ExceptionLogger {
     return allThrowables;
   }
 
-  private void logFirstStackFrameForNav() {
-    StackWalker.getInstance().walk(stackFrames -> {
-      var stackFrame = stackFrames
-          .filter(not(elem -> elem.getClassName().equals(EXCEPTION_LOGGER_CLASS_NAME)))
-          .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
-          .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
-          .filter(not(elem -> "<generated>".equals(elem.getFileName()))) // generated proxy code
-          .findFirst()
-          .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
+  private void logFirstStackFrameForNav(Throwable throwable) {
+    var stackFrame = Arrays.stream(throwable.getStackTrace())
+        .filter(not(elem -> elem.getClassName().equals(EXCEPTION_LOGGER_CLASS_NAME)))
+        .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
+        .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
+        .filter(not(elem -> "<generated>".equals(elem.getFileName()))) // generated proxy code
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no"));
 
-      LOGGER.error(
-          "Exception sett fra nav: {}.{}(line:{}) - {}",
-          stackFrame.getClassName(),
-          stackFrame.getMethodName(),
-          stackFrame.getLineNumber(),
-          stackFrame.getFileName()
-      );
-
-      return null;
-    });
+    LOGGER.error(
+        "Exception sett fra nav: {}.{}(line:{}) - {}",
+        stackFrame.getClassName(),
+        stackFrame.getMethodName(),
+        stackFrame.getLineNumber(),
+        stackFrame.getFileName()
+    );
   }
 }

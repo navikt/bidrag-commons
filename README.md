@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.3.2 | endret       | `ExceptionLogger`: Walking the stack trace, not the stack
 0.5.3.1 | endret       | `ExceptionLogger`: Ikke logging fra klasser som har filnavn lik <generated>
 0.5.3   | endret       | `ExceptionLogger`: Vil ikke logge kode auto-generert klassenavn
 0.5.2   | endret       | `ExceptionLogger`: Kan instansieres med klasser som ikke skal være del av stack som logges
