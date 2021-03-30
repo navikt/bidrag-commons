@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.5   | avhengighet  | Avhengighet fra spring-boot 2.4.3 -> 2.4.4
 0.5.4   | avhengighet  | Avhengighet fra spring-boot 2.4.2 -> 2.4.3
 0.5.3.3 | endret       | `ExceptionLogger`: Logger 3 siste stack elements sett fra nav
 0.5.3.2 | endret       | `ExceptionLogger`: Walking the stack trace, not the stack
