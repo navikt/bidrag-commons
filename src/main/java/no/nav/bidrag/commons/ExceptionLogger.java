@@ -124,7 +124,7 @@ public class ExceptionLogger {
 
       for (int i = 1; i < stackFrames.size(); i++) {
         var stackFrame = stackFrames.get(i);
-        fileInfo.append(String.format(", %s: %s", stackFrame.getFileName(), stackFrame.getLineNumber()));
+        fileInfo.append(String.format(", %s.%s: %s", stackFrame.getFileName(), stackFrame.getMethodName() , stackFrame.getLineNumber()));
     }
 
     return " - previous frames: " + fileInfo.substring(2);
