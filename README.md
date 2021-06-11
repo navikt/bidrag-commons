@@ -15,9 +15,10 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.7   | endret       | `CorrelationId`: Fjernet mulighet for bug når streng er blank, samt kompilering mot spring-boot 2.5.1
 0.5.6   | endret       | `ExceptionLogger`: Logger metodenavn på de siste stack frames fra nav
-0.5.5   | avhengighet  | Avhengighet fra spring-boot 2.4.3 -> 2.4.4
-0.5.4   | avhengighet  | Avhengighet fra spring-boot 2.4.2 -> 2.4.3
+0.5.5   | avhengighet  | Kompilering mot spring-boot 2.4.3 -> 2.4.4
+0.5.4   | avhengighet  | Kompilering mot spring-boot 2.4.2 -> 2.4.3
 0.5.3.3 | endret       | `ExceptionLogger`: Logger 3 siste stack elements sett fra nav
 0.5.3.2 | endret       | `ExceptionLogger`: Walking the stack trace, not the stack
 0.5.3.1 | endret       | `ExceptionLogger`: Ikke logging fra klasser som har filnavn lik <generated>
