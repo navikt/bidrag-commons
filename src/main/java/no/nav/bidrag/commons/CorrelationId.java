@@ -21,7 +21,7 @@ public class CorrelationId {
   }
 
   public static CorrelationId existing(String value) {
-    if (value == null || value.equals("")) {
+    if (value == null || value.trim().isBlank()) {
       return generateTimestamped("correlationId");
     }
 
