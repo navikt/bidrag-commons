@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
@@ -14,15 +14,17 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 @SuppressWarnings("rawtypes")
+@ExtendWith(MockitoExtension.class)
 @DisplayName("ExceptionLoggerTest")
 class ExceptionLoggerTest {
 
@@ -35,16 +37,11 @@ class ExceptionLoggerTest {
   private Appender appenderMock;
 
   @BeforeEach
-  void initMocks() {
-    MockitoAnnotations.openMocks(this);
-    mockLogAppender();
-  }
-
   @SuppressWarnings("unchecked")
-  private void mockLogAppender() {
+  void mockLogAppender() {
     ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    when(appenderMock.getName()).thenReturn("MOCK");
-    when(appenderMock.isStarted()).thenReturn(true);
+    lenient().when(appenderMock.getName()).thenReturn("MOCK");
+    lenient().when(appenderMock.isStarted()).thenReturn(true);
     logger.addAppender(appenderMock);
   }
 

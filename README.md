@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.8   | endret       | `CorrelationIdFilter`: Prosesserer ikke logging mot actuator, swagger eller api-docs
 0.5.7   | endret       | `CorrelationId`: Fjernet mulighet for bug når streng er blank, samt kompilering mot spring-boot 2.5.1
 0.5.6   | endret       | `ExceptionLogger`: Logger metodenavn på de siste stack frames fra nav
 0.5.5   | avhengighet  | Kompilering mot spring-boot 2.4.3 -> 2.4.4

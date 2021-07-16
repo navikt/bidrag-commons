@@ -34,7 +34,7 @@ public class CorrelationIdFilter implements Filter {
     var method = httpServletRequest.getMethod();
     var requestURI = httpServletRequest.getRequestURI();
 
-    if (isNotRequestToActuatorEndpoint(requestURI)) {
+    if (isNotRequstContaining(requestURI, "/actuator/", "/api-docs/", "/swagger-")) {
       CorrelationId correlationId;
 
       if (Optional.ofNullable(httpServletRequest.getHeader(CORRELATION_ID_HEADER)).isPresent()) {
@@ -54,12 +54,18 @@ public class CorrelationIdFilter implements Filter {
     MDC.clear();
   }
 
-  private boolean isNotRequestToActuatorEndpoint(String requestURI) {
+  private boolean isNotRequstContaining(String requestURI, String... uriParts) {
     if (requestURI == null) {
       throw new IllegalStateException("should only use this class in an web environment which receives requestUri!!!");
     }
 
-    return !requestURI.contains("/actuator/");
+    for (String uriPart : uriParts) {
+      if (requestURI.contains(uriPart)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private CorrelationId generateCorreleationIdToHttpHeaderOnResponse(HttpServletResponse httpServletResponse, CorrelationId correlationId) {
@@ -78,7 +84,7 @@ public class CorrelationIdFilter implements Filter {
 
   private String fetchLastPartOfRequestUriContainingPlainText(String requestUri) {
     ArrayList<String> reversedUriParts = reverseUriPartsBySlash(requestUri);
-    String lastUriPsty = reversedUriParts.size() < 1 ?  "" : reversedUriParts.get(0);
+    String lastUriPsty = reversedUriParts.size() < 1 ? "" : reversedUriParts.get(0);
 
     if (lastUriPsty.matches("^[a-zA-Z]+$") || lastUriPsty.isBlank()) {
       return lastUriPsty;
