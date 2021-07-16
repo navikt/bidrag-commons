@@ -6,9 +6,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -23,20 +24,22 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @DisplayName("CorrelationIdFilter")
+@ExtendWith(MockitoExtension.class)
 class CorrelationIdFilterTest {
 
   private static final String CORRELATION_ID = "X-Correlation-ID";
 
-  private CorrelationIdFilter correlationIdFilter = new CorrelationIdFilter();
-  private Set<String> logMeldinger = new HashSet<>();
+  private final CorrelationIdFilter correlationIdFilter = new CorrelationIdFilter();
+  private final Set<String> logMeldinger = new HashSet<>();
 
   @Mock
   @SuppressWarnings("rawtypes")
@@ -52,16 +55,11 @@ class CorrelationIdFilterTest {
   private HttpServletResponseWrapper httpServletResponseMock;
 
   @BeforeEach
-  void initMocksAndMockLogAppender() {
-    MockitoAnnotations.initMocks(this);
-    mockLogAppender();
-  }
-
   @SuppressWarnings("unchecked")
-  private void mockLogAppender() {
+  void mockLogAppender() {
     ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    when(appenderMock.getName()).thenReturn("MOCK");
-    when(appenderMock.isStarted()).thenReturn(true);
+    lenient().when(appenderMock.getName()).thenReturn("MOCK");
+    lenient().when(appenderMock.isStarted()).thenReturn(true);
     logger.addAppender(appenderMock);
   }
 
@@ -87,13 +85,35 @@ class CorrelationIdFilterTest {
 
   @Test
   @DisplayName("skal ikke logge requests mot actuator endpoints")
-  void skalIkkeLoggeRequestsMotActuatorEndpoints() throws IOException, ServletException {
+  void skalIkkeLoggeRequestsMotSwaggerResources() throws IOException, ServletException {
     when(httpServletRequestMock.getRequestURI()).thenReturn("/actuator/health").thenReturn("/actuator/something");
 
     correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
     correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
-    verifyZeroInteractions(appenderMock);
+    verifyNoInteractions(appenderMock);
+  }
+
+  @Test
+  @DisplayName("skal ikke logge requests etter api-docs")
+  void skalIkkeLoggeRequestsEtterApiDocs() throws IOException, ServletException {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("/v3/api-docs/").thenReturn("/v2/api-docs/");
+
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+    verifyNoInteractions(appenderMock);
+  }
+
+  @Test
+  @DisplayName("skal ikke logge requests mot swagger resources")
+  void skalIkkeLoggeRequestsMotActuatorEndpoints() throws IOException, ServletException {
+    when(httpServletRequestMock.getRequestURI()).thenReturn("/swagger-ui-bundle.js").thenReturn("/swagger-config");
+
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+    correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
+
+    verifyNoInteractions(appenderMock);
   }
 
   @Test
@@ -111,7 +131,6 @@ class CorrelationIdFilterTest {
   void skalIkkeLeggeHttpHeaderCorrelationIdPaaResponseNaarDenAlleredeEksisterer() throws IOException, ServletException {
     when(httpServletRequestMock.getRequestURI()).thenReturn("somewhere else");
     when(httpServletRequestMock.getHeader(CORRELATION_ID)).thenReturn("svada");
-    when(httpServletResponseMock.containsHeader(CORRELATION_ID)).thenReturn(true);
 
     correlationIdFilter.doFilter(httpServletRequestMock, httpServletResponseMock, filterChainMock);
 
