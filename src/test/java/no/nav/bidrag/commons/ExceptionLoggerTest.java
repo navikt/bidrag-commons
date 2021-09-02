@@ -11,6 +11,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -125,6 +126,16 @@ class ExceptionLoggerTest {
 
     verifiserLoggingSamtSamleLoggMeldinger();
     assertThat(String.join("\n", logMeldinger)).doesNotContain("OtherService");
+  }
+
+  @Test
+  @DisplayName("skal returnere det som logges")
+  void skalReturnereLogMeldinger() {
+    var exceptionStreng = String.join("", exceptionLogger.logException(
+        new HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".getBytes(), null), "junit test"
+    ));
+
+    assertThat(exceptionStreng).contains("Response body: something is fishy");
   }
 
   @SuppressWarnings("unchecked")

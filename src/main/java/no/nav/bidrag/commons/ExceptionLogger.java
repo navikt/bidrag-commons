@@ -19,7 +19,6 @@ public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
   private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
-  private static final String EXCEPTION_LOGGER_CLASS_NAME = ExceptionLogger.class.getName();
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -35,34 +34,46 @@ public class ExceptionLogger {
     }
   }
 
-  public void logException(Throwable throwable, String defaultLocation) {
+  public List<String> logException(Throwable throwable, String defaultLocation) {
+    var loggMeldinger = new ArrayList<String>();
     var exceptionClassName = throwable.getClass().getName();
     var exceptionMessage = throwable.getMessage();
     var possibleCause = Optional.ofNullable(throwable.getCause());
 
     if (possibleCause.isPresent()) {
-      LOGGER.error("{}: {} - Exception caught in {} within {}", exceptionClassName, exceptionMessage, application, defaultLocation);
-      logCause(throwable.getCause());
+      var melding = String.format(
+          "%s: %s - Exception caught in %s within %s", exceptionClassName, exceptionMessage, application, defaultLocation
+      );
+
+      loggMeldinger.add(melding);
+      LOGGER.error(melding);
+      loggMeldinger.addAll(logCause(throwable.getCause()));
     } else {
       var message = String.format(
           "%s: %s - Exception caught in %s within %s has no cause exception", exceptionClassName, exceptionMessage, application, defaultLocation
       );
 
+      loggMeldinger.add(message);
       LOGGER.error(message, throwable);
 
       if (throwable instanceof HttpStatusCodeException) {
         var statusCodeException = (HttpStatusCodeException) throwable;
 
         if (!"".equals(statusCodeException.getResponseBodyAsString())) {
-          LOGGER.error("Response body: " + statusCodeException.getResponseBodyAsString());
+          var responseBody = "Response body: " + statusCodeException.getResponseBodyAsString();
+          loggMeldinger.add(responseBody);
+          LOGGER.error(responseBody);
         }
       }
 
-      logFirstThreeStackFramesFromNavCode(throwable);
+      loggMeldinger.addAll(logFirstThreeStackFramesFromNavCode(throwable));
     }
+
+    return loggMeldinger;
   }
 
-  private void logCause(Throwable cause) {
+  private List<String> logCause(Throwable cause) {
+    var loggMeldinger = new ArrayList<String>();
     var throwables = fetchAllThrowables(cause);
     var exceptionTypes = throwables.stream()
         .map(aThrowable -> aThrowable.getClass().getName())
@@ -72,10 +83,14 @@ public class ExceptionLogger {
 
     for (Throwable throwable : throwables) {
       if (throwable.getCause() == null) {
-        LOGGER.error(String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage()), throwable);
-        logFirstThreeStackFramesFromNavCode(throwable);
+        var causedBy = String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage());
+        LOGGER.error(causedBy, throwable);
+        loggMeldinger.add(causedBy);
+        loggMeldinger.addAll(logFirstThreeStackFramesFromNavCode(throwable));
       }
     }
+
+    return loggMeldinger;
   }
 
   private List<Throwable> fetchAllThrowables(Throwable throwable) {
@@ -90,9 +105,9 @@ public class ExceptionLogger {
     return allThrowables;
   }
 
-  private void logFirstThreeStackFramesFromNavCode(Throwable throwable) {
+  private List<String> logFirstThreeStackFramesFromNavCode(Throwable throwable) {
     var stackFrames = Arrays.stream(throwable.getStackTrace())
-        .filter(not(elem -> elem.getClassName().equals(EXCEPTION_LOGGER_CLASS_NAME)))
+        .filter(not(elem -> elem.getClassName().equals(ExceptionLogger.class.getName())))
         .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
         .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
         .filter(not(elem -> "<generated>".equals(elem.getFileName()))) // generated proxy code
@@ -104,15 +119,18 @@ public class ExceptionLogger {
     }
 
     var firstStack = stackFrames.get(0);
-
-    LOGGER.error(
-        "Exception sett fra nav: {}.{}(line:{} - {}){}",
+    var exceptionSettFraNav = String.format(
+        "Exception sett fra nav: %s.%s(line:%s - %s)%s",
         firstStack.getClassName(),
         firstStack.getMethodName(),
         firstStack.getLineNumber(),
         firstStack.getFileName(),
         fetchFileInfoFromPreviousElements(stackFrames)
     );
+
+    LOGGER.error(exceptionSettFraNav);
+
+    return List.of(exceptionSettFraNav);
   }
 
   private String fetchFileInfoFromPreviousElements(List<StackTraceElement> stackFrames) {
@@ -120,11 +138,11 @@ public class ExceptionLogger {
       return "";
     }
 
-      var fileInfo = new StringBuilder();
+    var fileInfo = new StringBuilder();
 
-      for (int i = 1; i < stackFrames.size(); i++) {
-        var stackFrame = stackFrames.get(i);
-        fileInfo.append(String.format(", %s.%s: %s", stackFrame.getFileName(), stackFrame.getMethodName() , stackFrame.getLineNumber()));
+    for (int i = 1; i < stackFrames.size(); i++) {
+      var stackFrame = stackFrames.get(i);
+      fileInfo.append(String.format(", %s.%s: %s", stackFrame.getFileName(), stackFrame.getMethodName(), stackFrame.getLineNumber()));
     }
 
     return " - previous frames: " + fileInfo.substring(2);
