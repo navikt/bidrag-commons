@@ -35,45 +35,45 @@ public class ExceptionLogger {
   }
 
   public List<String> logException(Throwable throwable, String defaultLocation) {
-    var loggMeldinger = new ArrayList<String>();
+    var exceptionAndDetails = new ArrayList<String>();
     var exceptionClassName = throwable.getClass().getName();
     var exceptionMessage = throwable.getMessage();
     var possibleCause = Optional.ofNullable(throwable.getCause());
 
     if (possibleCause.isPresent()) {
       var melding = String.format(
-          "%s: %s - Exception caught in %s within %s", exceptionClassName, exceptionMessage, application, defaultLocation
+          "%s: %s - Exception caught in %s within %s, with details:", exceptionClassName, exceptionMessage, application, defaultLocation
       );
 
-      loggMeldinger.add(melding);
-      LOGGER.error(melding);
-      loggMeldinger.addAll(logCause(throwable.getCause()));
+      exceptionAndDetails.add(melding);
+      exceptionAndDetails.addAll(logCause(throwable.getCause()));
     } else {
       var message = String.format(
-          "%s: %s - Exception caught in %s within %s has no cause exception", exceptionClassName, exceptionMessage, application, defaultLocation
+          "%s: %s - Exception caught in %s within %s has no cause exception, with details:",
+          exceptionClassName, exceptionMessage, application, defaultLocation
       );
 
-      loggMeldinger.add(message);
-      LOGGER.error(message, throwable);
+      exceptionAndDetails.add(message);
 
       if (throwable instanceof HttpStatusCodeException) {
         var statusCodeException = (HttpStatusCodeException) throwable;
 
         if (!"".equals(statusCodeException.getResponseBodyAsString())) {
           var responseBody = "Response body: " + statusCodeException.getResponseBodyAsString();
-          loggMeldinger.add(responseBody);
-          LOGGER.error(responseBody);
+          exceptionAndDetails.add(responseBody);
         }
       }
 
-      loggMeldinger.addAll(logFirstThreeStackFramesFromNavCode(throwable));
+      exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
     }
 
-    return loggMeldinger;
+    LOGGER.error(String.join("\n", exceptionAndDetails));
+
+    return exceptionAndDetails;
   }
 
   private List<String> logCause(Throwable cause) {
-    var loggMeldinger = new ArrayList<String>();
+    var exceptionDetails = new ArrayList<String>();
     var throwables = fetchAllThrowables(cause);
     var exceptionTypes = throwables.stream()
         .map(aThrowable -> aThrowable.getClass().getName())
@@ -84,13 +84,12 @@ public class ExceptionLogger {
     for (Throwable throwable : throwables) {
       if (throwable.getCause() == null) {
         var causedBy = String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage());
-        LOGGER.error(causedBy, throwable);
-        loggMeldinger.add(causedBy);
-        loggMeldinger.addAll(logFirstThreeStackFramesFromNavCode(throwable));
+        exceptionDetails.add(causedBy);
+        exceptionDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
       }
     }
 
-    return loggMeldinger;
+    return exceptionDetails;
   }
 
   private List<Throwable> fetchAllThrowables(Throwable throwable) {
@@ -115,7 +114,7 @@ public class ExceptionLogger {
         .collect(toList());
 
     if (stackFrames.isEmpty()) {
-      throw new IllegalStateException("Unintended usage: ExceptionLogger is intented to be used within code from nav.no");
+      return Collections.emptyList();
     }
 
     var firstStack = stackFrames.get(0);
@@ -127,8 +126,6 @@ public class ExceptionLogger {
         firstStack.getFileName(),
         fetchFileInfoFromPreviousElements(stackFrames)
     );
-
-    LOGGER.error(exceptionSettFraNav);
 
     return List.of(exceptionSettFraNav);
   }

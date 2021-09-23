@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.10  | endret       | `ExceptionLogger`: Vil logge et exception en gang sammen med detaljene for dette exceptionet
 0.5.9   | endret       | `ExceptionLogger`: Vil også returnere logginnslag som en liste av strenger
 0.5.8   | endret       | `CorrelationIdFilter`: Prosesserer ikke logging mot actuator, swagger eller api-docs
 0.5.7   | endret       | `CorrelationId`: Fjernet mulighet for bug når streng er blank, samt kompilering mot spring-boot 2.5.1

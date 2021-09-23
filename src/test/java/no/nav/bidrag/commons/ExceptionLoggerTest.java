@@ -7,15 +7,16 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -141,7 +142,28 @@ class ExceptionLoggerTest {
   @SuppressWarnings("unchecked")
   private void verifiserLoggingSamtSamleLoggMeldinger() {
     verify(appenderMock, atLeastOnce())
-        .doAppend(argThat((ArgumentMatcher) argument -> logMeldinger.add(((ILoggingEvent) argument).getFormattedMessage())));
+        .doAppend(argThat((ArgumentMatcher) argument -> logMeldinger.add(((ILoggingEvent) argument).getMessage())));
+  }
+
+  @Test
+  @DisplayName("skal logge en error per exception")
+  void skalLoggeEnErrorPerException() {
+    exceptionLogger.logException(
+        new HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "i did it again".getBytes(), null), "junit test"
+    );
+
+    assertThat(fetchNumberOfLoglevelError()).as("Number of error logs").isEqualTo(1);
+  }
+
+  private int fetchNumberOfLoglevelError() {
+    ArgumentCaptor<ILoggingEvent> eventCaptor = ArgumentCaptor.forClass(ILoggingEvent.class);
+    //noinspection unchecked
+    verify(appenderMock, atLeastOnce()).doAppend(eventCaptor.capture());
+
+    return (int) eventCaptor.getAllValues().stream()
+        .map(ILoggingEvent::getLevel)
+        .filter(level -> level.equals(Level.ERROR))
+        .count();
   }
 
   private class Service {
