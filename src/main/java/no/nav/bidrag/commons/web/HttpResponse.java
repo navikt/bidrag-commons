@@ -1,9 +1,12 @@
 package no.nav.bidrag.commons.web;
 
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Redirecting {@link ResponseEntity} from one service to another
@@ -28,6 +31,14 @@ public class HttpResponse<T> {
 
   public HttpHeaders fetchHeaders() {
     return responseEntity.getHeaders();
+  }
+
+  public HttpResponse<T> clearContentHeaders() {
+    var headersMap = responseEntity.getHeaders().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    var headers = new HttpHeaders(CollectionUtils.toMultiValueMap(headersMap));
+    headers.clearContentHeaders();
+
+    return from(responseEntity.getBody(), headers, responseEntity.getStatusCode());
   }
 
   public ResponseEntity<T> getResponseEntity() {
