@@ -18,7 +18,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 public class ExceptionLogger {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
-  private static final String CAUSED_BY_MSG = "...caused by %s: %s.";
+  private static final String CAUSED_BY_MSG = "|> caused by %s: %s.";
   private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
       0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
   );
@@ -36,30 +36,26 @@ public class ExceptionLogger {
 
   public List<String> logException(Throwable throwable, String defaultLocation) {
     var exceptionAndDetails = new ArrayList<String>();
-    var exceptionClassName = throwable.getClass().getName();
+    var exceptionClassSimpleName = throwable.getClass().getSimpleName();
     var exceptionMessage = throwable.getMessage();
     var possibleCause = Optional.ofNullable(throwable.getCause());
+    var melding = String.format(
+        "%s: %s - caught in %s within %s. Details:",
+        exceptionClassSimpleName, exceptionMessage, application, defaultLocation
+    );
+
+    exceptionAndDetails.add(melding);
 
     if (possibleCause.isPresent()) {
-      var melding = String.format(
-          "%s: %s - Exception caught in %s within %s, with details:", exceptionClassName, exceptionMessage, application, defaultLocation
-      );
-
-      exceptionAndDetails.add(melding);
       exceptionAndDetails.addAll(logCause(throwable.getCause()));
     } else {
-      var message = String.format(
-          "%s: %s - Exception caught in %s within %s has no cause exception, with details:",
-          exceptionClassName, exceptionMessage, application, defaultLocation
-      );
-
-      exceptionAndDetails.add(message);
+      exceptionAndDetails.add("|> no root cause");
 
       if (throwable instanceof HttpStatusCodeException) {
         var statusCodeException = (HttpStatusCodeException) throwable;
 
         if (!"".equals(statusCodeException.getResponseBodyAsString())) {
-          var responseBody = "Response body: " + statusCodeException.getResponseBodyAsString();
+          var responseBody = "|> response body: " + statusCodeException.getResponseBodyAsString();
           exceptionAndDetails.add(responseBody);
         }
       }
@@ -119,7 +115,7 @@ public class ExceptionLogger {
 
     var firstStack = stackFrames.get(0);
     var exceptionSettFraNav = String.format(
-        "Exception sett fra nav: %s.%s(line:%s - %s)%s",
+        "|> kode i nav: %s.%s(line:%s - %s)%s",
         firstStack.getClassName(),
         firstStack.getMethodName(),
         firstStack.getLineNumber(),

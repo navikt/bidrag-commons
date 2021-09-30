@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.11  | endret       | `ExceptionLogger`: logger "simple name" til exception, endret hvordan detaljer blir logget
 0.5.11  | endret       | `HttpResponse`: ny metode `clearContentHeaders()`
 0.5.10  | endret       | `ExceptionLogger`: Vil logge et exception en gang sammen med detaljene for dette exceptionet
 0.5.9   | endret       | `ExceptionLogger`: Vil også returnere logginnslag som en liste av strenger
