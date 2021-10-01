@@ -121,14 +121,14 @@ public class ExceptionLogger {
         firstStack.getFileName()
     );
 
-    return List.of(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames));
+    if (stackFrames.size() > 1) {
+      return List.of(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames));
+    }
+
+    return List.of(exceptionSettFraNav);
   }
 
   private String fetchFileInfoFromPreviousElements(List<StackTraceElement> stackFrames) {
-    if (stackFrames.size() == 1) {
-      return "";
-    }
-
     var fileInfo = new StringBuilder();
 
     for (int i = 1; i < stackFrames.size(); i++) {
