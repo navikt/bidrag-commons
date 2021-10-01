@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
+0.5.14  | endret       | `ExceptionLogger`: previous frames melding kommer bare hvis det finnes previous frames 
 0.5.13  | endret       | `ExceptionLogger`: delt melding av kode i nav med previous frames på 2 linjer 
 0.5.12  | endret       | `ExceptionLogger`: logger "simple name" til exception, endret hvordan detaljer blir logget
 0.5.11  | endret       | `HttpResponse`: ny metode `clearContentHeaders()`
