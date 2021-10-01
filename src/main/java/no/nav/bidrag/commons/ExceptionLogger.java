@@ -59,9 +59,9 @@ public class ExceptionLogger {
           exceptionAndDetails.add(responseBody);
         }
       }
-
-      exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
     }
+
+    exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
 
     LOGGER.error(String.join("\n", exceptionAndDetails));
 
@@ -81,7 +81,6 @@ public class ExceptionLogger {
       if (throwable.getCause() == null) {
         var causedBy = String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage());
         exceptionDetails.add(causedBy);
-        exceptionDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
       }
     }
 
@@ -115,15 +114,14 @@ public class ExceptionLogger {
 
     var firstStack = stackFrames.get(0);
     var exceptionSettFraNav = String.format(
-        "|> kode i nav: %s.%s(line:%s - %s)%s",
+        "|> kode i nav: %s.%s(line:%s - %s)",
         firstStack.getClassName(),
         firstStack.getMethodName(),
         firstStack.getLineNumber(),
-        firstStack.getFileName(),
-        fetchFileInfoFromPreviousElements(stackFrames)
+        firstStack.getFileName()
     );
 
-    return List.of(exceptionSettFraNav);
+    return List.of(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames));
   }
 
   private String fetchFileInfoFromPreviousElements(List<StackTraceElement> stackFrames) {
@@ -138,6 +136,6 @@ public class ExceptionLogger {
       fileInfo.append(String.format(", %s.%s: %s", stackFrame.getFileName(), stackFrame.getMethodName(), stackFrame.getLineNumber()));
     }
 
-    return " - previous frames: " + fileInfo.substring(2);
+    return "|> previous frames: " + fileInfo.substring(2);
   }
 }
