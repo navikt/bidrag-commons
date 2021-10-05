@@ -51,6 +51,10 @@ public class KildesystemIdenfikator {
     return journalpostId;
   }
 
+  public Long hentJournalpostIdLong() {
+    return Long.valueOf(this.hentJournalpostId());
+  }
+
   public boolean erFor(Kildesystem kildesystem) {
     return this.kildesystem.er(kildesystem);
   }
