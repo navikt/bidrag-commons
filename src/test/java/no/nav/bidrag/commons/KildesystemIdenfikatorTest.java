@@ -43,6 +43,13 @@ class KildesystemIdenfikatorTest {
     assertThat(kildesystemIdenfikator.hentJournalpostId()).isEqualTo(666);
   }
 
+  @Test
+  void skalHenteJournalpostIdLong() {
+    KildesystemIdenfikator kildesystemIdenfikator = new KildesystemIdenfikator("BID-666");
+
+    assertThat(kildesystemIdenfikator.hentJournalpostIdLong()).isEqualTo(666L);
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {
       "BID-3757282865", // journalpost Id er ikke gyldig (Long), men det er et gyldig prefix på et tall - henter integer som null (!!!)
