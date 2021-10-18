@@ -41,7 +41,10 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
     HttpEntity<T> httpEntity = newEntityWithAdditionalHttpHeaders(requestBody);
     Set<String> headerNames = new HashSet<>(headerGenerators.keySet());
-    LOGGER.info("Generate header(s): {}", headerNames);
+
+    if (!headerNames.isEmpty()) {
+      LOGGER.info("Generate header(s): {}", headerNames);
+    }
 
     return super.httpEntityCallback(httpEntity, responseType);
   }
@@ -50,7 +53,11 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     if (o != null) {
       HttpEntity<T> httpEntity = mapToHttpEntity(o);
       Set<String> headerNames = new HashSet<>(httpEntity.getHeaders().keySet());
-      LOGGER.info("Existing header(s): {}", headerNames);
+
+      if (!headerNames.isEmpty()) {
+        LOGGER.info("Existing header(s): {}", headerNames);
+      }
+
       return new HttpEntity<>(httpEntity.getBody(), combineHeaders(httpEntity.getHeaders()));
     }
 
