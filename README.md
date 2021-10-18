@@ -15,7 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon | endringstype | beskrivelse
 --------|--------------|------------
-0.5.15  | endret       | `HttpHeaderRestTemplate`: logger headere og generatorer bare når de finnes...
+0.5.16  | endret       | `HttpHeaderRestTemplate`: logger headere og generatorer bare når de finnes...
 0.5.15  | endret       | `KildesystemIdentifikator`: Kan hente ut journalpostId som long (og ikke bare som int)
 0.5.14  | endret       | `ExceptionLogger`: previous frames melding kommer bare hvis det finnes previous frames 
 0.5.13  | endret       | `ExceptionLogger`: delt melding av kode i nav med previous frames på 2 linjer 
