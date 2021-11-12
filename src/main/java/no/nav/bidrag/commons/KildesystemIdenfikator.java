@@ -59,6 +59,16 @@ public class KildesystemIdenfikator {
     return this.kildesystem.er(kildesystem);
   }
 
+  public boolean erKjentKildesystemMedIdMedIdSomOverstigerInteger() {
+    if (kildesystem.erUkjent()) {
+      LOGGER.warn("Ukjent kildesystem i '%s'".formatted(prefiksetJournalpostId));
+
+      return false;
+    }
+
+    return kildesystem.idErStorreEnnIntegerMax(prefiksetJournalpostId);
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -102,18 +112,6 @@ public class KildesystemIdenfikator {
       return er(UKJENT);
     }
 
-    static Kildesystem hentKildesystem(String prefiksetJournalpostId) {
-      if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) {
-        return BIDRAG;
-      }
-
-      if (prefiksetJournalpostId.startsWith(JOARK.prefixMedDelimiter)) {
-        return JOARK;
-      }
-
-      return UKJENT;
-    }
-
     public Integer hentJournalpostId(String prefiksetJournalpostId) {
       String ident = prefiksetJournalpostId.replaceAll(prefixMedDelimiter, "");
 
@@ -124,6 +122,38 @@ public class KildesystemIdenfikator {
 
         return null;
       }
+    }
+
+    boolean idErStorreEnnIntegerMax(String prefksetJournalpostId) {
+      var bareTall = prefksetJournalpostId.replaceAll(NON_DIGITS, "");
+
+      try {
+        long longSomTall = Long.parseLong(bareTall);
+
+        if (longSomTall > Integer.MAX_VALUE) {
+          LOGGER.warn("kan ikke parses til int: '{}'", longSomTall);
+
+          return true;
+        }
+      } catch (NumberFormatException nfe) {
+        LOGGER.warn("kan ikke parses til int: '{}'", bareTall);
+
+        return true;
+      }
+
+      return false;
+    }
+
+    static Kildesystem hentKildesystem(String prefiksetJournalpostId) {
+      if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) {
+        return BIDRAG;
+      }
+
+      if (prefiksetJournalpostId.startsWith(JOARK.prefixMedDelimiter)) {
+        return JOARK;
+      }
+
+      return UKJENT;
     }
   }
 }
