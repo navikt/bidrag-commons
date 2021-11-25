@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.5.19   | endret       | `HttpHeaderRestTemplate`: endret hvordan HEADER blir logget
 0.5.18   | endret       | `KildesystemIdentifikator`: ny metode: `erKjentKildesystemMedIdMedIdSomOverstigerInteger()`
 0.5.17.1 | endret       | Kompilering mot spring-boot 2.5.6
 0.5.16   | endret       | `HttpHeaderRestTemplate`: logger headere og generatorer bare når de finnes...
