@@ -35,6 +35,7 @@ public class EnhetFilter implements Filter {
           ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
           LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
         } else {
+          ENHETSNUMMER_VALUE.set(null);
           LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
         }
       }
@@ -44,7 +45,7 @@ public class EnhetFilter implements Filter {
     }
 
     filterChain.doFilter(servletRequest, servletResponse);
-    MDC.remove(ENHET_MDC);
+    MDC.clear();
   }
 
   private boolean isNotRequestToActuatorEndpoint(String requestURI) {

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,10 +83,15 @@ public class HttpHeaderRestTemplate extends RestTemplate {
 
   private MultiValueMap<String, String> combineHeaders(HttpHeaders existingHeaders) {
     HttpHeaders allHeaders = new HttpHeaders();
-    existingHeaders.forEach((name, listValue) -> listValue.forEach(value -> allHeaders.add(name, value)));
+    existingHeaders.forEach((name, listValue) -> listValue.forEach(value -> {
+      if (Objects.nonNull(value)){
+        allHeaders.add(name, value);
+      }
+    }));
 
     headerGenerators.forEach((key, value) -> {
-      if (!isXEnhetHeaderAndXEnhetHeaderExists(key, allHeaders)) {
+      var headerValue = value.generate();
+      if (!isXEnhetHeaderAndXEnhetHeaderExists(key, allHeaders) && Objects.nonNull(headerValue)) {
         allHeaders.add(key, value.generate());
       }
     });
