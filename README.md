@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.5.21   | endret       | `HttpHeaderRestTemplate`: Hindre duplikat header for x_enhet
 0.5.20   | endret       | `HttpHeaderRestTemplate`: metode for å legge til default headere
 0.5.20   | endret       | `EnhetFilter`: legg til MDC
 0.5.19   | endret       | `HttpHeaderRestTemplate`: endret hvordan HEADER blir logget
