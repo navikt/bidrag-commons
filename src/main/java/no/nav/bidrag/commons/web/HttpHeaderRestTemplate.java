@@ -1,5 +1,7 @@
 package no.nav.bidrag.commons.web;
 
+import static no.nav.bidrag.commons.web.EnhetFilter.X_ENHET_HEADER;
+
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,9 +35,9 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     super(messageConverters);
   }
 
-  public void withDefaultHeaders(){
+  public void withDefaultHeaders() {
     addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER, CorrelationIdFilter::fetchCorrelationIdForThread);
-    addHeaderGenerator(EnhetFilter.X_ENHET_HEADER, EnhetFilter::fetchForThread);
+    addHeaderGenerator(X_ENHET_HEADER, EnhetFilter::fetchForThread);
   }
 
   @Override
@@ -82,9 +84,18 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     HttpHeaders allHeaders = new HttpHeaders();
     existingHeaders.forEach((name, listValue) -> listValue.forEach(value -> allHeaders.add(name, value)));
 
-    headerGenerators.forEach((key, value) -> allHeaders.add(key, value.generate()));
+    headerGenerators.forEach((key, value) -> {
+      if (!isXEnhetHeaderAndXEnhetHeaderExists(key, allHeaders)) {
+        allHeaders.add(key, value.generate());
+      }
+    });
 
     return allHeaders;
+  }
+
+  // Prevent duplicate X_ENHET headers. Makes it possible to override the header
+  private boolean isXEnhetHeaderAndXEnhetHeaderExists(String key, HttpHeaders allHeaders) {
+    return X_ENHET_HEADER.equals(key) && allHeaders.get(X_ENHET_HEADER) != null;
   }
 
   public void addHeaderGenerator(String headerName, ValueGenerator valueGenerator) {
