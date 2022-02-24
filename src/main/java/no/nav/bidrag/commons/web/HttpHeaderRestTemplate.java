@@ -92,7 +92,7 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     headerGenerators.forEach((key, value) -> {
       var headerValue = value.generate();
       if (!isXEnhetHeaderAndXEnhetHeaderExists(key, allHeaders) && Objects.nonNull(headerValue)) {
-        allHeaders.add(key, value.generate());
+        allHeaders.add(key, headerValue);
       }
     });
 
