@@ -33,6 +33,11 @@ public class HttpHeaderRestTemplate extends RestTemplate {
     super(messageConverters);
   }
 
+  public void withDefaultHeaders(){
+    addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER, CorrelationIdFilter::fetchCorrelationIdForThread);
+    addHeaderGenerator(EnhetFilter.X_ENHET_HEADER, EnhetFilter::fetchForThread);
+  }
+
   @Override
   public <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
     if (headerGenerators.isEmpty()) {
