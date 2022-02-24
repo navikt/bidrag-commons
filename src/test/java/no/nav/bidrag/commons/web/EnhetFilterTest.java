@@ -101,7 +101,7 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).as("log").contains("behandler request 'some url' for enhet med enhetsnummer 007");
+    assertThat(loggingEvent.getFormattedMessage()).as("log").contains("Behandler request 'some url' for enhet med enhetsnummer 007");
     assertThat(EnhetFilter.fetchForThread()).as("enhetsnummer").isEqualTo("007");
   }
 
@@ -116,7 +116,7 @@ class EnhetFilterTest {
     var loggingEvent = (ILoggingEvent) logCaptor.getValue();
 
     assertThat(loggingEvent).isNotNull();
-    assertThat(loggingEvent.getFormattedMessage()).contains("behandler request 'some url' uten informasjon om enhetsnummer");
+    assertThat(loggingEvent.getFormattedMessage()).contains("Behandler request 'some url' uten informasjon om enhetsnummer");
   }
 
   @Test

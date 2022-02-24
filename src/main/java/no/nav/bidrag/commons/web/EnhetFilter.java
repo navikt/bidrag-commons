@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class EnhetFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EnhetFilter.class);
   private static final ThreadLocal<String> ENHETSNUMMER_VALUE = new ThreadLocal<>();
+  private static final String ENHET_MDC = "enhet";
 
   public static final String X_ENHET_HEADER = "X-Enhet";
 
@@ -29,10 +31,11 @@ public class EnhetFilter implements Filter {
 
         if (enhetsnummer != null) {
           ENHETSNUMMER_VALUE.set(enhetsnummer);
+          MDC.put(ENHET_MDC, enhetsnummer);
           ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
-          LOGGER.info("{} behandler request '{}' for enhet med enhetsnummer {}", EnhetFilter.class.getSimpleName(), requestURI, enhetsnummer);
+          LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
         } else {
-          LOGGER.info("{} behandler request '{}' uten informasjon om enhetsnummer.", EnhetFilter.class.getSimpleName(), requestURI);
+          LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
         }
       }
     } else {
@@ -41,6 +44,7 @@ public class EnhetFilter implements Filter {
     }
 
     filterChain.doFilter(servletRequest, servletResponse);
+    MDC.remove(ENHET_MDC);
   }
 
   private boolean isNotRequestToActuatorEndpoint(String requestURI) {
