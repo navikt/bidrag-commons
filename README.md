@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.5.24   | endret       | `HttpHeaderRestTemplate`: Endre logger til nivå debug
 0.5.23   | endret       | `HttpHeaderRestTemplate`: Only fetch headergenerator once
 0.5.22   | endret       | `HttpHeaderRestTemplate`: Clear enhet from thread
 0.5.21   | endret       | `HttpHeaderRestTemplate`: Hindre duplikat header for x_enhet
