@@ -1,9 +1,9 @@
 package no.nav.bidrag.commons.security.service
 
-import no.nav.bidrag.commons.security.SecurityConfig.Companion.STS_SERVICE_USER_TOKEN_CACHE
 import no.nav.bidrag.commons.security.model.TokenException
 import no.nav.bidrag.commons.security.model.TokenForBasicAuthentication
-import org.springframework.cache.annotation.Cacheable
+import no.nav.security.token.support.client.core.OAuth2CacheFactory
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.util.LinkedMultiValueMap
@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate
 import java.util.Optional
 
 open class StsTokenService(private val restTemplate: RestTemplate?): TokenService("STS") {
+    private var stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(1000, 100)
     companion object {
         private val PARAMETERS: LinkedMultiValueMap<String?, String?> = object : LinkedMultiValueMap<String?, String?>(2) {
             init {
@@ -23,12 +24,16 @@ open class StsTokenService(private val restTemplate: RestTemplate?): TokenServic
 
     override fun isEnabled() = true
 
-    @Cacheable(STS_SERVICE_USER_TOKEN_CACHE, cacheManager = "securityTokenCacheManager")
     override fun fetchToken(): String {
+        return stsCache.get("sts", this::getToken)!!.accessToken
+
+    }
+
+    private fun getToken(cacheName: String): OAuth2AccessTokenResponse {
         val tokenForBasicAuthenticationResponse = restTemplate!!.exchange("/", HttpMethod.POST, HttpEntity<Any>(PARAMETERS), TokenForBasicAuthentication::class.java)
         val tokenForBasicAuthentication = tokenForBasicAuthenticationResponse.body
         return Optional.ofNullable(tokenForBasicAuthentication)
-            .map { obj: TokenForBasicAuthentication -> obj.fetchToken() }
+            .map { obj: TokenForBasicAuthentication -> OAuth2AccessTokenResponse.builder().accessToken(obj.access_token).build() }
             .orElseThrow {
                 TokenException(
                     String.format(

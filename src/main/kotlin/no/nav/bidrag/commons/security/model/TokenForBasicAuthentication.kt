@@ -7,6 +7,4 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class TokenForBasicAuthentication(
     @JsonProperty("access_token") var access_token: String = "",
     @JsonProperty("token_type") var tokenType: String = ""
-) {
-    fun fetchToken() = access_token.trim()
-}
+)
