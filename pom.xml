@@ -41,7 +41,7 @@
     <!-- plugins -->
     <maven-compiler.version>3.8.1</maven-compiler.version>
     <maven-surefire.version>2.22.0</maven-surefire.version>
-    <kotlin.version>1.6.10</kotlin.version>
+    <kotlin.version>1.6.20-RC</kotlin.version>
   </properties>
 
   <distributionManagement>
@@ -119,8 +119,19 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>${httpclient.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.13</version>
+    </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
