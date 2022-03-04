@@ -5,8 +5,8 @@ import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 
 class SecurityTokenService(
-    private val azureTokenService: AzureTokenService,
-    private val stsTokenService: StsTokenService,
+    private val azureTokenService: TokenService,
+    private val stsTokenService: TokenService,
     private val oidcTokenManager: OidcTokenManager
 ) {
     companion object {
@@ -15,7 +15,7 @@ class SecurityTokenService(
     fun authTokenInterceptor(clientRegistrationId: String): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (oidcTokenManager.isValidTokenIssuedByAzure()){
-                request.headers.setBearerAuth(azureTokenService.getAccessToken(clientRegistrationId, oidcTokenManager.fetchToken()).tokenValue)
+                request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
             } else {
                 request.headers.setBearerAuth(oidcTokenManager.fetchTokenAsString())
             }
@@ -27,7 +27,7 @@ class SecurityTokenService(
     fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (!oidcTokenManager.isValidTokenIssuedByAzure()){
-                request.headers.set(HEADER_NAV_CONSUMER_TOKEN, stsTokenService.generateToken())
+                request.headers.set(HEADER_NAV_CONSUMER_TOKEN, stsTokenService.fetchToken())
             }
 
             execution.execute(request, body!!)

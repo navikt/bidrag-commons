@@ -5,9 +5,11 @@ import no.nav.bidrag.commons.security.service.AzureTokenService
 import no.nav.bidrag.commons.security.service.OidcTokenManager
 import no.nav.bidrag.commons.security.service.SecurityTokenService
 import no.nav.bidrag.commons.security.service.StsTokenService
+import no.nav.bidrag.commons.security.service.TokenService
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -22,11 +24,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @Configuration
 @EnableJwtTokenValidation
 open class SecurityConfig {
-
-    @Bean
-    open fun disabledAzureTokenService() = AzureTokenService(null, null, null)
-    @Bean
-    open fun disabledStsTokenService() = StsTokenService(null)
 
     @Bean
     @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.discoveryurl", havingValue = "")
@@ -61,7 +58,7 @@ open class SecurityConfig {
     open fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager(tokenValidationContextHolder)
 
     @Bean
-    @ConditionalOnProperty("no.nav.security.jwt.issuer.sts.discoveryurl", havingValue = "")
+    @ConditionalOnProperty("no.nav.bidrag.commons.security.sts.url", havingValue = "")
     open fun stsTokenService(
         restTemplateBuilder: RestTemplateBuilder,
         @Value("\${no.nav.bidrag.commons.security.sts.url}") url: String,
@@ -69,8 +66,16 @@ open class SecurityConfig {
         @Value("\${no.nav.bidrag.commons.security.sts.serviceuser.password}") password: String,
     ) = StsTokenService(restTemplateBuilder.rootUri(url).basicAuthentication(username, password).build())
 
+
+    @Bean("azureTokenService")
+    @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.discoveryurl", matchIfMissing = true)
+    open fun dummyAzureTokenService() = TokenService("AZURE")
+    @Bean("stsTokenService")
+    @ConditionalOnProperty("no.nav.bidrag.commons.security.sts.url", matchIfMissing = true)
+    open fun dummyStsTokenService() = TokenService("STS")
+
     @Bean
-    open fun securityTokenService(azureTokenService: AzureTokenService, stsTokenService: StsTokenService, oidcTokenManager: OidcTokenManager) =
+    open fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, oidcTokenManager: OidcTokenManager) =
         SecurityTokenService(azureTokenService, stsTokenService, oidcTokenManager)
 
 

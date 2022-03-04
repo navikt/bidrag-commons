@@ -8,7 +8,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.util.LinkedMultiValueMap
 import java.util.Optional
 
-class StsTokenService(private val restTemplate: RestTemplate?) {
+class StsTokenService(private val restTemplate: RestTemplate?): TokenService("STS") {
     companion object {
         private val PARAMETERS: LinkedMultiValueMap<String?, String?> = object : LinkedMultiValueMap<String?, String?>(2) {
             init {
@@ -19,7 +19,7 @@ class StsTokenService(private val restTemplate: RestTemplate?) {
         const val REST_TOKEN_ENDPOINT = "/rest/v1/sts/token"
     }
 
-    fun generateToken(): String {
+    override fun fetchToken(): String {
         val tokenForBasicAuthenticationResponse = restTemplate!!.exchange("/", HttpMethod.POST, HttpEntity<Any>(PARAMETERS), TokenForBasicAuthentication::class.java)
         val tokenForBasicAuthentication = tokenForBasicAuthenticationResponse.body
         return Optional.ofNullable(tokenForBasicAuthentication)

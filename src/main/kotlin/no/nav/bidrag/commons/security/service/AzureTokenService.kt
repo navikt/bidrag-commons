@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken
 open class AzureTokenService(
   private val authorizedClientManager: OAuth2AuthorizedClientManager?,
   private val onBehalfOfTokenResponseClient: OnBehalfOfTokenResponseClient?,
-  private val clientRegistrationRepository: ClientRegistrationRepository?): TokenService() {
+  private val clientRegistrationRepository: ClientRegistrationRepository?): TokenService("Azure") {
 
   companion object {
     const val AZURE_CLAIM_OID = "oid"
@@ -27,7 +27,11 @@ open class AzureTokenService(
     "anonymous", "anonymousUser", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
   )
 
-  open fun getAccessToken(clientRegistrationId: String, token: JwtToken): OAuth2AccessToken {
+  override fun fetchToken(clientRegistrationId: String, token: JwtToken): String {
+    return getAccessToken(clientRegistrationId, token).tokenValue
+  }
+
+  private fun getAccessToken(clientRegistrationId: String, token: JwtToken): OAuth2AccessToken {
     if (isOnBehalfOfFlowToken(token)){
       val clientRegistration: ClientRegistration = clientRegistrationRepository!!.findByRegistrationId(clientRegistrationId)
       return onBehalfOfTokenResponseClient!!.getTokenResponse(OAuth2JwtBearerGrantRequest(clientRegistration, token.tokenAsString)).accessToken
@@ -41,12 +45,12 @@ open class AzureTokenService(
       )!!.accessToken
   }
 
-  protected open fun isOnBehalfOfFlowToken(token: JwtToken): Boolean {
+  private fun isOnBehalfOfFlowToken(token: JwtToken): Boolean {
     val jwtTokenClaims: JwtTokenClaims = token.getJwtTokenClaims()
     return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
   }
 
-  protected open fun isClientCredentialFlowToken(token: JwtToken): Boolean {
+  private fun isClientCredentialFlowToken(token: JwtToken): Boolean {
     val jwtTokenClaims: JwtTokenClaims = token.getJwtTokenClaims()
     return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) == jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
   }
