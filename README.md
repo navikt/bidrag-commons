@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.6.1    | endret       |  Feilfiks i sikkerhetskonfigurasjon og støtte for maskin-maskin kommunikasjon
 0.6.0    | opprettet    |  Lagt til felles sikkerhetskonfigurasjon
 0.5.24   | endret       | `HttpHeaderRestTemplate`: Endre logger til nivå debug
 0.5.23   | endret       | `HttpHeaderRestTemplate`: Only fetch headergenerator once

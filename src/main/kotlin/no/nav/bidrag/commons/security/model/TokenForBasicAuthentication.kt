@@ -8,5 +8,5 @@ data class TokenForBasicAuthentication(
     @JsonProperty("access_token") var access_token: String = "",
     @JsonProperty("token_type") var tokenType: String = ""
 ) {
-    fun fetchToken() = "$tokenType $access_token".trim()
+    fun fetchToken() = access_token.trim()
 }

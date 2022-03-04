@@ -7,23 +7,17 @@ import java.util.Optional
 class OidcTokenManager(private val tokenValidationContextHolder: TokenValidationContextHolder) {
     companion object {
         const val AZURE_ISSUER = "aad"
-        const val ISSO_ISSUER = "isso"
-        const val STS_ISSUER = "sts"
     }
     fun fetchTokenAsString(): String {
         return fetchToken().tokenAsString
     }
 
+    private fun hasIssuers(): Boolean {
+        return tokenValidationContextHolder.tokenValidationContext.issuers.isNotEmpty()
+    }
+
     fun isValidTokenIssuedByAzure(): Boolean {
-        return tokenValidationContextHolder.tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
-    }
-
-    fun isValidTokenIssuedBySTS(): Boolean {
-        return tokenValidationContextHolder.tokenValidationContext.getJwtToken(STS_ISSUER) != null
-    }
-
-    fun isValidTokenIssuedByISSO(): Boolean {
-        return tokenValidationContextHolder.tokenValidationContext.getJwtToken(ISSO_ISSUER) != null
+        return hasIssuers() && tokenValidationContextHolder.tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
     }
 
     fun fetchToken(): JwtToken {
