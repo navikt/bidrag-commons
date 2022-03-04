@@ -49,7 +49,7 @@ class OnBehalfOfTokenResponseClient(restTemplateBuilder: RestTemplateBuilder, en
         Assert.notNull(oAuth2JwtBearerGrantRequest, "oAuth2JwtBearerGrantRequest cannot be null")
         val request = convert(oAuth2JwtBearerGrantRequest)
         return try {
-            restTemplate.exchange(request, OAuth2AccessTokenResponse::class.java).body
+            restTemplate.exchange(request, OAuth2AccessTokenResponse::class.java).body!!
         } catch (ex: HttpStatusCodeException) {
             LOGGER.error("received status code={}, and body={}", ex.statusCode, ex.responseBodyAsString)
             val oauth2Error = OAuth2Error(
