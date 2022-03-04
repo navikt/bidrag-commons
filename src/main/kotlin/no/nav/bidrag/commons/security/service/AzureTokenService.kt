@@ -1,53 +1,38 @@
 package no.nav.bidrag.commons.security.service
 
-import no.nav.bidrag.commons.security.SecurityConfig
-import no.nav.bidrag.commons.security.azure.OAuth2JwtBearerGrantRequest
-import no.nav.bidrag.commons.security.azure.OnBehalfOfTokenResponseClient
+import no.nav.bidrag.commons.security.model.TokenException
+import no.nav.security.token.support.client.core.ClientProperties
+import no.nav.security.token.support.client.core.OAuth2GrantType
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
+import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.security.authentication.AnonymousAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.authority.AuthorityUtils
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.registration.ClientRegistration
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.core.OAuth2AccessToken
+import org.slf4j.LoggerFactory
 
 
 open class AzureTokenService(
-  private val authorizedClientManager: OAuth2AuthorizedClientManager?,
-  private val onBehalfOfTokenResponseClient: OnBehalfOfTokenResponseClient?,
-  private val clientRegistrationRepository: ClientRegistrationRepository?): TokenService("Azure") {
+  private val clientConfigurationProperties: ClientConfigurationProperties,
+  private val azureTokenService: OAuth2AccessTokenService): TokenService("Azure") {
 
   companion object {
+    private val LOGGER = LoggerFactory.getLogger(AzureTokenService::class.java)
     const val AZURE_CLAIM_OID = "oid"
     const val AZURE_CLAIM_SUB = "sub"
   }
   override fun isEnabled() = true
 
-  private val ANONYMOUS_AUTHENTICATION: Authentication = AnonymousAuthenticationToken(
-    "anonymous", "anonymousUser", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS")
-  )
-
-  @Cacheable(SecurityConfig.AZURE_AD_TOKEN_CACHE, cacheManager = "securityTokenCacheManager", condition = "#token==null")
   override fun fetchToken(clientRegistrationId: String, token: JwtToken?): String {
-    return getAccessToken(clientRegistrationId, token).tokenValue
+    return getAccessToken(clientRegistrationId, token).accessToken
   }
 
-  private fun getAccessToken(clientRegistrationId: String, token: JwtToken?): OAuth2AccessToken {
+  private fun getAccessToken(clientRegistrationId: String, token: JwtToken?): OAuth2AccessTokenResponse {
     if (token != null && isOnBehalfOfFlowToken(token)){
-      val clientRegistration: ClientRegistration = clientRegistrationRepository!!.findByRegistrationId(clientRegistrationId)
-      return onBehalfOfTokenResponseClient!!.getTokenResponse(OAuth2JwtBearerGrantRequest(clientRegistration, token.tokenAsString)).accessToken
+      LOGGER.debug("AZURE: Creating on-behalf-of token")
+      return azureTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.JWT_BEARER))
     }
-    return authorizedClientManager!!
-      .authorize(
-        OAuth2AuthorizeRequest
-          .withClientRegistrationId(clientRegistrationId)
-          .principal(ANONYMOUS_AUTHENTICATION)
-          .build()
-      )!!.accessToken
+    LOGGER.debug("AZURE: Creating client credentials token")
+    return azureTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.CLIENT_CREDENTIALS))
   }
 
   private fun isOnBehalfOfFlowToken(token: JwtToken): Boolean {
@@ -55,8 +40,16 @@ open class AzureTokenService(
     return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
   }
 
-  private fun isClientCredentialFlowToken(token: JwtToken): Boolean {
-    val jwtTokenClaims: JwtTokenClaims = token.jwtTokenClaims
-    return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) == jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
+  private fun createClientPropertiesWithGrantType(clientRegistrationId: String, grantType: OAuth2GrantType): ClientProperties{
+    val registration = clientConfigurationProperties.registration[clientRegistrationId]
+        ?: throw TokenException("Missing registration for client $clientRegistrationId")
+    return ClientProperties(
+      registration.tokenEndpointUrl,
+      registration.wellKnownUrl,
+      grantType,
+      registration.scope,
+      registration.authentication,
+      registration.resourceUrl,
+      registration.tokenExchange)
   }
 }

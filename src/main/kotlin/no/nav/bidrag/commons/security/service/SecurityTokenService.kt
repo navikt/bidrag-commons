@@ -1,6 +1,5 @@
 package no.nav.bidrag.commons.security.service
 
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
