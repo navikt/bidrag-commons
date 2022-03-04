@@ -10,6 +10,7 @@ import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -34,7 +35,7 @@ class SecurityConfig {
     fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager(tokenValidationContextHolder)
 
     @Bean
-    @ConditionalOnProperty("no.nav.security.jwt.sts.url", havingValue = "")
+    @ConditionalOnProperty("no.nav.security.jwt.sts.properties.url", havingValue = "")
     fun stsTokenService(
         restTemplateBuilder: RestTemplateBuilder,
         stsConfigurationProperties: StsConfigurationProperties
@@ -42,7 +43,7 @@ class SecurityConfig {
 
 
     @Bean("stsTokenService")
-    @ConditionalOnProperty("no.nav.bidrag.commons.security.sts.url", matchIfMissing = true, havingValue = "false")
+    @ConditionalOnMissingBean(StsTokenService::class)
     fun dummyStsTokenService() = TokenService("STS")
 
     @Bean
