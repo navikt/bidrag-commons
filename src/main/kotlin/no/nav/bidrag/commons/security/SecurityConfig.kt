@@ -38,7 +38,7 @@ class SecurityConfig {
     fun stsTokenService(
         restTemplateBuilder: RestTemplateBuilder,
         stsConfigurationProperties: StsConfigurationProperties
-    ) = StsTokenService(restTemplateBuilder.rootUri(stsConfigurationProperties.url).basicAuthentication(stsConfigurationProperties.username, stsConfigurationProperties.password).build())
+    ) = StsTokenService(restTemplateBuilder.rootUri(stsConfigurationProperties.properties?.url).basicAuthentication(stsConfigurationProperties.properties?.username, stsConfigurationProperties.properties?.password).build())
 
 
     @Bean("stsTokenService")

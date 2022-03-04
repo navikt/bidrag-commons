@@ -11,6 +11,10 @@ import no.nav.security.token.support.client.core.ClientProperties
 @ConfigurationProperties("no.nav.security.jwt.sts")
 @ConstructorBinding
 data class StsConfigurationProperties(
+    var properties: StsProperties?
+)
+
+data class StsProperties(
     var url: String,
     var username: String,
     var password: String,
