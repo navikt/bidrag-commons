@@ -4,7 +4,7 @@ import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 
-class SecurityTokenService(
+open class SecurityTokenService(
     private val azureTokenService: TokenService,
     private val stsTokenService: TokenService,
     private val oidcTokenManager: OidcTokenManager
@@ -13,7 +13,7 @@ class SecurityTokenService(
         const val HEADER_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
     }
 
-    fun serviceUserAuthTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
+    open fun serviceUserAuthTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (azureTokenService.isEnabled() && clientRegistrationId != null){
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, null))
@@ -25,7 +25,7 @@ class SecurityTokenService(
         }
     }
 
-    fun authTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
+    open fun authTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
@@ -37,7 +37,7 @@ class SecurityTokenService(
         }
     }
 
-    fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
+    open fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (!oidcTokenManager.isValidTokenIssuedByAzure()){
                 request.headers.set(HEADER_NAV_CONSUMER_TOKEN, "Bearer ${stsTokenService.fetchToken()}")

@@ -4,11 +4,11 @@ import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.core.jwt.JwtToken
 import java.util.Optional
 
-class OidcTokenManager(private val tokenValidationContextHolder: TokenValidationContextHolder) {
+open class OidcTokenManager(private val tokenValidationContextHolder: TokenValidationContextHolder) {
     companion object {
         const val AZURE_ISSUER = "aad"
     }
-    fun fetchTokenAsString(): String {
+    open fun fetchTokenAsString(): String {
         return fetchToken().tokenAsString
     }
 
@@ -16,7 +16,7 @@ class OidcTokenManager(private val tokenValidationContextHolder: TokenValidation
         return tokenValidationContextHolder.tokenValidationContext.issuers.isNotEmpty()
     }
 
-    fun isValidTokenIssuedByAzure(): Boolean {
+    open fun isValidTokenIssuedByAzure(): Boolean {
         return hasIssuers() && tokenValidationContextHolder.tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
     }
 
