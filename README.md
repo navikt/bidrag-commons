@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.6.4    | endret       |  Legg til støtte for å mocke bønner i sikkerhetskonfigurasjon
 0.6.3    | endret       |  Feilfiks sikkerhetskonfigurasjon for StsService bønne
 0.6.2    | endret       |  Bruk token-client-spring for sikkerhetskonfigurasjon
 0.6.1    | endret       |  Feilfiks i sikkerhetskonfigurasjon og støtte for maskin-maskin kommunikasjon

@@ -40,13 +40,13 @@ open class AzureTokenService(
     return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
   }
 
-  private fun createClientPropertiesWithGrantType(clientRegistrationId: String, grantType: OAuth2GrantType): ClientProperties{
+  private fun createClientPropertiesWithGrantType(clientRegistrationId: String, grantType: OAuth2GrantType?): ClientProperties{
     val registration = clientConfigurationProperties.registration[clientRegistrationId]
         ?: throw TokenException("Missing registration for client $clientRegistrationId")
     return ClientProperties(
       registration.tokenEndpointUrl,
       registration.wellKnownUrl,
-      grantType,
+      grantType?:registration.grantType,
       registration.scope,
       registration.authentication,
       registration.resourceUrl,
