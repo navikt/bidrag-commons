@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 
 open class AzureTokenService(
   private val clientConfigurationProperties: ClientConfigurationProperties,
-  private val azureTokenService: OAuth2AccessTokenService): TokenService("Azure") {
+  private val oAuth2AccessTokenService: OAuth2AccessTokenService): TokenService("Azure") {
 
   companion object {
     private val LOGGER = LoggerFactory.getLogger(AzureTokenService::class.java)
@@ -29,10 +29,10 @@ open class AzureTokenService(
   private fun getAccessToken(clientRegistrationId: String, token: JwtToken?): OAuth2AccessTokenResponse {
     if (token != null && isOnBehalfOfFlowToken(token)){
       LOGGER.debug("AZURE: Creating on-behalf-of token")
-      return azureTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.JWT_BEARER))
+      return oAuth2AccessTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.JWT_BEARER))
     }
     LOGGER.debug("AZURE: Creating client credentials token")
-    return azureTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.CLIENT_CREDENTIALS))
+    return oAuth2AccessTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.CLIENT_CREDENTIALS))
   }
 
   private fun isOnBehalfOfFlowToken(token: JwtToken): Boolean {

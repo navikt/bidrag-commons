@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate
 import java.util.Optional
 
 open class StsTokenService(private val restTemplate: RestTemplate?): TokenService("STS") {
-    private var stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(1000, 100)
+    private var stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(100, 300)
     companion object {
         private val LOGGER = LoggerFactory.getLogger(StsTokenService::class.java)
         private val PARAMETERS: LinkedMultiValueMap<String?, String?> = object : LinkedMultiValueMap<String?, String?>(2) {
@@ -27,7 +27,7 @@ open class StsTokenService(private val restTemplate: RestTemplate?): TokenServic
     override fun isEnabled() = true
 
     override fun fetchToken(): String {
-        return stsCache.get("sts", this::getToken)!!.accessToken
+        return stsCache.get("STS", this::getToken)!!.accessToken
 
     }
 
@@ -36,7 +36,10 @@ open class StsTokenService(private val restTemplate: RestTemplate?): TokenServic
         val tokenForBasicAuthenticationResponse = restTemplate!!.exchange("/", HttpMethod.POST, HttpEntity<Any>(PARAMETERS), TokenForBasicAuthentication::class.java)
         val tokenForBasicAuthentication = tokenForBasicAuthenticationResponse.body
         return Optional.ofNullable(tokenForBasicAuthentication)
-            .map { obj: TokenForBasicAuthentication -> OAuth2AccessTokenResponse.builder().accessToken(obj.access_token).build() }
+            .map { obj: TokenForBasicAuthentication -> OAuth2AccessTokenResponse.builder()
+                .accessToken(obj.access_token)
+                .expiresIn(obj.expiresIn)
+                .build() }
             .orElseThrow {
                 TokenException(
                     String.format(
