@@ -15,6 +15,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 versjon  | endringstype | beskrivelse
 ---------|--------------|------------
+0.6.6    | endret       |  Fjernet SpringSecurityConfig
 0.6.5    | endret       |  Fikset caching i STSTokenService
 0.6.4    | endret       |  Legg til støtte for å mocke bønner i sikkerhetskonfigurasjon
 0.6.3    | endret       |  Feilfiks sikkerhetskonfigurasjon for StsService bønne
