@@ -25,6 +25,10 @@ open class OidcTokenManager(private val tokenValidationContextHolder: TokenValid
         return hasIssuers() && tokenValidationContextHolder.tokenValidationContext.getJwtToken(STS_ISSUER) != null
     }
 
+    fun getIssuer(): String {
+        return fetchToken().issuer
+    }
+
     fun fetchToken(): JwtToken {
         return Optional.ofNullable<TokenValidationContextHolder>(tokenValidationContextHolder)
             .map { it.tokenValidationContext }

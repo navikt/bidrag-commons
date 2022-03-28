@@ -22,10 +22,10 @@ open class SecurityTokenService(
     open fun serviceUserAuthTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (azureTokenService.isEnabled() && clientRegistrationId != null){
-                LOGGER.debug("Adding Azure client credentials token to auth header")
+                LOGGER.debug("serviceUserAuthTokenInterceptor: Adding Azure client credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, null))
             } else {
-                LOGGER.debug("Adding STS token to auth header")
+                LOGGER.debug("serviceUserAuthTokenInterceptor: Adding STS token to auth header")
                 request.headers.setBearerAuth(stsTokenService.fetchToken())
             }
 
@@ -44,13 +44,13 @@ open class SecurityTokenService(
     open fun authTokenInterceptor(clientRegistrationId: String? = null, forwardIncomingSTSToken: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
-                LOGGER.debug("Adding Azure on-behalf-of/client_credentials token to auth header")
+                LOGGER.debug("authTokenInterceptor: Adding Azure on-behalf-of/client_credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
             } else if (oidcTokenManager.isValidTokenIssuedBySTS() && !forwardIncomingSTSToken) {
-                LOGGER.debug("Adding application STS token")
+                LOGGER.debug("authTokenInterceptor: Adding application STS token")
                 request.headers.setBearerAuth(stsTokenService.fetchToken())
             } else {
-                LOGGER.debug("Adding incoming token to auth header")
+                LOGGER.debug("authTokenInterceptor: Adding incoming token to auth header by issuer", oidcTokenManager.getIssuer())
                 request.headers.setBearerAuth(oidcTokenManager.fetchTokenAsString())
             }
 
