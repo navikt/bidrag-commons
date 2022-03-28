@@ -122,6 +122,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.6.7    | endret       | Legg til applikasjon STS token hvis inkommende token er STS                                                                                    |
 | 0.6.6    | endret       | Fjernet SpringSecurityConfig                                                                                                                   |
 | 0.6.5    | endret       | Fikset caching i STSTokenService                                                                                                               |
 | 0.6.4    | endret       | Legg til støtte for å mocke bønner i sikkerhetskonfigurasjon                                                                                   |
