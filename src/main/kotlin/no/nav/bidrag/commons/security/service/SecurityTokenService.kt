@@ -15,6 +15,10 @@ open class SecurityTokenService(
         const val HEADER_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
     }
 
+    open fun serviceUserAuthTokenInterceptor(): ClientHttpRequestInterceptor? {
+        return serviceUserAuthTokenInterceptor(null)
+    }
+
     open fun serviceUserAuthTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (azureTokenService.isEnabled() && clientRegistrationId != null){
@@ -29,11 +33,22 @@ open class SecurityTokenService(
         }
     }
 
+    open fun authTokenInterceptor(): ClientHttpRequestInterceptor? {
+        return authTokenInterceptor(null, false)
+    }
+
     open fun authTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
+        return authTokenInterceptor(clientRegistrationId, false)
+    }
+
+    open fun authTokenInterceptor(clientRegistrationId: String? = null, forwardIncomingSTSToken: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
-                LOGGER.debug("Adding Azure on-behalf-of token to auth header")
+                LOGGER.debug("Adding Azure on-behalf-of/client_credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
+            } else if (oidcTokenManager.isValidTokenIssuedBySTS() && !forwardIncomingSTSToken) {
+                LOGGER.debug("Adding application STS token")
+                request.headers.setBearerAuth(stsTokenService.fetchToken())
             } else {
                 LOGGER.debug("Adding incoming token to auth header")
                 request.headers.setBearerAuth(oidcTokenManager.fetchTokenAsString())
@@ -45,7 +60,7 @@ open class SecurityTokenService(
 
     open fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
-            if (!oidcTokenManager.isValidTokenIssuedByAzure()){
+            if (!oidcTokenManager.isValidTokenIssuedByAzure() && !oidcTokenManager.isValidTokenIssuedBySTS()){
                 LOGGER.debug("Adding STS token to Nav-Consumer-Token header")
                 request.headers.set(HEADER_NAV_CONSUMER_TOKEN, "Bearer ${stsTokenService.fetchToken()}")
             }
