@@ -109,6 +109,30 @@ Implementasjon av RestTemplate med noe ekstra funksjonalitet.
 `withDefaultHeaders` legger til `X-Enhet` og `X-Correlation-ID` headere til kallet. <br/>
 Dette hentes fra LocalThread som blir lagt til i `EnhetFilter` og `CorrelationIdFilter` og bør derfor brukes i kombinasjon av filterne
 
+### SensitiveLogMasker
+Vil maskere aktørid og fnr fra logg meldingene. Dette kan konfigureres ved å oppdatere logback filen:
+
+```xml
+  <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+      <providers>
+        <mdc/>
+        <timestamp/>
+        <message/>
+        <loggerName/>
+        <threadName/>
+        <logLevel/>
+        <callerData/>
+        <arguments/>
+        <stackTrace/>
+      </providers>
+      ----> Legg til følgende i logback filen
+      <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+        <valueMasker class="no.nav.bidrag.commons.logging.SensitiveLogMasker"/>
+      </jsonGeneratorDecorator>
+    </encoder>
+  </appender>
+```
 ### Web filter
 Dette biblioteket inneholder to filtere.
 
@@ -122,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                                  |
 | 0.6.7    | endret       | Legg til applikasjon STS token hvis inkommende token er STS                                                                                    |
 | 0.6.6    | endret       | Fjernet SpringSecurityConfig                                                                                                                   |
 | 0.6.5    | endret       | Fikset caching i STSTokenService                                                                                                               |
