@@ -13,21 +13,6 @@ gjenbruke komponenter til enhetstesting.
 Sikkerhetskonfigurasjon er et enkel wrapper av NAV sin sikkerhetsbibliotek [token-support](https://github.com/navikt/token-support). <br/>
 Det er lagt støtte for validering av `Authorization` token i kallet gjennom `token-validation-spring` og generering av token med caching gjennom `token-client-spring`.
 
-Sikkerhetskonfigurasjon kan "skrus" på ved å legge til annotering `@EnableSecurityConfiguration` i konfigurasjonen. <br/> 
-I tillegg må `SecurityAutoConfiguration` og `ManagementWebSecurityAutoConfiguration` "excludes" da de blir dratt automatisk inn gjennom Spring web konfigurasjon. Disse bibliotekene konfigurer basic Spring sikkerhetskonfigurasjon (basic auth med brukernavn/passord) som ikke er nødvendig da vi gjør vår egen validering av token.
-
-Eksempel på hvordan det kan konfigureres
-```kotlin
-
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class, ManagementWebSecurityAutoConfiguration::class])
-@EnableSecurityConfiguration 
-class BidragApplication
-
-fun main() {
-    SpringApplication.run(BidragApplication::class.java)
-}
-```
-
 I tillegg må det under legges til i `application.yaml`:
 ```yaml
 
@@ -146,6 +131,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.2    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                                 |
 | 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                                |
 | 0.7.1    | endret       | `SensitiveLogMasker` masker hele sensitiv data istedenfor å vise deler av den                                                                  |
 | 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                                  |
