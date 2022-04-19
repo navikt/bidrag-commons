@@ -23,29 +23,20 @@ class SensitiveLogMasker : ValueMasker {
 
     fun maskLogMessage(logMessage: CharSequence?): String {
         val sb = StringBuilder(logMessage)
-        maskFnr(sb)
-        maskAktorId(sb)
+        maskAll(sb, AKTOER_PATTERN)
+        maskAll(sb, FNR_PATTERN)
         return sb.toString()
     }
 
-    private fun maskAktorId(sb: StringBuilder) {
-        val matcher: Matcher = AKTOER_PATTERN.matcher(sb)
+    private fun maskAll(sb: StringBuilder, pattern: Pattern){
+        val matcher: Matcher = pattern.matcher(sb)
         while (matcher.find()) {
-            mask(sb, matcher.start(), 10)
+            mask(sb, matcher.start(), matcher.end())
             matcher.start()
         }
     }
 
-    private fun maskFnr(sb: StringBuilder) {
-        val matcher: Matcher = FNR_PATTERN.matcher(sb)
-        while (matcher.find()) {
-            mask(sb, matcher.start(), 8)
-            matcher.start()
-        }
-    }
-
-    private fun mask(sb: StringBuilder, start: Int, len: Int) {
-        val end = start + len - 1
+    private fun mask(sb: StringBuilder, start: Int, end: Int) {
         for (i in start until end) {
             sb.setCharAt(i, '*')
         }

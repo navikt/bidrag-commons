@@ -9,14 +9,17 @@ internal class SensitiveLogMaskerTest {
     fun shouldMaskAktoerId(){
         val masker = SensitiveLogMasker()
         val maskedMessage = masker.maskLogMessage("Some message 1234567891033 aktoerid")
-        assertThat(maskedMessage).isEqualTo("Some message *********1033 aktoerid")
+        assertThat(maskedMessage).isEqualTo("Some message ************* aktoerid")
     }
 
     @Test
     fun shouldMaskFNR(){
         val masker = SensitiveLogMasker()
         val maskedMessage = masker.maskLogMessage("Some message 12345678910 fnr")
-        assertThat(maskedMessage).isEqualTo("Some message *******8910 fnr")
+        assertThat(maskedMessage).isEqualTo("Some message *********** fnr")
+
+        val maskedMessage2 = masker.maskLogMessage("Some message 12345678910 fnr 12345678910")
+        assertThat(maskedMessage2).isEqualTo("Some message *********** fnr ***********")
     }
 
     @Test
