@@ -131,7 +131,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.7.2    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                                 |
+| 0.7.3    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                                 |
 | 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                                |
 | 0.7.1    | endret       | `SensitiveLogMasker` masker hele sensitiv data istedenfor å vise deler av den                                                                  |
 | 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                                  |
