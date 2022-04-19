@@ -146,6 +146,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                                |
+| 0.7.1    | endret       | `SensitiveLogMasker` masker hele sensitiv data istedenfor å vise deler av den                                                                  |
 | 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                                  |
 | 0.6.7    | endret       | Legg til applikasjon STS token hvis inkommende token er STS                                                                                    |
 | 0.6.6    | endret       | Fjernet SpringSecurityConfig                                                                                                                   |
