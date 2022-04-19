@@ -6,7 +6,7 @@ import java.lang.annotation.Inherited
 
 @MustBeDocumented
 @Inherited
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 @Import(SecurityConfig::class)
 annotation class EnableSecurityConfiguration(
