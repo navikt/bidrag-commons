@@ -58,15 +58,21 @@ open class SecurityTokenService(
         }
     }
 
-    open fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
+    open fun navConsumerTokenInterceptor(ignoreWhenIncomingSTS: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
-            if (!oidcTokenManager.isValidTokenIssuedByAzure() && !oidcTokenManager.isValidTokenIssuedBySTS()){
-                LOGGER.debug("Adding STS token to Nav-Consumer-Token header")
+            if (!oidcTokenManager.isValidTokenIssuedByAzure() && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
+                LOGGER.debug("navConsumerTokenInterceptor: Adding STS token to Nav-Consumer-Token header")
                 request.headers.set(HEADER_NAV_CONSUMER_TOKEN, "Bearer ${stsTokenService.fetchToken()}")
+            } else {
+                LOGGER.debug("navConsumerTokenInterceptor: Not adding STS token to Nav-Consumer-Token header. ignoreWhenIncomingSTS=$ignoreWhenIncomingSTS and isValidTokenIssuedBySTS=${oidcTokenManager.isValidTokenIssuedBySTS()}")
             }
 
             execution.execute(request, body!!)
         }
+    }
+
+    open fun navConsumerTokenInterceptor(): ClientHttpRequestInterceptor? {
+        return navConsumerTokenInterceptor(false)
     }
 
 }
