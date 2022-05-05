@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.5    | endret       | `SecurityConfig` Fiks feil i navConsumerTokenInterceptor                                                                                       |
 | 0.7.4    | endret       | `SecurityConfig` rull tilbake auto skru av default spring sikkerhetskonfigurasjon                                                              |
 | 0.7.3    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                                 |
 | 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                                |
