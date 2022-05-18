@@ -47,10 +47,15 @@ open class SecurityTokenService(
                 LOGGER.debug("authTokenInterceptor: Adding Azure on-behalf-of/client_credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
             } else if (oidcTokenManager.isValidTokenIssuedBySTS() && !forwardIncomingSTSToken) {
-                LOGGER.debug("authTokenInterceptor: Adding application STS token")
-                request.headers.setBearerAuth(stsTokenService.fetchToken())
+                if (clientRegistrationId != null){
+                    LOGGER.debug("authTokenInterceptor: Adding Azure client credentials token")
+                    request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, null))
+                } else {
+                    LOGGER.debug("authTokenInterceptor: Adding application STS token")
+                    request.headers.setBearerAuth(stsTokenService.fetchToken())
+                }
             } else {
-                LOGGER.debug("authTokenInterceptor: Adding incoming token to auth header by issuer", oidcTokenManager.getIssuer())
+                LOGGER.debug("authTokenInterceptor: Adding incoming token to auth header by issuer {}", oidcTokenManager.getIssuer())
                 request.headers.setBearerAuth(oidcTokenManager.fetchTokenAsString())
             }
 
