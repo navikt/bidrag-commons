@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.7    | opprettet    | `CorsFilter` for å kunne kalle bidrag-apper rett fra nettleser                                                                                 |
 | 0.7.6    | endret       | `SecurityConfig` authTokenInterceptor bruk Azure client-credentials ved service token                                                          |
 | 0.7.5    | endret       | `SecurityConfig` Fiks feil i navConsumerTokenInterceptor                                                                                       |
 | 0.7.4    | endret       | `SecurityConfig` rull tilbake auto skru av default spring sikkerhetskonfigurasjon                                                              |
