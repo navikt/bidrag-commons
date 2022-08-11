@@ -11,6 +11,7 @@ public class DefaultCorsFilter extends CorsFilter {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowedOrigins(List.of("*"));
     corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Content-Length", "X-Requested-With", "X-Correlation-ID", "X-Enhet", "Nav-Call-Id", "Nav-Consumer-Id"));
+    corsConfiguration.setExposedHeaders(List.of("Warning", "X-Enhet", "X-Correlation-Id"));
     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
     urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
