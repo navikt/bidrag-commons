@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.10   | opprettet    | `TokenUtils` for å kunne hente saksbehandlerident fra token                                                                                    |
 | 0.7.9    | endret       | Lagt til exposed headers på `DefaultCorsFilter`                                                                                                |
 | 0.7.8    | endret       | Endret `CorsFilter` til `DefaultCorsFilter` og oppdatert cors konfigurasjon                                                                    |
 | 0.7.7    | opprettet    | `CorsFilter` for å kunne kalle bidrag-apper rett fra nettleser                                                                                 |
