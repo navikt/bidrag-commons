@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class CorrelationIdFilter implements Filter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
-  private static final String CORRELATION_ID_MDC = "correlationId";
+  public static final String CORRELATION_ID_MDC = "correlationId";
 
   public static final String CORRELATION_ID_HEADER = CorrelationId.CORRELATION_ID_HEADER;
 
