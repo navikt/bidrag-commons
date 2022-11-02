@@ -16,8 +16,7 @@ import java.net.URI
 class BearerTokenClientInterceptor(
   private val oAuth2AccessTokenService: OAuth2AccessTokenService,
   private val clientConfigurationProperties: ClientConfigurationProperties
-) :
-  ClientHttpRequestInterceptor {
+) : ClientHttpRequestInterceptor {
 
   override fun intercept(
     request: HttpRequest,
@@ -56,13 +55,17 @@ class BearerTokenClientInterceptor(
     clientConfigurationProperties: ClientConfigurationProperties,
   ): ClientProperties {
     val clientProperties = filterClientProperties(clientConfigurationProperties, uri)
-    return if (clientProperties.size == 1) {
-      clientProperties.first()
-    } else {
-      clientPropertiesForGrantType(clientProperties, clientCredentialOrJwtBearer(), uri)
-    }
-  }
 
+    return ClientProperties(
+      clientProperties.tokenEndpointUrl,
+      clientProperties.wellKnownUrl,
+      clientCredentialOrJwtBearer(),
+      clientProperties.scope,
+      clientProperties.authentication,
+      clientProperties.resourceUrl,
+      clientProperties.tokenExchange
+    )
+  }
 
   private fun filterClientProperties(
     clientConfigurationProperties: ClientConfigurationProperties,
@@ -70,16 +73,8 @@ class BearerTokenClientInterceptor(
   ) = clientConfigurationProperties
     .registration
     .values
-    .filter { uri.toString().startsWith(it.resourceUrl.toString()) }
-
-  private fun clientPropertiesForGrantType(
-    values: List<ClientProperties>,
-    grantType: OAuth2GrantType,
-    uri: URI
-  ): ClientProperties {
-    return values.firstOrNull { grantType == it.grantType }
-      ?: error("could not find oauth2 client config for uri=$uri and grant type=$grantType")
-  }
+    .firstOrNull { uri.toString().startsWith(it.resourceUrl.toString()) }
+    ?: error("could not find oauth2 client config for uri=$uri")
 
   private fun clientCredentialOrJwtBearer() =
     if (erSystembruker()) OAuth2GrantType.CLIENT_CREDENTIALS else OAuth2GrantType.JWT_BEARER

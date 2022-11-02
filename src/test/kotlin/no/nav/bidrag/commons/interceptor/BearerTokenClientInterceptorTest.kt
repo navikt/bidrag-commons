@@ -4,6 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.bidrag.commons.web.interceptor.BearerTokenClientInterceptor
+import no.nav.security.token.support.client.core.ClientProperties
+import no.nav.security.token.support.client.core.OAuth2GrantType
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.core.context.TokenValidationContext
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
@@ -60,7 +62,17 @@ class BearerTokenClientInterceptorTest {
     bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
 
     verify {
-      oAuth2AccessTokenService.getAccessToken(clientConfigurationProperties.registration["2"])
+      oAuth2AccessTokenService.getAccessToken(
+        ClientProperties(
+          clientConfigurationProperties.registration["1"]?.tokenEndpointUrl,
+          clientConfigurationProperties.registration["1"]?.wellKnownUrl,
+          OAuth2GrantType.JWT_BEARER,
+          clientConfigurationProperties.registration["1"]?.scope,
+          clientConfigurationProperties.registration["1"]?.authentication,
+          clientConfigurationProperties.registration["1"]?.resourceUrl,
+          clientConfigurationProperties.registration["1"]?.tokenExchange
+        )
+      )
     }
   }
 

@@ -30,21 +30,12 @@ val clientConfigurationProperties =
                 URI(tokenEndpoint),
                 URI(tokenEndpoint),
                 OAuth2GrantType.JWT_BEARER,
-                listOf("c", "b", "a"),
-                authentication,
-                URI("http://firstResource.no"),
-                null
-            ),
-            "3" to ClientProperties(
-                URI(tokenEndpoint),
-                URI(tokenEndpoint),
-                OAuth2GrantType.JWT_BEARER,
                 listOf("z", "y", "x"),
                 authentication,
                 URI("http://jwtResource.no"),
                 null
             ),
-            "4" to ClientProperties(
+            "3" to ClientProperties(
                 URI(tokenEndpoint),
                 URI(tokenEndpoint),
                 OAuth2GrantType.CLIENT_CREDENTIALS,
