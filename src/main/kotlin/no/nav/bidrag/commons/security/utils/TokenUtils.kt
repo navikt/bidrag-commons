@@ -10,20 +10,24 @@ object TokenUtils {
     private const val ISSUER_AZURE_AD_IDENTIFIER = "login.microsoftonline.com"
 
     @JvmStatic
-    fun fetchSubject(token: String): String {
+    fun fetchSubject(token: String): String? {
         LOGGER.debug("Skal finne subject fra id-token")
         return try {
             fetchSubject(parseIdToken(token))
         } catch (var2: Exception) {
-            LOGGER.error("Klarte ikke parse ${token.substring(0, 20)}...", var2)
-            if (var2 is RuntimeException) {
-                throw var2
-            } else {
-                throw IllegalArgumentException("Klarte ikke å parse $${token.substring(0, 20)}...", var2)
-            }
+            LOGGER.error("Klarte ikke parse ${token.substring(0, 10)}...", var2)
+            return null
         }
     }
 
+    fun fetchAppName(token: String): String? {
+        return try {
+            fetchAppNameFromToken(parseIdToken(token))
+        } catch (var2: Exception) {
+            LOGGER.error("Klarte ikke parse ${token.substring(0, 10)}...", var2)
+            return null
+        }
+    }
     @JvmStatic
     fun isTokenIssuedByAzure(signedJWT: SignedJWT): Boolean {
         return try {
@@ -49,6 +53,20 @@ object TokenUtils {
             systemRessurs || azureApp
         } catch (var5: ParseException) {
             throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var5)
+        }
+    }
+
+    private fun fetchAppNameFromToken(signedJWT: SignedJWT): String {
+        return try {
+            val claims = signedJWT.jwtClaimsSet
+            if (isTokenIssuedByAzure(signedJWT)){
+                val application = claims.getStringClaim("azp_name")
+                return getApplicationNameFromAzp(application)!!
+            } else {
+                claims.audience[0]
+            }
+        } catch (var4: ParseException) {
+            throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var4)
         }
     }
 

@@ -30,10 +30,6 @@ open class OidcTokenManager(private val tokenValidationContextHolder: TokenValid
     }
 
     open fun fetchToken(): JwtToken {
-        return Optional.ofNullable<TokenValidationContextHolder>(tokenValidationContextHolder)
-            .map { it.tokenValidationContext }
-            .map { it.firstValidToken }
-            .map { it.orElse(null) }
-            .orElseThrow { IllegalStateException("Fant ingen gyldig token i kontekst") }
+        return tokenValidationContextHolder.tokenValidationContext?.firstValidToken?.orElse(null) ?: throw IllegalStateException("Fant ingen gyldig token i kontekst")
     }
 }
