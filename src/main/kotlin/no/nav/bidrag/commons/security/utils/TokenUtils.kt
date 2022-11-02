@@ -20,6 +20,7 @@ object TokenUtils {
         }
     }
 
+    @JvmStatic
     fun fetchAppName(token: String): String? {
         return try {
             fetchAppNameFromToken(parseIdToken(token))
