@@ -33,7 +33,7 @@ open class OidcTokenManager(private val tokenValidationContextHolder: TokenValid
         return Optional.ofNullable<TokenValidationContextHolder>(tokenValidationContextHolder)
             .map { it.tokenValidationContext }
             .map { it.firstValidToken }
-            .map { it.get() }
-            .orElseThrow { IllegalStateException("Kunne ikke videresende Bearer token") }
+            .map { it.orElse(null) }
+            .orElseThrow { IllegalStateException("Fant ingen gyldig token i kontekst") }
     }
 }

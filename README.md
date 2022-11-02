@@ -146,6 +146,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.11   | endret       | `TokenUtils` forbredet API                                                                                                                     |
+| 0.7.11   | opprettet    | `UserMdcFilter` som legger til brukerid i MDC                                                                                                  |
 | 0.7.10   | opprettet    | `TokenUtils` for å kunne hente saksbehandlerident fra token                                                                                    |
 | 0.7.9    | endret       | Lagt til exposed headers på `DefaultCorsFilter`                                                                                                |
 | 0.7.8    | endret       | Endret `CorsFilter` til `DefaultCorsFilter` og oppdatert cors konfigurasjon                                                                    |
