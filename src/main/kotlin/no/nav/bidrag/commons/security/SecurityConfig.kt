@@ -13,7 +13,6 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -34,10 +33,8 @@ class SecurityConfig {
 
     @Bean
     @ConditionalOnProperty("no.nav.security.jwt.sts.properties.url", havingValue = "")
-    fun stsTokenService(
-        restTemplateBuilder: RestTemplateBuilder,
-        stsConfigurationProperties: StsConfigurationProperties
-    ) = StsTokenService(restTemplateBuilder.rootUri(stsConfigurationProperties.properties?.url).basicAuthentication(stsConfigurationProperties.properties?.username, stsConfigurationProperties.properties?.password).build())
+    fun stsTokenService(stsConfigurationProperties: StsConfigurationProperties) =
+        StsTokenService(stsConfigurationProperties)
 
 
     @Bean("stsTokenService")
