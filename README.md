@@ -146,6 +146,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.12   | opprettet    | Hjelpeklasser og konfigurasjon for restklienter.
+   |
 | 0.7.11   | endret       | `TokenUtils` forbredet API                                                                                                                     |
 | 0.7.11   | opprettet    | `UserMdcFilter` som legger til brukerid i MDC                                                                                                  |
 | 0.7.10   | opprettet    | `TokenUtils` for å kunne hente saksbehandlerident fra token                                                                                    |
