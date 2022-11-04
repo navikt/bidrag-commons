@@ -57,12 +57,12 @@ object TokenUtils {
         }
     }
 
-    private fun fetchAppNameFromToken(signedJWT: SignedJWT): String {
+    private fun fetchAppNameFromToken(signedJWT: SignedJWT): String? {
         return try {
             val claims = signedJWT.jwtClaimsSet
             if (isTokenIssuedByAzure(signedJWT)){
-                val application = claims.getStringClaim("azp_name")
-                return getApplicationNameFromAzp(application)!!
+                val application = claims.getStringClaim("azp_name") ?: claims.getStringClaim("azp")
+                return getApplicationNameFromAzp(application)
             } else {
                 claims.audience[0]
             }
@@ -71,18 +71,18 @@ object TokenUtils {
         }
     }
 
-    private fun fetchSubjectIdFromAzureToken(signedJWT: SignedJWT): String {
+    private fun fetchSubjectIdFromAzureToken(signedJWT: SignedJWT): String? {
         return try {
             val claims = signedJWT.jwtClaimsSet
             val navIdent = claims.getStringClaim("NAVident")
             val application = claims.getStringClaim("azp_name")
-            navIdent ?: getApplicationNameFromAzp(application)!!
+            navIdent ?: getApplicationNameFromAzp(application)
         } catch (var4: ParseException) {
             throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var4)
         }
     }
 
-    private fun fetchSubject(signedJWT: SignedJWT): String {
+    private fun fetchSubject(signedJWT: SignedJWT): String? {
         return try {
             if (isTokenIssuedByAzure(signedJWT)) fetchSubjectIdFromAzureToken(signedJWT) else signedJWT.jwtClaimsSet.subject
         } catch (var2: ParseException) {
