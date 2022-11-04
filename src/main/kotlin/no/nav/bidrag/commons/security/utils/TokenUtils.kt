@@ -15,7 +15,7 @@ object TokenUtils {
         return try {
             fetchSubject(parseIdToken(token))
         } catch (var2: Exception) {
-            LOGGER.error("Klarte ikke parse ${token.substring(0, 10)}...", var2)
+            LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
             return null
         }
     }
@@ -25,7 +25,7 @@ object TokenUtils {
         return try {
             fetchAppNameFromToken(parseIdToken(token))
         } catch (var2: Exception) {
-            LOGGER.error("Klarte ikke parse ${token.substring(0, 10)}...", var2)
+            LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
             return null
         }
     }

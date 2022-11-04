@@ -21,8 +21,8 @@ class UserMdcFilter(var oidcTokenManager: OidcTokenManager) : Filter {
         val token = try {oidcTokenManager.fetchTokenAsString()} catch (_: Exception) { null }
         val user = token?.let { TokenUtils.fetchSubject(it) }
         val appName = token?.let { TokenUtils.fetchAppName(it) }
-        user.apply { MDC.put(USER_MDC, user) }
-        appName.apply { MDC.put(APP_NAME_MDC, appName) }
+        user?.apply { MDC.put(USER_MDC, user) }
+        appName?.apply { MDC.put(APP_NAME_MDC, appName) }
 
         filterChain.doFilter(servletRequest, servletResponse)
         MDC.clear()
