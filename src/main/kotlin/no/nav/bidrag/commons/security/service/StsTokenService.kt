@@ -6,14 +6,18 @@ import no.nav.bidrag.commons.security.model.TokenForBasicAuthentication
 import no.nav.security.token.support.client.core.OAuth2CacheFactory
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
 import org.slf4j.LoggerFactory
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 
 @EnableConfigurationProperties(StsConfigurationProperties::class)
-open class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) :
+@Service("stsTokenService")
+class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) :
   TokenService("STS") {
   private val stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(100, 300)
 

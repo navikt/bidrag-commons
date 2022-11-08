@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 
 @Configuration
 @EnableJwtTokenValidation
@@ -28,16 +29,6 @@ class SecurityConfig {
 
     @Bean
     fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager(tokenValidationContextHolder)
-
-    @Bean
-    @ConditionalOnProperty("no.nav.security.jwt.sts.properties.url", havingValue = "")
-    fun stsTokenService(stsConfigurationProperties: StsConfigurationProperties) =
-        StsTokenService(stsConfigurationProperties)
-
-
-    @Bean("stsTokenService")
-    @ConditionalOnMissingBean(StsTokenService::class)
-    fun dummyStsTokenService() = TokenService("STS")
 
     @Bean
     fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, oidcTokenManager: OidcTokenManager) =
