@@ -146,8 +146,9 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.15   | endret       | `MdcValuesPropagatingClientInterceptor` Satt riktig headernavn.                                                                                |
 | 0.7.15   | endret       | `SecurityConfig` fiks initialisering av StsTokenService bønne                                                                                  |
- | 0.7.14   | endret       | `TokenUtils` fiks fetchAppName som kunne gi nullpointerexception                                                                               |
+| 0.7.14   | endret       | `TokenUtils` fiks fetchAppName som kunne gi nullpointerexception                                                                               |
 | 0.7.13   | endret       | Fikset unødvendig lasting av StsConfigurationProperties.                                                                                       |
 | 0.7.12   | opprettet    | Hjelpeklasser og konfigurasjon for restklienter.                                                                                               |
 | 0.7.11   | endret       | `TokenUtils` forbredet API                                                                                                                     |
