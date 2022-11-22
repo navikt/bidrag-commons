@@ -15,7 +15,9 @@ import javax.servlet.ServletResponse
  * Adds user to MDC for logging
  */
 @Component
-class UserMdcFilter(var oidcTokenManager: OidcTokenManager) : Filter {
+class UserMdcFilter : Filter {
+
+    val oidcTokenManager: OidcTokenManager = OidcTokenManager()
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
         val token = try {oidcTokenManager.fetchTokenAsString()} catch (_: Exception) { null }
