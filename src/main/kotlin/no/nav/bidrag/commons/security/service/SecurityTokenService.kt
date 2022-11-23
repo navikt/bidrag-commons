@@ -7,9 +7,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 
 open class SecurityTokenService(
     private val azureTokenService: TokenService,
-    private val stsTokenService: TokenService,
-    private val oidcTokenManager: OidcTokenManager
+    private val tokenXTokenService: TokenService,
+    private val stsTokenService: TokenService
 ) {
+
+    private val oidcTokenManager = OidcTokenManager()
     companion object {
         private val LOGGER = LoggerFactory.getLogger(SecurityTokenService::class.java)
         const val HEADER_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
@@ -46,6 +48,9 @@ open class SecurityTokenService(
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
                 LOGGER.debug("authTokenInterceptor: Adding Azure on-behalf-of/client_credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
+            } else if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByIdporten()) {
+                LOGGER.debug("authTokenInterceptor: Adding TokenX token")
+                request.headers.setBearerAuth(tokenXTokenService.fetchToken(clientRegistrationId))
             } else if (oidcTokenManager.isValidTokenIssuedBySTS() && !forwardIncomingSTSToken) {
                 if (clientRegistrationId != null){
                     LOGGER.debug("authTokenInterceptor: Adding Azure client credentials token")
@@ -65,7 +70,12 @@ open class SecurityTokenService(
 
     open fun navConsumerTokenInterceptor(ignoreWhenIncomingSTS: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
-            if (!oidcTokenManager.isValidTokenIssuedByAzure() && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
+
+            LOGGER.debug("navConsumerTokenInterceptor:" +
+                    "isValidTokenIssuedByOpenAm: ${oidcTokenManager.isValidTokenIssuedByOpenAm()} " +
+                    "isValidTokenIssuedByIdporten: ${oidcTokenManager.isValidTokenIssuedByIdporten()} " +
+                    "isValidTokenIssuedByAzure: ${oidcTokenManager.isValidTokenIssuedByAzure()}")
+            if (oidcTokenManager.isValidTokenIssuedByOpenAm() && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
                 LOGGER.debug("navConsumerTokenInterceptor: Adding STS token to Nav-Consumer-Token header")
                 request.headers.set(HEADER_NAV_CONSUMER_TOKEN, "Bearer ${stsTokenService.fetchToken()}")
             } else {

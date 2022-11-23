@@ -12,4 +12,8 @@ open class TokenService(var name: String = "Unknown") {
     open fun fetchToken(clientRegistrationId: String, token: JwtToken?): String{
         throw TokenException("Tokenservice for provider $name not initialized")
     }
+
+    open fun fetchToken(clientRegistrationId: String): String{
+        throw TokenException("Tokenservice for provider $name not initialized")
+    }
 }

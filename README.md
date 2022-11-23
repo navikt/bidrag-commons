@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.19   | endret       | La til støtte for `TokenX` i securityTokenService                                                                                              |
 | 0.7.18   | endret       | Byttet `tokenValidationContextHodler` med `SpringTokenValidationContextHodler()`                                                               |
 | 0.7.17   | endret       | `MdcValuesPropagatingClientInterceptor` Fikset sjekk av riktig MDC-verdi                                                                       |
 | 0.7.16   | endret       | `MdcValuesPropagatingClientInterceptor` Satt riktig headernavn.                                                                                |
