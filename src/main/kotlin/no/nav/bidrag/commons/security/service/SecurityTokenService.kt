@@ -71,9 +71,11 @@ open class SecurityTokenService(
     open fun navConsumerTokenInterceptor(ignoreWhenIncomingSTS: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
 
-            LOGGER.debug("navConsumerTokenInterceptor: isValidTokenIssuedByIdporten: ${oidcTokenManager.isValidTokenIssuedByIdporten()} isValidTokenIssuedByAzure: ${oidcTokenManager.isValidTokenIssuedByAzure()}")
-            val isTokenIssuedByOpenAm = !oidcTokenManager.isValidTokenIssuedByIdporten() && !oidcTokenManager.isValidTokenIssuedByAzure()
-            if (isTokenIssuedByOpenAm && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
+            LOGGER.debug("navConsumerTokenInterceptor:" +
+                    "isValidTokenIssuedByOpenAm: ${oidcTokenManager.isValidTokenIssuedByOpenAm()} " +
+                    "isValidTokenIssuedByIdporten: ${oidcTokenManager.isValidTokenIssuedByIdporten()} " +
+                    "isValidTokenIssuedByAzure: ${oidcTokenManager.isValidTokenIssuedByAzure()}")
+            if (oidcTokenManager.isValidTokenIssuedByOpenAm() && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
                 LOGGER.debug("navConsumerTokenInterceptor: Adding STS token to Nav-Consumer-Token header")
                 request.headers.set(HEADER_NAV_CONSUMER_TOKEN, "Bearer ${stsTokenService.fetchToken()}")
             } else {

@@ -5,6 +5,7 @@ import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 
 class OidcTokenManager {
     companion object {
+        const val ISSO_ISSUER = "isso"
         const val AZURE_ISSUER = "aad"
         const val IDPORTEN_ISSUER = "idporten"
         const val STS_ISSUER = "sts"
@@ -23,6 +24,10 @@ class OidcTokenManager {
 
     fun isValidTokenIssuedByIdporten(): Boolean {
         return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(IDPORTEN_ISSUER) != null
+    }
+
+    fun isValidTokenIssuedByOpenAm(): Boolean {
+        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(ISSO_ISSUER) != null
     }
 
     fun isValidTokenIssuedBySTS(): Boolean {
