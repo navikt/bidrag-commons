@@ -34,9 +34,9 @@
     <!-- dependencies -->
     <logback-encoder.version>6.6</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
-    <spring-boot.version>2.6.6</spring-boot.version>
+    <spring-boot.version>2.7.5</spring-boot.version>
     <mockk.version>1.12.1</mockk.version>
-    <token-support.version>2.1.6</token-support.version>
+    <token-support.version>2.1.8</token-support.version>
     <httpclient.version>4.5.13</httpclient.version>
 
     <!-- language -->
