@@ -6,6 +6,7 @@ import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 class OidcTokenManager {
     companion object {
         const val AZURE_ISSUER = "aad"
+        const val IDPORTEN_ISSUER = "idporten"
         const val STS_ISSUER = "sts"
     }
     fun fetchTokenAsString(): String {
@@ -18,6 +19,10 @@ class OidcTokenManager {
 
     fun isValidTokenIssuedByAzure(): Boolean {
         return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
+    }
+
+    fun isValidTokenIssuedByIdporten(): Boolean {
+        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(IDPORTEN_ISSUER) != null
     }
 
     fun isValidTokenIssuedBySTS(): Boolean {
