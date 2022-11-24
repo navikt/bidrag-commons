@@ -7,7 +7,7 @@ class OidcTokenManager {
     companion object {
         const val ISSO_ISSUER = "isso"
         const val AZURE_ISSUER = "aad"
-        const val IDPORTEN_ISSUER = "idporten"
+        const val TOKENX_ISSUER = "tokenx"
         const val STS_ISSUER = "sts"
     }
     fun fetchTokenAsString(): String {
@@ -22,8 +22,8 @@ class OidcTokenManager {
         return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
     }
 
-    fun isValidTokenIssuedByIdporten(): Boolean {
-        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(IDPORTEN_ISSUER) != null
+    fun isValidTokenIssuedByTokenX(): Boolean {
+        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(TOKENX_ISSUER) != null
     }
 
     fun isValidTokenIssuedByOpenAm(): Boolean {

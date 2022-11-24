@@ -48,7 +48,7 @@ open class SecurityTokenService(
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
                 LOGGER.debug("authTokenInterceptor: Adding Azure on-behalf-of/client_credentials token to auth header")
                 request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
-            } else if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByIdporten()) {
+            } else if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByTokenX()) {
                 LOGGER.debug("authTokenInterceptor: Adding TokenX token")
                 request.headers.setBearerAuth(tokenXTokenService.fetchToken(clientRegistrationId))
             } else if (oidcTokenManager.isValidTokenIssuedBySTS() && !forwardIncomingSTSToken) {
@@ -73,7 +73,7 @@ open class SecurityTokenService(
 
             LOGGER.debug("navConsumerTokenInterceptor:" +
                     "isValidTokenIssuedByOpenAm: ${oidcTokenManager.isValidTokenIssuedByOpenAm()} " +
-                    "isValidTokenIssuedByIdporten: ${oidcTokenManager.isValidTokenIssuedByIdporten()} " +
+                    "isValidTokenIssuedByTokenX: ${oidcTokenManager.isValidTokenIssuedByTokenX()} " +
                     "isValidTokenIssuedByAzure: ${oidcTokenManager.isValidTokenIssuedByAzure()}")
             if (oidcTokenManager.isValidTokenIssuedByOpenAm() && !(ignoreWhenIncomingSTS && oidcTokenManager.isValidTokenIssuedBySTS())){
                 LOGGER.debug("navConsumerTokenInterceptor: Adding STS token to Nav-Consumer-Token header")
