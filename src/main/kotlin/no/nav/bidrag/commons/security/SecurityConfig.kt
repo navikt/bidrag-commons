@@ -37,6 +37,6 @@ class SecurityConfig {
     fun stsTokenService() = TokenService("STS")
 
     @Bean
-    fun securityTokenService(azureTokenService: TokenService, tokenxTokenService: TokenService, stsTokenService: TokenService) =
+    fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, tokenxTokenService: TokenService) =
         SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
 }
