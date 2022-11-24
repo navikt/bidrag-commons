@@ -12,10 +12,12 @@ import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.core.context.TokenValidationContextHolder
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 
 @Configuration
 @EnableJwtTokenValidation
@@ -38,10 +40,9 @@ class SecurityConfig {
     fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager()
 
     @Bean
-    fun securityTokenServiceSTS(azureTokenService: AzureTokenService, tokenxTokenService: TokenXTokenService, stsTokenService: TokenService) =
-        SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
+    fun stsTokenService() = TokenService("STS")
 
     @Bean
-    fun securityTokenService(azureTokenService: AzureTokenService, tokenxTokenService: TokenXTokenService) =
-        SecurityTokenService(azureTokenService, tokenxTokenService, TokenService("STS"))
+    fun securityTokenService(azureTokenService: TokenService, tokenxTokenService: TokenService, stsTokenService: TokenService) =
+        SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
 }
