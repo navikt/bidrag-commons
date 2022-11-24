@@ -34,6 +34,9 @@ class SecurityConfig {
     fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager()
 
     @Bean
+    fun stsTokenService() = TokenService("STS")
+
+    @Bean
     fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, tokenxTokenService: TokenService) =
         SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
 }
