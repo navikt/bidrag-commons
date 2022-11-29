@@ -20,8 +20,12 @@ class RestTemplateBuilderBean {
   fun restTemplateBuilder(
     iNaisProxyCustomizer: INaisProxyCustomizer,
     consumerIdClientInterceptor: ConsumerIdClientInterceptor
-  ) = restTemplateBuilderNoProxy(consumerIdClientInterceptor)
+  ) = RestTemplateBuilder()
+    .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
     .additionalCustomizers(iNaisProxyCustomizer)
+    .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
+    .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
+
 
   /**
    * Denne bønnnen initialiseres hvis proxy-url ikke finnes. Hvis proxy-url finnnes vil bønnen over
@@ -35,10 +39,9 @@ class RestTemplateBuilderBean {
     havingValue = "Umulig verdi"
   )
   fun restTemplateBuilderNoProxy(consumerIdClientInterceptor: ConsumerIdClientInterceptor)
-      : RestTemplateBuilder = RestTemplateBuilder().additionalInterceptors(
-    consumerIdClientInterceptor,
-    MdcValuesPropagatingClientInterceptor()
-  ).setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
+      : RestTemplateBuilder = RestTemplateBuilder()
+    .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
+    .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
     .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
 
 }

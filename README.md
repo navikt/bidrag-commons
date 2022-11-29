@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.24   | endret       | Endret instantiering av restTemplateBuilder                                                                                                    |
 | 0.7.23   | endret       | Fikset manglende import av proxy                                                                                                               |
 | 0.7.22   | endret       | Endret konfigurasjon for proxy cumstomizer i RestTemlateBuilderBean                                                                            |
 | 0.7.21   | endret       | Endre issuer idporten til tokenx og oppdater TokenUtils                                                                                        |
