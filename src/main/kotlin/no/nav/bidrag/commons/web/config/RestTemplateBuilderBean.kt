@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 class RestTemplateBuilderBean {
 
   @Bean
-  @ConditionalOnProperty("no.nav.security.jwt.issuer.azuread.proxyurl")
+  @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.proxy_url")
   fun restTemplateBuilder(
     iNaisProxyCustomizer: INaisProxyCustomizer,
     consumerIdClientInterceptor: ConsumerIdClientInterceptor
@@ -30,7 +30,7 @@ class RestTemplateBuilderBean {
    */
   @Bean
   @ConditionalOnProperty(
-    "no.nav.security.jwt.issuer.azuread.proxyurl",
+    "no.nav.security.jwt.issuer.aad.proxy_url",
     matchIfMissing = true,
     havingValue = "Umulig verdi"
   )

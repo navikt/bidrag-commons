@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.22   | endret       | Endret konfigurasjon for proxy cumstomizer i RestTemlateBuilderBean                                                                            |
 | 0.7.21   | endret       | Endre issuer idporten til tokenx og oppdater TokenUtils                                                                                        |
 | 0.7.20   | endret       | Lagt til stsTokenService dummy bean som brukes hvis stsTokenService bønnen ikke er initialisert                                                |
 | 0.7.19   | endret       | La til støtte for `TokenX` i securityTokenService                                                                                              |
