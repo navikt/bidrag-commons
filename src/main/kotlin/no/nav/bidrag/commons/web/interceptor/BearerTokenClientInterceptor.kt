@@ -12,35 +12,20 @@ import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Component
 import java.net.URI
 
-@Component
-class BearerTokenClientInterceptor(
+abstract class AzureTokenClientInterceptor(
   private val oAuth2AccessTokenService: OAuth2AccessTokenService,
   private val clientConfigurationProperties: ClientConfigurationProperties
-) : ClientHttpRequestInterceptor {
+) :
+  ClientHttpRequestInterceptor {
 
-  override fun intercept(
+  protected fun genererAccessToken(
     request: HttpRequest,
-    body: ByteArray,
-    execution: ClientHttpRequestExecution
-  ): ClientHttpResponse {
-    request.headers.setBearerAuth(
-      genererAccessToken(
-        request,
-        clientConfigurationProperties,
-        oAuth2AccessTokenService
-      )
-    )
-    return execution.execute(request, body)
-  }
-
-  private fun genererAccessToken(
-    request: HttpRequest,
-    clientConfigurationProperties: ClientConfigurationProperties,
-    oAuth2AccessTokenService: OAuth2AccessTokenService,
+    oAuth2GrantType: OAuth2GrantType? = null
   ): String {
     val clientProperties = clientPropertiesFor(
       request.uri,
       clientConfigurationProperties,
+      oAuth2GrantType
     )
     return oAuth2AccessTokenService.getAccessToken(clientProperties).accessToken
   }
@@ -53,13 +38,14 @@ class BearerTokenClientInterceptor(
   private fun clientPropertiesFor(
     uri: URI,
     clientConfigurationProperties: ClientConfigurationProperties,
+    oAuth2GrantType: OAuth2GrantType? = null
   ): ClientProperties {
     val clientProperties = filterClientProperties(clientConfigurationProperties, uri)
 
     return ClientProperties(
       clientProperties.tokenEndpointUrl,
       clientProperties.wellKnownUrl,
-      clientCredentialOrJwtBearer(),
+      oAuth2GrantType ?: clientCredentialOrJwtBearer(),
       clientProperties.scope,
       clientProperties.authentication,
       clientProperties.resourceUrl,
@@ -91,5 +77,32 @@ class BearerTokenClientInterceptor(
       true
     }
   }
+}
 
+@Component
+class BearerTokenClientInterceptor(
+  oAuth2AccessTokenService: OAuth2AccessTokenService,
+  clientConfigurationProperties: ClientConfigurationProperties
+) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
+
+  override fun intercept(
+    request: HttpRequest,
+    body: ByteArray,
+    execution: ClientHttpRequestExecution
+  ): ClientHttpResponse {
+    request.headers.setBearerAuth(genererAccessToken(request))
+    return execution.execute(request, body)
+  }
+}
+
+@Component
+class ServiceUserAuthTokenInterceptor(
+  oAuth2AccessTokenService: OAuth2AccessTokenService,
+  clientConfigurationProperties: ClientConfigurationProperties
+) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
+
+  override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
+    request.headers.setBearerAuth(genererAccessToken(request, OAuth2GrantType.CLIENT_CREDENTIALS))
+    return execution.execute(request, body)
+  }
 }
