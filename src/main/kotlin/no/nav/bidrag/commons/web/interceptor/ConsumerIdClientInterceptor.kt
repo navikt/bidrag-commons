@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ConsumerIdClientInterceptor(
-  @Value("\${application.name}") private val appName: String,
+  @Value("\${spring.application.name}") private val appName: String,
   @Value("\${credential.username:}") private val serviceUser: String
 ) : ClientHttpRequestInterceptor {
 

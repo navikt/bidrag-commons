@@ -146,6 +146,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.26   | endret       | Lagt til flere headere i `MdcValuesPropagatingInterceptor`                                                                                     |
 | 0.7.25   | opprettet    | Lagt til restTemplate som kun bruker service user til autentisering                                                                            |
 | 0.7.24   | endret       | Endret instantiering av restTemplateBuilder                                                                                                    |
 | 0.7.23   | endret       | Fikset manglende import av proxy                                                                                                               |
