@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.security.service
 
+import no.nav.bidrag.commons.security.utils.TokenUtils
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 
@@ -32,6 +33,21 @@ class OidcTokenManager {
 
     fun isValidTokenIssuedBySTS(): Boolean {
         return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(STS_ISSUER) != null
+    }
+    
+    private fun hentToken(): String? {
+        if (SpringTokenValidationContextHolder().tokenValidationContext.hasValidToken()){
+            return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken.get().tokenAsString
+        }
+        return null
+    }
+
+    fun hentSaksbehandlerIdentFraToken(): String? {
+        return hentToken()?.let { TokenUtils.fetchSubject(it) }
+    }
+    
+    fun erApplikasjonBruker(): Boolean {
+        return TokenUtils.isSystemUser(hentToken())
     }
 
     fun getIssuer(): String {
