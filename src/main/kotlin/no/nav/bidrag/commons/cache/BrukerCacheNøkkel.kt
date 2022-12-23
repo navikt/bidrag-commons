@@ -26,6 +26,6 @@ class BrukerCacheNøkkel(private val userId: String, private val key: Any) {
     }
 
     companion object {
-        const val GENERATOR_BØNNE = "UserCacheKeyGenerator"
+        const val GENERATOR_BØNNE = "BrukerCacheNøkkelGenerator"
     }
 }
