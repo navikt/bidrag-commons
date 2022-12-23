@@ -35,7 +35,7 @@ class OidcTokenManager {
         return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(STS_ISSUER) != null
     }
     
-    private fun getToken(): String? {
+    private fun hentToken(): String? {
         if (SpringTokenValidationContextHolder().tokenValidationContext.hasValidToken()){
             return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken.get().tokenAsString
         }
@@ -43,11 +43,11 @@ class OidcTokenManager {
     }
 
     fun hentSaksbehandlerIdentFraToken(): String? {
-        return getToken()?.let { TokenUtils.fetchSubject(it) }
+        return hentToken()?.let { TokenUtils.fetchSubject(it) }
     }
     
     fun erApplikasjonBruker(): Boolean {
-        return TokenUtils.isSystemUser(getToken())
+        return TokenUtils.isSystemUser(hentToken())
     }
 
     fun getIssuer(): String {
