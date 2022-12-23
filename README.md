@@ -163,6 +163,17 @@ Deretter kan bruker cache brukes på følgende måte
   }
 ```
 
+### Invalider cache før starten av arbeidsdag
+Hvis du bruker CaffeineCacheManager kan følgende brukes for å konfigurere cache slik at den invalideres/slettes før starten av arbeisdagen (Kl 06.00 hver dag)
+```kotlin
+  @Bean
+    fun cacheManager(): CacheManager {
+        val caffeineCacheManager = CaffeineCacheManager()
+        caffeineCacheManager.registerCustomCache(PERSON_CACHE, Caffeine.newBuilder().expireAfter(InvaliderCacheFørStartenAvArbeidsdag()).build())
+        return caffeineCacheManager
+    }
+```
+
 
 ## continuous integration and deployment
 
