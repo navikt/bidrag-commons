@@ -138,6 +138,32 @@ Dette biblioteket inneholder to filtere.
 
 Det ene er `EnhetFilter` som leser `X-Enhet` header fra kallet og lagrer det i MDC
 
+
+### Bruker cache
+Hvis en tjeneste tilbyr tilgangstyrt data som krever spesiell tilgang for å aksessere kan det være dumt å bruke generell cache. Da kan en person uten tilgang kunne aksessere data fordi cachen ikke gjør noe tilgangskontroll på bruker som kaller tjenesten.
+Eksempel på dette er caching av respons fra bidrag-person. Hvis en bruker/applikasjon henter data om en kode 6/7 bruker som caches vil neste person uten tilgang kunne aksessere samme data fordi den hentes fra cachen istedenfor PDL.
+For å unngå dette problemet bør `@BrukerCacheable` brukes. Denne annoteringen henter saksbehandlerident fra token i kontekst og bruker den når nøkkel for cachen opprettes. Cachen blir da begrenset til bruker istedenfor å være generell.
+Hvis det er en applikasjon som kaller tjenesten så vil en felles nøkkel brukes.
+For at `@BrukerCacheable` annotering skal fungere må `@Import(BrukerCacheKonfig::class)` annotering legges til på Cache konfigurasjonen
+
+```kotlin
+@Configuration
+@EnableCaching
+@Import(BrukerCacheKonfig::class) <----
+class CacheConfig {
+....
+```
+
+Deretter kan bruker cache brukes på følgende måte
+
+```kotlin
+  @BrukerCacheable("personinfo")
+  fun hentPersonInfo(ident: String): PersonDto {
+    return PersonDto()
+  }
+```
+
+
 ## continuous integration and deployment
 
 Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for detaljer.
