@@ -1,159 +1,125 @@
-package no.nav.bidrag.commons;
+package no.nav.bidrag.commons.util
 
-import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringBuilder;
-import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringBuilder
+import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringStyle
+import org.slf4j.LoggerFactory
+import java.util.Locale
 
-public class KildesystemIdenfikator {
+class KildesystemIdenfikator(prefiksetJournalpostId: String) {
+    @JvmField
+    val kildesystem: Kildesystem
+    @JvmField
+    val prefiksetJournalpostId: String
+    private var journalpostId: Int? = null
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KildesystemIdenfikator.class);
-
-  public static final String DELIMTER = "-";
-  public static final String PREFIX_BIDRAG = "BID";
-  public static final String PREFIX_BIDRAG_COMPLETE = PREFIX_BIDRAG + DELIMTER;
-  public static final String PREFIX_JOARK = "JOARK";
-  public static final String PREFIX_JOARK_COMPLETE = PREFIX_JOARK + DELIMTER;
-
-  private final Kildesystem kildesystem;
-  private final String prefiksetJournalpostId;
-
-  private Integer journalpostId;
-
-  public KildesystemIdenfikator(String prefiksetJournalpostId) {
-    if (prefiksetJournalpostId == null) {
-      throw new IllegalArgumentException("En prefikset journalpost Id kan ikke være null!");
+    init {
+        this.prefiksetJournalpostId = trimAndUpperCase(prefiksetJournalpostId)
+        kildesystem = Kildesystem.hentKildesystem(this.prefiksetJournalpostId)
     }
 
-    this.prefiksetJournalpostId = trimAndUpperCase(prefiksetJournalpostId);
-    kildesystem = Kildesystem.hentKildesystem(this.prefiksetJournalpostId);
-  }
-
-  private String trimAndUpperCase(String string) {
-    return string.trim().toUpperCase();
-  }
-
-  public boolean erUkjentPrefixEllerHarIkkeTallEtterPrefix() {
-    boolean ugyldigPefix = kildesystem.erUkjent() || kildesystem.harIkkeJournalpostIdSomTall(prefiksetJournalpostId);
-
-    if (ugyldigPefix) {
-      LOGGER.warn("Id har ikke riktig prefix: " + prefiksetJournalpostId);
+    private fun trimAndUpperCase(string: String): String {
+        return string.trim { it <= ' ' }.uppercase(Locale.getDefault())
     }
 
-    return ugyldigPefix;
-  }
-
-  public Integer hentJournalpostId() {
-    if (journalpostId == null) {
-      journalpostId = kildesystem.hentJournalpostId(prefiksetJournalpostId);
-    }
-
-    return journalpostId;
-  }
-
-  public Long hentJournalpostIdLong() {
-    return Long.valueOf(this.hentJournalpostId());
-  }
-
-  public boolean erFor(Kildesystem kildesystem) {
-    return this.kildesystem.er(kildesystem);
-  }
-
-  public boolean erKjentKildesystemMedIdMedIdSomOverstigerInteger() {
-    if (kildesystem.erUkjent()) {
-      LOGGER.warn("Ukjent kildesystem i '%s'".formatted(prefiksetJournalpostId));
-
-      return false;
-    }
-
-    return kildesystem.idErStorreEnnIntegerMax(prefiksetJournalpostId);
-  }
-
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-        .append("prefiksetJournalpostId", prefiksetJournalpostId)
-        .append("kildesystem", kildesystem)
-        .toString();
-  }
-
-  public String getPrefiksetJournalpostId() {
-    return prefiksetJournalpostId;
-  }
-
-  public Kildesystem getKildesystem() {
-    return kildesystem;
-  }
-
-  public enum Kildesystem {
-    BIDRAG(PREFIX_BIDRAG_COMPLETE),
-    JOARK(PREFIX_JOARK_COMPLETE),
-    UKJENT(null);
-
-    private static final String NON_DIGITS = "\\D+";
-    private final String prefixMedDelimiter;
-
-    Kildesystem(String prefixMedDelimiter) {
-      this.prefixMedDelimiter = prefixMedDelimiter;
-    }
-
-    public boolean er(Kildesystem kildesystem) {
-      return kildesystem == this;
-    }
-
-    boolean harIkkeJournalpostIdSomTall(String prefiksetJournalpostId) {
-      String utenPrefix = prefiksetJournalpostId.replaceAll(prefixMedDelimiter, "");
-      String bareTall = utenPrefix.replaceAll(NON_DIGITS, "");
-
-      return utenPrefix.length() != bareTall.length();
-    }
-
-    boolean erUkjent() {
-      return er(UKJENT);
-    }
-
-    public Integer hentJournalpostId(String prefiksetJournalpostId) {
-      String ident = prefiksetJournalpostId.replaceAll(prefixMedDelimiter, "");
-
-      try {
-        return Integer.valueOf(ident);
-      } catch (NumberFormatException nfe) {
-        LOGGER.warn("'{}' formatert til '{}' skaper NumberFormatException: {}", prefiksetJournalpostId, ident, nfe);
-
-        return null;
-      }
-    }
-
-    boolean idErStorreEnnIntegerMax(String prefksetJournalpostId) {
-      var bareTall = prefksetJournalpostId.replaceAll(NON_DIGITS, "");
-
-      try {
-        long longSomTall = Long.parseLong(bareTall);
-
-        if (longSomTall > Integer.MAX_VALUE) {
-          LOGGER.warn("kan ikke parses til int: '{}'", longSomTall);
-
-          return true;
+    fun erUkjentPrefixEllerHarIkkeTallEtterPrefix(): Boolean {
+        val ugyldigPefix = kildesystem.erUkjent() || kildesystem.harIkkeJournalpostIdSomTall(prefiksetJournalpostId)
+        if (ugyldigPefix) {
+            LOGGER.warn("Id har ikke riktig prefix: $prefiksetJournalpostId")
         }
-      } catch (NumberFormatException nfe) {
-        LOGGER.warn("kan ikke parses til int: '{}'", bareTall);
-
-        return true;
-      }
-
-      return false;
+        return ugyldigPefix
     }
 
-    static Kildesystem hentKildesystem(String prefiksetJournalpostId) {
-      if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) {
-        return BIDRAG;
-      }
-
-      if (prefiksetJournalpostId.startsWith(JOARK.prefixMedDelimiter)) {
-        return JOARK;
-      }
-
-      return UKJENT;
+    fun hentJournalpostId(): Int? {
+        if (journalpostId == null) {
+            journalpostId = kildesystem.hentJournalpostId(prefiksetJournalpostId)
+        }
+        return journalpostId
     }
-  }
+
+    fun hentJournalpostIdLong(): Long? {
+        return hentJournalpostId()?.toLong()
+    }
+
+    fun erFor(kildesystem: Kildesystem): Boolean {
+        return this.kildesystem.er(kildesystem)
+    }
+
+    fun erKjentKildesystemMedIdMedIdSomOverstigerInteger(): Boolean {
+        if (kildesystem.erUkjent()) {
+            LOGGER.warn("Ukjent kildesystem i '$prefiksetJournalpostId'")
+            return false
+        }
+        return kildesystem.idErStorreEnnIntegerMax(prefiksetJournalpostId)
+    }
+
+    override fun toString(): String {
+        return ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            .append("prefiksetJournalpostId", prefiksetJournalpostId)
+            .append("kildesystem", kildesystem)
+            .toString()
+    }
+
+    enum class Kildesystem(private val prefixMedDelimiter: String) {
+        BIDRAG(PREFIX_BIDRAG_COMPLETE), JOARK(PREFIX_JOARK_COMPLETE), FORSENDELSE(PREFIX_FORSENDELSE_COMPLETE), UKJENT("");
+
+        fun er(kildesystem: Kildesystem): Boolean {
+            return kildesystem == this
+        }
+
+        fun harIkkeJournalpostIdSomTall(prefiksetJournalpostId: String): Boolean {
+            val utenPrefix = prefiksetJournalpostId.replace(prefixMedDelimiter.toRegex(), "")
+            val bareTall = utenPrefix.replace(NON_DIGITS.toRegex(), "")
+            return utenPrefix.length != bareTall.length
+        }
+
+        fun erUkjent(): Boolean {
+            return er(UKJENT)
+        }
+
+        fun hentJournalpostId(prefiksetJournalpostId: String): Int? {
+            val ident = prefiksetJournalpostId.replace(prefixMedDelimiter.toRegex(), "")
+            return try {
+                Integer.valueOf(ident)
+            } catch (nfe: NumberFormatException) {
+                LOGGER.warn("'$prefiksetJournalpostId' formatert til '$ident' skaper NumberFormatException: $nfe")
+                null
+            }
+        }
+
+        fun idErStorreEnnIntegerMax(prefksetJournalpostId: String): Boolean {
+            val bareTall = prefksetJournalpostId.replace(NON_DIGITS.toRegex(), "")
+            try {
+                val longSomTall = bareTall.toLong()
+                if (longSomTall > Int.MAX_VALUE) {
+                    LOGGER.warn("kan ikke parses til int: '{}'", longSomTall)
+                    return true
+                }
+            } catch (nfe: NumberFormatException) {
+                LOGGER.warn("kan ikke parses til int: '{}'", bareTall)
+                return true
+            }
+            return false
+        }
+
+        companion object {
+            private const val NON_DIGITS = "\\D+"
+            fun hentKildesystem(prefiksetJournalpostId: String): Kildesystem {
+                return if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) BIDRAG
+                else if (prefiksetJournalpostId.startsWith(JOARK.prefixMedDelimiter)) JOARK
+                else if (prefiksetJournalpostId.startsWith(FORSENDELSE.prefixMedDelimiter)) FORSENDELSE
+                else UKJENT
+            }
+        }
+    }
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(KildesystemIdenfikator::class.java)
+        const val DELIMTER = "-"
+        const val PREFIX_BIDRAG = "BID"
+        const val PREFIX_BIDRAG_COMPLETE = PREFIX_BIDRAG + DELIMTER
+        const val PREFIX_JOARK = "JOARK"
+        const val PREFIX_FORSENDELSE = "BIF"
+        const val PREFIX_JOARK_COMPLETE = PREFIX_JOARK + DELIMTER
+        const val PREFIX_FORSENDELSE_COMPLETE = PREFIX_FORSENDELSE + DELIMTER
+    }
 }

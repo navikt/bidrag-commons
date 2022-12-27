@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.29   | endret       | Oppdater `KildesystemIdenfikator` legg til støtte for forsendelse og refaktorer til Kotlin                                                     |
 | 0.7.28   | endret       | Fiks `BrukerCacheable` til å ta inn cache navn uten å nevne `value`                                                                            |
 | 0.7.27   | endret       | Lagt til `BrukerCacheable` og `InvaliderCacheFørStartenAvArbeidsdag`                                                                           |
 | 0.7.26   | endret       | Lagt til flere headere i `MdcValuesPropagatingInterceptor`                                                                                     |

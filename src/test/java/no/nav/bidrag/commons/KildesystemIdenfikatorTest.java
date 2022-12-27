@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.stream.Stream;
-import no.nav.bidrag.commons.KildesystemIdenfikator.Kildesystem;
+import no.nav.bidrag.commons.util.KildesystemIdenfikator;
+import no.nav.bidrag.commons.util.KildesystemIdenfikator.Kildesystem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,8 +77,8 @@ class KildesystemIdenfikatorTest {
 
   private void assertKildesystem(KildesystemIdenfikator kildesystemIdenfikator, Kildesystem kildesystem) {
     assertAll(
-        () -> assertThat(kildesystemIdenfikator.getKildesystem()).as(kildesystemIdenfikator.getPrefiksetJournalpostId()).isEqualTo(kildesystem),
-        () -> assertThat(kildesystemIdenfikator.erFor(kildesystem)).as(kildesystemIdenfikator.getPrefiksetJournalpostId()).isTrue()
+        () -> assertThat(kildesystemIdenfikator.kildesystem).as(kildesystemIdenfikator.prefiksetJournalpostId).isEqualTo(kildesystem),
+        () -> assertThat(kildesystemIdenfikator.erFor(kildesystem)).as(kildesystemIdenfikator.prefiksetJournalpostId).isTrue()
     );
   }
 
