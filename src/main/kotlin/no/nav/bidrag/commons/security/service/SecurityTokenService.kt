@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.security.service
 
+import no.nav.bidrag.commons.security.SikkerhetsKontekst.Companion.erIApplikasjonKontekst
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
@@ -17,11 +18,22 @@ open class SecurityTokenService(
         const val HEADER_NAV_CONSUMER_TOKEN = "Nav-Consumer-Token"
     }
 
-    open fun serviceUserAuthTokenInterceptor(): ClientHttpRequestInterceptor? {
-        return serviceUserAuthTokenInterceptor(null)
+    open fun stsAuthTokenInterceptor(): ClientHttpRequestInterceptor? {
+        return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
+            LOGGER.debug("serviceUserAuthTokenInterceptor: Adding STS token to auth header")
+            request.headers.setBearerAuth(stsTokenService.fetchToken())
+            execution.execute(request, body!!)
+        }
     }
 
+
+    @Deprecated("Bruk clientCredentialsTokenInterceptor")
     open fun serviceUserAuthTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
+        return clientCredentialsTokenInterceptor(clientRegistrationId)
+    }
+
+
+    open fun clientCredentialsTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (azureTokenService.isEnabled() && clientRegistrationId != null){
                 LOGGER.debug("serviceUserAuthTokenInterceptor: Adding Azure client credentials token to auth header")
@@ -34,15 +46,32 @@ open class SecurityTokenService(
             execution.execute(request, body!!)
         }
     }
+    open fun authTokenInterceptor(clientRegistrationId: String): ClientHttpRequestInterceptor {
+        return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
+            if (erIApplikasjonKontekst()){
+                LOGGER.debug("authTokenInterceptor: Er i applikasjonkontekst, legger til client credentials token til auth header")
+                request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, null))
+            } else if (oidcTokenManager.isValidTokenIssuedByAzure()) {
+                LOGGER.debug("authTokenInterceptor: Legger til Azure on-behalf-of token til auth header")
+                request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, oidcTokenManager.fetchToken()))
+            } else if (oidcTokenManager.isValidTokenIssuedByTokenX()) {
+                LOGGER.debug("authTokenInterceptor: Legger TokenX token til auth header")
+                request.headers.setBearerAuth(tokenXTokenService.fetchToken(clientRegistrationId))
+            } else if (oidcTokenManager.isValidTokenIssuedBySTS()) {
+                LOGGER.debug("authTokenInterceptor: Legger til Azure client credentials token til auth header")
+                request.headers.setBearerAuth(azureTokenService.fetchToken(clientRegistrationId, null))
+            }
 
+            execution.execute(request, body!!)
+        }
+    }
+
+    @Deprecated("authTokenInterceptor må inkludere clientRegistrationId")
     open fun authTokenInterceptor(): ClientHttpRequestInterceptor? {
         return authTokenInterceptor(null, false)
     }
 
-    open fun authTokenInterceptor(clientRegistrationId: String? = null): ClientHttpRequestInterceptor? {
-        return authTokenInterceptor(clientRegistrationId, false)
-    }
-
+    @Deprecated("authTokenInterceptor må inkludere clientRegistrationId")
     open fun authTokenInterceptor(clientRegistrationId: String? = null, forwardIncomingSTSToken: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
             if (clientRegistrationId != null && oidcTokenManager.isValidTokenIssuedByAzure()){
@@ -68,6 +97,7 @@ open class SecurityTokenService(
         }
     }
 
+    @Deprecated("Dette var i bruk i tillfeller der konsumenten krevde ISSO token. Dette skal ikke lenger brukes")
     open fun navConsumerTokenInterceptor(ignoreWhenIncomingSTS: Boolean = false): ClientHttpRequestInterceptor? {
         return ClientHttpRequestInterceptor { request: HttpRequest, body: ByteArray?, execution: ClientHttpRequestExecution ->
 

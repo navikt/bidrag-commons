@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.security.service
 
+import no.nav.bidrag.commons.security.SikkerhetsKontekst
 import no.nav.bidrag.commons.security.utils.TokenUtils
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
@@ -47,7 +48,7 @@ class OidcTokenManager {
     }
     
     fun erApplikasjonBruker(): Boolean {
-        return TokenUtils.isSystemUser(hentToken())
+        return SikkerhetsKontekst.erIApplikasjonKontekst() || TokenUtils.isSystemUser(hentToken())
     }
 
     fun getIssuer(): String {
