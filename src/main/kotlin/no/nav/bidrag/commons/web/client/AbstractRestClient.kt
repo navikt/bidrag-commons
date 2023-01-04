@@ -34,11 +34,11 @@ abstract class AbstractRestClient(
   protected val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
   protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
-  protected inline fun <reified T : Any> getForEntity(uri: URI): T {
+  protected inline fun <reified T : Any> getForEntity(uri: URI): T? {
     return getForEntity(uri, null)
   }
 
-  protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders?): T {
+  protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders?): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
         uri,
@@ -48,7 +48,7 @@ abstract class AbstractRestClient(
     }
   }
 
-  protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T {
+  protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T? {
     return postForEntity(uri, payload, null)
   }
 
@@ -56,7 +56,7 @@ abstract class AbstractRestClient(
     uri: URI,
     payload: Any,
     httpHeaders: HttpHeaders?
-  ): T {
+  ): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
         uri,
@@ -66,7 +66,7 @@ abstract class AbstractRestClient(
     }
   }
 
-  protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T {
+  protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T? {
     return putForEntity(uri, payload, null)
   }
 
@@ -74,7 +74,7 @@ abstract class AbstractRestClient(
     uri: URI,
     payload: Any,
     httpHeaders: HttpHeaders?
-  ): T {
+  ): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
         uri,
@@ -84,7 +84,7 @@ abstract class AbstractRestClient(
     }
   }
 
-  protected inline fun <reified T : Any> patchForEntity(uri: URI, payload: Any): T {
+  protected inline fun <reified T : Any> patchForEntity(uri: URI, payload: Any): T? {
     return patchForEntity(uri, payload, null)
   }
 
@@ -92,7 +92,7 @@ abstract class AbstractRestClient(
     uri: URI,
     payload: Any,
     httpHeaders: HttpHeaders?
-  ): T {
+  ): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
         uri,
@@ -102,7 +102,7 @@ abstract class AbstractRestClient(
     }
   }
 
-  protected inline fun <reified T : Any> deleteForEntity(uri: URI, payload: Any? = null): T {
+  protected inline fun <reified T : Any> deleteForEntity(uri: URI, payload: Any? = null): T? {
     return deleteForEntity(uri, payload, null)
   }
 
@@ -110,7 +110,7 @@ abstract class AbstractRestClient(
     uri: URI,
     payload: Any?,
     httpHeaders: HttpHeaders?
-  ): T {
+  ): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
         uri,
@@ -120,7 +120,7 @@ abstract class AbstractRestClient(
     }
   }
 
-  private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T {
+  private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T? {
     if (!respons.statusCode.is2xxSuccessful) {
       secureLogger.info("Kall mot $uri feilet:  ${respons.body}")
       log.info("Kall mot $uri feilet: ${respons.statusCode}")
@@ -132,11 +132,10 @@ abstract class AbstractRestClient(
       )
     }
     val payload = respons.body
-    requireNotNull(payload)
     return payload
   }
 
-  protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T {
+  protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T? {
     try {
       val startTime = System.nanoTime()
       val responseEntity = function.invoke()
