@@ -1,67 +1,60 @@
-package no.nav.bidrag.commons.web;
+package no.nav.bidrag.commons.web
 
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.util.CollectionUtils
+import java.util.*
 
 /**
- * Redirecting {@link ResponseEntity} from one service to another
+ * Redirecting [ResponseEntity] from one service to another
  *
  * @param <T> type of http payload
- */
-public class HttpResponse<T> {
+</T> */
+class HttpResponse<T>(val responseEntity: ResponseEntity<T>) {
 
-  private final ResponseEntity<T> responseEntity;
-
-  public HttpResponse(ResponseEntity<T> responseEntity) {
-    this.responseEntity = responseEntity;
+  fun fetchBody(): Optional<T> {
+    return Optional.ofNullable(responseEntity.body)
   }
 
-  public Optional<T> fetchBody() {
-    return Optional.ofNullable(responseEntity.getBody());
+  fun is2xxSuccessful(): Boolean {
+    return responseEntity.statusCode.is2xxSuccessful
   }
 
-  public boolean is2xxSuccessful() {
-    return responseEntity.getStatusCode().is2xxSuccessful();
+  fun fetchHeaders(): HttpHeaders {
+    return responseEntity.headers
   }
 
-  public HttpHeaders fetchHeaders() {
-    return responseEntity.getHeaders();
+  fun clearContentHeaders(): HttpResponse<T?> {
+    val headersMap: Map<String, List<String>> =
+      responseEntity.headers
+        .entries
+        .associateBy({ (key) -> key }, { (_, value) -> value })
+
+    val headers = HttpHeaders(CollectionUtils.toMultiValueMap(headersMap))
+    headers.clearContentHeaders()
+    return from(responseEntity.body, headers, responseEntity.statusCode)
   }
 
-  public HttpResponse<T> clearContentHeaders() {
-    var headersMap = responseEntity.getHeaders().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    var headers = new HttpHeaders(CollectionUtils.toMultiValueMap(headersMap));
-    headers.clearContentHeaders();
+  companion object {
+    fun <E> from(httpStatus: HttpStatus?): HttpResponse<E> {
+      val responseEntity = ResponseEntity<E>(httpStatus!!)
+      return HttpResponse(responseEntity)
+    }
 
-    return from(responseEntity.getBody(), headers, responseEntity.getStatusCode());
-  }
+    fun <E> from(httpStatus: HttpStatus?, body: E): HttpResponse<E> {
+      val responseEntity = ResponseEntity(body, httpStatus!!)
+      return HttpResponse(responseEntity)
+    }
 
-  public ResponseEntity<T> getResponseEntity() {
-    return responseEntity;
-  }
+    fun <E> from(httpHeaders: HttpHeaders?, httpStatus: HttpStatus?): HttpResponse<E> {
+      val responseEntity = ResponseEntity<E>(httpHeaders!!, httpStatus!!)
+      return HttpResponse(responseEntity)
+    }
 
-  public static <E> HttpResponse<E> from(HttpStatus httpStatus) {
-    var responseEntity = new ResponseEntity<E>(httpStatus);
-    return new HttpResponse<>(responseEntity);
-  }
-
-  public static <E> HttpResponse<E> from(HttpStatus httpStatus, E body) {
-    var responseEntity = new ResponseEntity<>(body, httpStatus);
-    return new HttpResponse<>(responseEntity);
-  }
-
-  public static <E> HttpResponse<E> from(HttpHeaders httpHeaders, HttpStatus httpStatus) {
-    var responseEntity = new ResponseEntity<E>(httpHeaders, httpStatus);
-    return new HttpResponse<>(responseEntity);
-  }
-
-  public static <E> HttpResponse<E> from(E body, HttpHeaders httpHeaders, HttpStatus httpStatus) {
-    var responseEntity = new ResponseEntity<>(body, httpHeaders, httpStatus);
-    return new HttpResponse<>(responseEntity);
+    fun <E> from(body: E, httpHeaders: HttpHeaders?, httpStatus: HttpStatus?): HttpResponse<E> {
+      val responseEntity = ResponseEntity(body, httpHeaders, httpStatus!!)
+      return HttpResponse(responseEntity)
+    }
   }
 }

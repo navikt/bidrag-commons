@@ -1,107 +1,75 @@
-package no.nav.bidrag.commons.web;
+package no.nav.bidrag.commons.web
 
-import static java.util.Arrays.asList;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import no.nav.bidrag.commons.CorrelationId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-import org.springframework.stereotype.Component;
+import no.nav.bidrag.commons.CorrelationId
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
+import org.springframework.stereotype.Component
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Component
-public class CorrelationIdFilter implements Filter {
+class CorrelationIdFilter : Filter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CorrelationIdFilter.class);
-  public static final String CORRELATION_ID_MDC = "correlationId";
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
-  public static final String CORRELATION_ID_HEADER = CorrelationId.CORRELATION_ID_HEADER;
-
-  @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    var httpServletRequest = (HttpServletRequest) servletRequest;
-    var httpServletResponse = (HttpServletResponse) servletResponse;
-    var method = httpServletRequest.getMethod();
-    var requestURI = httpServletRequest.getRequestURI();
-
-    if (isNotRequstContaining(requestURI, "/actuator/", "/api-docs/", "/swagger-")) {
-      CorrelationId correlationId;
-
-      if (Optional.ofNullable(httpServletRequest.getHeader(CORRELATION_ID_HEADER)).isPresent()) {
-        correlationId = CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER));
+  override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    val httpServletRequest = servletRequest as HttpServletRequest
+    val httpServletResponse = servletResponse as HttpServletResponse
+    val method = httpServletRequest.method
+    val requestURI: String = httpServletRequest.requestURI
+    if (isNotRequestContaining(requestURI, "/actuator/", "/api-docs/", "/swagger-")) {
+      val correlationId: CorrelationId = if (httpServletRequest.getHeader(CORRELATION_ID_HEADER) != null) {
+        CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER))
       } else {
-        correlationId = generateCorreleationIdToHttpHeaderOnResponse(
-            httpServletResponse, CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI))
-        );
+        generateCorreleationIdToHttpHeaderOnResponse(
+          httpServletResponse, CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI))
+        )
       }
+      MDC.put(CORRELATION_ID_MDC, correlationId.get())
+      logger.debug("{} is prosessing {} {}", CorrelationIdFilter::class.java.simpleName, method, requestURI)
+    }
+    filterChain.doFilter(servletRequest, servletResponse)
+    MDC.clear()
+  }
 
-      MDC.put(CORRELATION_ID_MDC, correlationId.get());
+  private fun isNotRequestContaining(requestURI: String, vararg uriParts: String): Boolean {
+    return uriParts.none { requestURI.contains(it) }
+  }
 
-      LOGGER.debug("{} is prosessing {} {}", CorrelationIdFilter.class.getSimpleName(), method, requestURI);
+  private fun generateCorreleationIdToHttpHeaderOnResponse(httpServletResponse: HttpServletResponse, correlationId: CorrelationId): CorrelationId {
+    httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId.get())
+    return correlationId
+  }
+
+  private fun fetchLastPartOfRequestUri(requestUri: String): String {
+    return if (requestUri.contains("/")) {
+      fetchLastPartOfRequestUriContainingPlainText(requestUri)
+    } else requestUri
+  }
+
+  private fun fetchLastPartOfRequestUriContainingPlainText(requestUri: String): String {
+    val reversedUriParts = reverseUriPartsBySlash(requestUri)
+    val lastUriPsty = if (reversedUriParts.isEmpty()) "" else reversedUriParts[0]
+    return if (lastUriPsty.matches(Regex("^[a-zA-Z]+$")) || lastUriPsty.isBlank()) {
+      lastUriPsty
+    } else reversedUriParts[1] + '/' + lastUriPsty
+  }
+
+  private fun reverseUriPartsBySlash(requestUri: String): List<String> {
+    return requestUri.split("/".toRegex()).dropLastWhile { it.isEmpty() }.reversed()
+  }
+
+
+  companion object {
+    fun fetchCorrelationIdForThread(): String {
+      return CorrelationId.fetchCorrelationIdForThread()
     }
 
-    filterChain.doFilter(servletRequest, servletResponse);
-    MDC.clear();
-  }
-
-  private boolean isNotRequstContaining(String requestURI, String... uriParts) {
-    if (requestURI == null) {
-      throw new IllegalStateException("should only use this class in an web environment which receives requestUri!!!");
-    }
-
-    for (String uriPart : uriParts) {
-      if (requestURI.contains(uriPart)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private CorrelationId generateCorreleationIdToHttpHeaderOnResponse(HttpServletResponse httpServletResponse, CorrelationId correlationId) {
-    httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId.get());
-
-    return correlationId;
-  }
-
-  private String fetchLastPartOfRequestUri(String requestUri) {
-    if (requestUri.contains("/")) {
-      return fetchLastPartOfRequestUriContainingPlainText(requestUri);
-    }
-
-    return requestUri;
-  }
-
-  private String fetchLastPartOfRequestUriContainingPlainText(String requestUri) {
-    ArrayList<String> reversedUriParts = reverseUriPartsBySlash(requestUri);
-    String lastUriPsty = reversedUriParts.size() < 1 ? "" : reversedUriParts.get(0);
-
-    if (lastUriPsty.matches("^[a-zA-Z]+$") || lastUriPsty.isBlank()) {
-      return lastUriPsty;
-    }
-
-    return reversedUriParts.get(1) + '/' + lastUriPsty;
-  }
-
-  private ArrayList<String> reverseUriPartsBySlash(String requestUri) {
-    String[] uriArray = requestUri.split("/");
-    var uriParts = new ArrayList<>(asList(uriArray));
-    Collections.reverse(uriParts);
-
-    return uriParts;
-  }
-
-  public static String fetchCorrelationIdForThread() {
-    return CorrelationId.fetchCorrelationIdForThread();
+    const val CORRELATION_ID_MDC = "correlationId"
+    const val CORRELATION_ID_HEADER: String = CorrelationId.CORRELATION_ID_HEADER
   }
 }

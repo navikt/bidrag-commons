@@ -1,107 +1,95 @@
-package no.nav.bidrag.commons.ws;
+package no.nav.bidrag.commons.ws
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.SoapMessage;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
+import org.slf4j.LoggerFactory
+import org.springframework.ws.WebServiceMessage
+import org.springframework.ws.soap.SoapMessage
+import org.springframework.ws.soap.client.core.SoapActionCallback
+import org.w3c.dom.Document
+import org.xml.sax.InputSource
+import java.io.IOException
+import java.io.StringReader
+import java.io.StringWriter
+import javax.xml.namespace.QName
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerException
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMResult
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 
 /**
  * SoapSamlCallback
  */
-public class SoapSamlCallback extends SoapActionCallback {
+class SoapSamlCallback(soapAction: String?, samlToken: String?, decoder: Decoder) : SoapActionCallback(soapAction) {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SoapSamlCallback.class);
-  static final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+  private var samlAssertion: String? = null
+  private var error: Exception? = null
 
-  private String samlAssertion;
-  private Exception error;
-
-  public SoapSamlCallback(String soapAction, String samlToken, Decoder decoder) {
-    super(soapAction);
-
+  init {
     try {
-      this.samlAssertion = decoder.decode(samlToken);
-    } catch (RuntimeException re) {
-      error = re;
+      samlAssertion = decoder.decode(samlToken)
+    } catch (re: RuntimeException) {
+      error = re
     }
   }
 
-  @Override
-  public void doWithMessage(WebServiceMessage message) throws IOException {
-    super.doWithMessage(message);
-
+  @Throws(IOException::class)
+  override fun doWithMessage(message: WebServiceMessage) {
+    super.doWithMessage(message)
     if (error != null) {
-      throw new IOException("Invalid SAML token", error);
+      throw IOException("Invalid SAML token", error)
     }
-
-    SoapMessage soapMessage = (SoapMessage) message;
-    Document document = soapMessage.getDocument();
-    SoapHeaderElement wsse = soapMessage.getSoapHeader().addHeaderElement(new QName(WSSE_NS, "Security"));
-    DOMResult result = (DOMResult) wsse.getResult();
-    Element samlNode = buildSamlAssertionDocument().getDocumentElement();
-    Node node = document.importNode(samlNode.cloneNode(true), true);
-    result.getNode().appendChild(node);
-
+    val soapMessage = message as SoapMessage
+    val document = soapMessage.document
+    val wsse = soapMessage.soapHeader.addHeaderElement(QName(WSSE_NS, "Security"))
+    val result = wsse.result as DOMResult?
+    val samlNode = buildSamlAssertionDocument().documentElement
+    val node = document.importNode(samlNode.cloneNode(true), true)
+    result?.node?.appendChild(node)
     try {
-      var transformed = transformToString(soapMessage.getDocument());
-      int index = transformed.indexOf('>');
-      LOGGER.debug("SOAP Message med SAML token fra {}: {}{}", WSSE_NS, transformed.substring(0, index), "...");
-    } catch (TransformerException e) {
-      LOGGER.error("Unable to append saml token", e);
+      val transformed = transformToString(soapMessage.document)
+      val index = transformed.indexOf('>')
+      LOGGER.debug("SOAP Message med SAML token fra {}: {}{}", WSSE_NS, transformed.substring(0, index), "...")
+    } catch (e: TransformerException) {
+      LOGGER.error("Unable to append saml token", e)
     }
   }
 
-  private Document buildSamlAssertionDocument() {
-    try {
-      DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-      documentBuilderFactory.setNamespaceAware(true);
-      DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-      Document document = documentBuilder.parse(new InputSource(new StringReader(samlAssertion)));
-      var transformed = transformToString(document);
-      int index = transformed.indexOf('>');
-      LOGGER.debug("SAML assertion document: {}{}", transformed.substring(0, index), "...");
-
-      return document;
-    } catch (Exception e) {
-      throw new IllegalStateException("Could not build saml assertion document", e);
+  private fun buildSamlAssertionDocument(): Document {
+    return try {
+      val documentBuilderFactory = DocumentBuilderFactory.newInstance()
+      documentBuilderFactory.isNamespaceAware = true
+      val documentBuilder = documentBuilderFactory.newDocumentBuilder()
+      val document = documentBuilder.parse(InputSource(StringReader(samlAssertion)))
+      val transformed = transformToString(document)
+      val index = transformed.indexOf('>')
+      LOGGER.debug("SAML assertion document: {}{}", transformed.substring(0, index), "...")
+      document
+    } catch (e: Exception) {
+      throw IllegalStateException("Could not build saml assertion document", e)
     }
   }
 
-  private String transformToString(Document document) throws TransformerException {
-    DOMSource domSource = new DOMSource(document);
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-    transformer.setOutputProperty(OutputKeys.INDENT, "no");
-    StringWriter sw = new StringWriter();
-    StreamResult sr = new StreamResult(sw);
-    transformer.transform(domSource, sr);
-
-    return sw.toString();
+  @Throws(TransformerException::class)
+  private fun transformToString(document: Document): String {
+    val domSource = DOMSource(document)
+    val transformer = TransformerFactory.newInstance().newTransformer()
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no")
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8")
+    transformer.setOutputProperty(OutputKeys.INDENT, "no")
+    val sw = StringWriter()
+    val sr = StreamResult(sw)
+    transformer.transform(domSource, sr)
+    return sw.toString()
   }
 
-  @FunctionalInterface
-  public interface Decoder {
+  fun interface Decoder {
+    fun decode(token: String?): String?
+  }
 
-    String decode(String token);
+  companion object {
+    private val LOGGER = LoggerFactory.getLogger(SoapSamlCallback::class.java)
+    const val WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
   }
 }

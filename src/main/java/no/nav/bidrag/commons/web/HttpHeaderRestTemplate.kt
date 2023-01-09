@@ -1,120 +1,88 @@
-package no.nav.bidrag.commons.web;
+package no.nav.bidrag.commons.web
 
-import static no.nav.bidrag.commons.web.EnhetFilter.X_ENHET_HEADER;
+import no.nav.bidrag.commons.web.EnhetFilter.Companion.X_ENHET_HEADER
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.client.ClientHttpRequestFactory
+import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.util.MultiValueMap
+import org.springframework.web.client.RequestCallback
+import org.springframework.web.client.RestTemplate
+import java.lang.reflect.Type
+import java.util.*
 
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.RestTemplate;
+class HttpHeaderRestTemplate : RestTemplate {
+  private val headerGenerators: MutableMap<String, () -> String> = HashMap()
 
-public class HttpHeaderRestTemplate extends RestTemplate {
+  private val log = LoggerFactory.getLogger(this::class.java)
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(HttpHeaderRestTemplate.class);
+  constructor()
+  constructor(requestFactory: ClientHttpRequestFactory) : super(requestFactory) {}
+  constructor(messageConverters: List<HttpMessageConverter<*>>) : super(messageConverters) {}
 
-  private final Map<String, ValueGenerator> headerGenerators = new HashMap<>();
-
-  public HttpHeaderRestTemplate() {
+  fun withDefaultHeaders() {
+    addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER, CorrelationIdFilter::fetchCorrelationIdForThread)
+    addHeaderGenerator(X_ENHET_HEADER, EnhetFilter::fetchForThread)
   }
 
-  public HttpHeaderRestTemplate(ClientHttpRequestFactory requestFactory) {
-    super(requestFactory);
-  }
-
-  public HttpHeaderRestTemplate(List<HttpMessageConverter<?>> messageConverters) {
-    super(messageConverters);
-  }
-
-  public void withDefaultHeaders() {
-    addHeaderGenerator(CorrelationIdFilter.CORRELATION_ID_HEADER, CorrelationIdFilter::fetchCorrelationIdForThread);
-    addHeaderGenerator(X_ENHET_HEADER, EnhetFilter::fetchForThread);
-  }
-
-  @Override
-  public <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
+  override fun <T> httpEntityCallback(requestBody: Any?, responseType: Type): RequestCallback {
     if (headerGenerators.isEmpty()) {
-      return super.httpEntityCallback(requestBody, responseType);
+      return super.httpEntityCallback<Any>(requestBody, responseType)
     }
-
-    HttpEntity<T> httpEntity = newEntityWithAdditionalHttpHeaders(requestBody);
-    Set<String> headerNames = new HashSet<>(headerGenerators.keySet());
-
-    if (!headerNames.isEmpty()) {
-      LOGGER.debug("Generate header(s): %s".formatted(headerNames));
+    val httpEntity = newEntityWithAdditionalHttpHeaders<T>(requestBody)
+    val headerNames: Set<String> = HashSet(headerGenerators.keys)
+    if (headerNames.isNotEmpty()) {
+      log.debug("Generate header(s): %s".format(headerNames))
     }
-
-    return super.httpEntityCallback(httpEntity, responseType);
+    return super.httpEntityCallback<Any>(httpEntity, responseType)
   }
 
-  private <T> HttpEntity<T> newEntityWithAdditionalHttpHeaders(Object o) {
+  private fun <T> newEntityWithAdditionalHttpHeaders(o: Any?): HttpEntity<T> {
     if (o != null) {
-      HttpEntity<T> httpEntity = mapToHttpEntity(o);
-      Set<String> headerNames = new HashSet<>(httpEntity.getHeaders().keySet());
-
+      val httpEntity = mapToHttpEntity<T>(o)
+      val headerNames: Set<String> = HashSet(httpEntity.headers.keys)
       if (!headerNames.isEmpty()) {
-        LOGGER.debug("Existing header(s): %s".formatted(headerNames));
+        log.debug("Existing header(s): %s".format(headerNames))
       }
-
-      return new HttpEntity<>(httpEntity.getBody(), combineHeaders(httpEntity.getHeaders()));
+      return HttpEntity(httpEntity.body, combineHeaders(httpEntity.headers))
     }
-
-    return new HttpEntity<>(null, combineHeaders(new HttpHeaders()));
+    return HttpEntity(null, combineHeaders(HttpHeaders()))
   }
 
-  @SuppressWarnings("unchecked")
-  private <T> HttpEntity<T> mapToHttpEntity(Object o) {
-    if (o instanceof HttpEntity) {
-      return (HttpEntity<T>) o;
-    }
-
-    return new HttpEntity<>((T) o);
+  private fun <T> mapToHttpEntity(o: Any): HttpEntity<T> {
+    return if (o is HttpEntity<*>) {
+      o as HttpEntity<T>
+    } else HttpEntity(o as T)
   }
 
-  private MultiValueMap<String, String> combineHeaders(HttpHeaders existingHeaders) {
-    HttpHeaders allHeaders = new HttpHeaders();
-    existingHeaders.forEach((name, listValue) -> listValue.forEach(value -> {
-      if (Objects.nonNull(value)){
-        allHeaders.add(name, value);
+  private fun combineHeaders(existingHeaders: HttpHeaders): MultiValueMap<String, String> {
+    val allHeaders = HttpHeaders()
+    existingHeaders.forEach { name: String, listValue: List<String> ->
+      listValue.forEach { value: String ->
+        allHeaders.add(name, value)
       }
-    }));
-
-    headerGenerators.forEach((key, value) -> {
-      var headerValue = value.generate();
+    }
+    headerGenerators.forEach { (key: String, value: () -> String) ->
+      val headerValue = value.invoke()
       if (!isXEnhetHeaderAndXEnhetHeaderExists(key, allHeaders) && Objects.nonNull(headerValue)) {
-        allHeaders.add(key, headerValue);
+        allHeaders.add(key, headerValue)
       }
-    });
-
-    return allHeaders;
+    }
+    return allHeaders
   }
 
   // Prevent duplicate X_ENHET headers. Makes it possible to override the header
-  private boolean isXEnhetHeaderAndXEnhetHeaderExists(String key, HttpHeaders allHeaders) {
-    return X_ENHET_HEADER.equals(key) && allHeaders.get(X_ENHET_HEADER) != null;
+  private fun isXEnhetHeaderAndXEnhetHeaderExists(key: String, allHeaders: HttpHeaders): Boolean {
+    return X_ENHET_HEADER == key && allHeaders[X_ENHET_HEADER] != null
   }
 
-  public void addHeaderGenerator(String headerName, ValueGenerator valueGenerator) {
-    headerGenerators.put(headerName, valueGenerator);
+  fun addHeaderGenerator(headerName: String, valueGenerator: () -> String) {
+    headerGenerators[headerName] = valueGenerator
   }
 
-  public void removeHeaderGenerator(String headerName) {
-    headerGenerators.remove(headerName);
+  fun removeHeaderGenerator(headerName: String) {
+    headerGenerators.remove(headerName)
   }
 
-  @FunctionalInterface
-  public interface ValueGenerator {
-
-    String generate();
-  }
 }

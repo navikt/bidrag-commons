@@ -1,62 +1,53 @@
-package no.nav.bidrag.commons.web;
+package no.nav.bidrag.commons.web
 
-import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
+import java.io.IOException
+import javax.servlet.Filter
+import javax.servlet.FilterChain
+import javax.servlet.ServletException
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
-public class EnhetFilter implements Filter {
+class EnhetFilter : Filter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EnhetFilter.class);
-  private static final ThreadLocal<String> ENHETSNUMMER_VALUE = new ThreadLocal<>();
-  private static final String ENHET_MDC = "enhet";
-
-  public static final String X_ENHET_HEADER = "X-Enhet";
-
-  @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    if (servletRequest instanceof HttpServletRequest) {
-      var httpServletRequest = (HttpServletRequest) servletRequest;
-      var requestURI = httpServletRequest.getRequestURI();
-
+  override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    if (servletRequest is HttpServletRequest) {
+      val requestURI = servletRequest.requestURI
       if (isNotRequestToActuatorEndpoint(requestURI)) {
-        var enhetsnummer = httpServletRequest.getHeader(X_ENHET_HEADER);
-
+        val enhetsnummer = servletRequest.getHeader(X_ENHET_HEADER)
         if (enhetsnummer != null) {
-          ENHETSNUMMER_VALUE.set(enhetsnummer);
-          MDC.put(ENHET_MDC, enhetsnummer);
-          ((HttpServletResponse) servletResponse).addHeader(X_ENHET_HEADER, enhetsnummer);
-          LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer);
+          ENHETSNUMMER_VALUE.set(enhetsnummer)
+          MDC.put(ENHET_MDC, enhetsnummer)
+          (servletResponse as HttpServletResponse).addHeader(X_ENHET_HEADER, enhetsnummer)
+          LOGGER.info("Behandler request '{}' for enhet med enhetsnummer {}", requestURI, enhetsnummer)
         } else {
-          ENHETSNUMMER_VALUE.set(null);
-          LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI);
+          ENHETSNUMMER_VALUE.set(null)
+          LOGGER.info("Behandler request '{}' uten informasjon om enhetsnummer.", requestURI)
         }
       }
     } else {
-      String filterRequest = servletRequest != null ? servletRequest.getClass().getSimpleName() : "null";
-      LOGGER.error("Filtrering gjøres ikke av en HttpServletRequest: " + filterRequest);
+      val filterRequest = servletRequest.javaClass.simpleName
+      LOGGER.error("Filtrering gjøres ikke av en HttpServletRequest: $filterRequest")
     }
-
-    filterChain.doFilter(servletRequest, servletResponse);
-    MDC.clear();
+    filterChain.doFilter(servletRequest, servletResponse)
+    MDC.clear()
   }
 
-  private boolean isNotRequestToActuatorEndpoint(String requestURI) {
-    if (requestURI == null) {
-      throw new IllegalStateException("should only use this class in an web environment which receives requestUri!!!");
-    }
-
-    return !requestURI.contains("/actuator/");
+  private fun isNotRequestToActuatorEndpoint(requestURI: String?): Boolean {
+    checkNotNull(requestURI) { "should only use this class in an web environment which receives requestUri!!!" }
+    return !requestURI.contains("/actuator/")
   }
 
-  public static String fetchForThread() {
-    return ENHETSNUMMER_VALUE.get();
+  companion object {
+    private val LOGGER = LoggerFactory.getLogger(EnhetFilter::class.java)
+    private val ENHETSNUMMER_VALUE = ThreadLocal<String>()
+    private const val ENHET_MDC = "enhet"
+    const val X_ENHET_HEADER = "X-Enhet"
+    fun fetchForThread(): String {
+      return ENHETSNUMMER_VALUE.get()
+    }
   }
 }

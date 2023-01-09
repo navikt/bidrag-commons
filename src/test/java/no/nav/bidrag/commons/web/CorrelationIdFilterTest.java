@@ -225,7 +225,7 @@ class CorrelationIdFilterTest {
     public void run() {
       try {
         filterExecutor.doFilter();
-        correlationId = CorrelationIdFilter.fetchCorrelationIdForThread();
+        correlationId = CorrelationIdFilter.Companion.fetchCorrelationIdForThread();
       } catch (IOException | ServletException e) {
         throw new AssertionError(e);
       }

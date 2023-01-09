@@ -11,7 +11,7 @@ class CorrelationIdTest {
   @Test
   @DisplayName("skal lage correlation id med eksisterende verdi")
   void skalLageCorrelationIdMedEksisterendeVerdi() {
-    CorrelationId correlationId = CorrelationId.existing("eksisterende");
+    CorrelationId correlationId = CorrelationId.Companion.existing("eksisterende");
 
      assertThat(correlationId.get()).isEqualTo("eksisterende");
   }
@@ -19,7 +19,7 @@ class CorrelationIdTest {
   @Test
   @DisplayName("skal lage correlation id som tidsstemplet verdi")
   void skalLageCorrelationIdSomTidsstempletVerdi() {
-    CorrelationId correlationId = CorrelationId.generateTimestamped("value");
+    CorrelationId correlationId = CorrelationId.Companion.generateTimestamped("value");
     String timestamp = Long.toHexString(System.currentTimeMillis());
 
      assertThat(correlationId.get())
@@ -30,7 +30,7 @@ class CorrelationIdTest {
   @Test
   @DisplayName("skal generere ny verdi når gitt Correlation ID er null")
   void skalGenerereNyVerdiNarGittVerdiErNull() {
-    var correlationId = CorrelationId.existing(null);
+    var correlationId = CorrelationId.Companion.existing(null);
 
     assertThat(correlationId.get()).contains("-correlationId");
   }

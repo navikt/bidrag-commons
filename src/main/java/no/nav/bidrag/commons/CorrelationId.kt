@@ -1,35 +1,30 @@
-package no.nav.bidrag.commons;
+package no.nav.bidrag.commons
 
-public class CorrelationId {
-
-  public static final String CORRELATION_ID_HEADER = "X-Correlation-ID";
-  private static final ThreadLocal<String> CORRELATION_ID_VALUE = new ThreadLocal<>();
-
-  private final String idValue;
-
-  private CorrelationId(String correlationId) {
-    idValue = correlationId;
-    CORRELATION_ID_VALUE.set(idValue);
+class CorrelationId private constructor(private val idValue: String) {
+  init {
+    CORRELATION_ID_VALUE.set(idValue)
   }
 
-  public String get() {
-    return idValue;
+  fun get(): String {
+    return idValue
   }
 
-  public static String fetchCorrelationIdForThread() {
-    return CORRELATION_ID_VALUE.get();
-  }
-
-  public static CorrelationId existing(String value) {
-    if (value == null || value.trim().isBlank()) {
-      return generateTimestamped("correlationId");
+  companion object {
+    const val CORRELATION_ID_HEADER = "X-Correlation-ID"
+    private val CORRELATION_ID_VALUE = ThreadLocal<String>()
+    fun fetchCorrelationIdForThread(): String {
+      return CORRELATION_ID_VALUE.get()
     }
 
-    return new CorrelationId(value);
-  }
+    fun existing(value: String?): CorrelationId {
+      return if (value.isNullOrBlank()) {
+        generateTimestamped("correlationId")
+      } else CorrelationId(value)
+    }
 
-  public static CorrelationId generateTimestamped(String value) {
-    String currentTimeAsString = Long.toHexString(System.currentTimeMillis());
-    return new CorrelationId(currentTimeAsString + '-' + value);
+    fun generateTimestamped(value: String): CorrelationId {
+      val currentTimeAsString = java.lang.Long.toHexString(System.currentTimeMillis())
+      return CorrelationId("$currentTimeAsString-$value")
+    }
   }
 }

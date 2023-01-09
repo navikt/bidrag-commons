@@ -1,141 +1,96 @@
-package no.nav.bidrag.commons;
+package no.nav.bidrag.commons
 
-import static java.util.function.Predicate.not;
-import static java.util.stream.Collectors.toList;
+import org.slf4j.LoggerFactory
+import org.springframework.web.client.HttpStatusCodeException
+import java.util.*
+import java.util.stream.Collectors
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.client.HttpStatusCodeException;
+class ExceptionLogger(private val application: String, vararg doNotLogClasses: Class<*>) {
 
-public class ExceptionLogger {
+  private val doNotLogClasses = doNotLogClasses.map { it.name }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionLogger.class);
-  private static final String CAUSED_BY_MSG = "|> caused by %s: %s.";
-  private static final String PACKAGE_NO_NAV = ExceptionLogger.class.getPackageName().substring(
-      0, ExceptionLogger.class.getPackageName().indexOf(".bidrag")
-  );
-
-  private final String application;
-  private final Set<String> doNotLogClasses = new HashSet<>();
-
-  public ExceptionLogger(String application, Class<?>... doNotLogClasses) {
-    this.application = application;
-
-    if (doNotLogClasses != null) {
-      Arrays.stream(doNotLogClasses).forEach(aClass -> this.doNotLogClasses.add(aClass.getName()));
-    }
-  }
-
-  public List<String> logException(Throwable throwable, String defaultLocation) {
-    var exceptionAndDetails = new ArrayList<String>();
-    var exceptionClassSimpleName = throwable.getClass().getSimpleName();
-    var exceptionMessage = throwable.getMessage();
-    var possibleCause = Optional.ofNullable(throwable.getCause());
-    var melding = String.format(
-        "%s: %s - caught in %s within %s. Details:",
-        exceptionClassSimpleName, exceptionMessage, application, defaultLocation
-    );
-
-    exceptionAndDetails.add(melding);
-
-    if (possibleCause.isPresent()) {
-      exceptionAndDetails.addAll(logCause(throwable.getCause()));
+  fun logException(throwable: Throwable, defaultLocation: String?): List<String> {
+    val exceptionAndDetails = ArrayList<String>()
+    val exceptionClassSimpleName = throwable.javaClass.simpleName
+    val exceptionMessage = throwable.message
+    val possibleCause = throwable.cause
+    val melding =
+      String.format("%s: %s - caught in %s within %s. Details:", exceptionClassSimpleName, exceptionMessage, application, defaultLocation)
+    exceptionAndDetails.add(melding)
+    if (possibleCause != null) {
+      exceptionAndDetails.addAll(logCause(possibleCause))
     } else {
-      exceptionAndDetails.add("|> no root cause");
-
-      if (throwable instanceof HttpStatusCodeException) {
-        var statusCodeException = (HttpStatusCodeException) throwable;
-
-        if (!"".equals(statusCodeException.getResponseBodyAsString())) {
-          var responseBody = "|> response body: " + statusCodeException.getResponseBodyAsString();
-          exceptionAndDetails.add(responseBody);
+      exceptionAndDetails.add("|> no root cause")
+      if (throwable is HttpStatusCodeException) {
+        if (throwable.responseBodyAsString.isNotEmpty()) {
+          val responseBody = "|> response body: " + throwable.responseBodyAsString
+          exceptionAndDetails.add(responseBody)
         }
       }
     }
-
-    exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable));
-
-    LOGGER.error(String.join("\n", exceptionAndDetails));
-
-    return exceptionAndDetails;
+    exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable))
+    LOGGER.error(java.lang.String.join("\n", exceptionAndDetails))
+    return exceptionAndDetails
   }
 
-  private List<String> logCause(Throwable cause) {
-    var exceptionDetails = new ArrayList<String>();
-    var throwables = fetchAllThrowables(cause);
-    var exceptionTypes = throwables.stream()
-        .map(aThrowable -> aThrowable.getClass().getName())
-        .collect(Collectors.joining(", "));
-
-    Collections.reverse(throwables);
-
-    for (Throwable throwable : throwables) {
-      if (throwable.getCause() == null) {
-        var causedBy = String.format(CAUSED_BY_MSG, exceptionTypes, throwable.getMessage());
-        exceptionDetails.add(causedBy);
-      }
+  private fun logCause(cause: Throwable): List<String> {
+    val throwables = fetchAllThrowables(cause)
+    val exceptionTypes = throwables.joinToString(", ") { it.javaClass.name }
+    return throwables.mapNotNull {
+      if (it.cause == null) {
+        String.format(CAUSED_BY_MSG, exceptionTypes, it.message)
+      } else
+        null
     }
-
-    return exceptionDetails;
   }
 
-  private List<Throwable> fetchAllThrowables(Throwable throwable) {
-    var cause = throwable;
-    var allThrowables = new ArrayList<Throwable>();
-
-    do {
-      allThrowables.add(cause);
-      cause = cause.getCause();
-    } while (cause != null);
-
-    return allThrowables;
+    private fun fetchAllThrowables(throwable: Throwable): List<Throwable> {
+    var cause: Throwable? = throwable
+    val allThrowables = ArrayList<Throwable>()
+    while (cause != null) {
+      allThrowables.add(cause)
+      cause = cause.cause
+    }
+    return allThrowables
   }
 
-  private List<String> logFirstThreeStackFramesFromNavCode(Throwable throwable) {
-    var stackFrames = Arrays.stream(throwable.getStackTrace())
-        .filter(not(elem -> elem.getClassName().equals(ExceptionLogger.class.getName())))
-        .filter(elem -> elem.getClassName().startsWith(PACKAGE_NO_NAV))
-        .filter(not(elem -> doNotLogClasses.contains(elem.getClassName())))
-        .filter(not(elem -> "<generated>".equals(elem.getFileName()))) // generated proxy code
-        .limit(3)
-        .collect(toList());
-
+  private fun logFirstThreeStackFramesFromNavCode(throwable: Throwable): List<String> {
+    val stackFrames = throwable.stackTrace
+      .filter { it.className != ExceptionLogger::class.java.name }
+      .filter { it.className.startsWith(PACKAGE_NO_NAV) }
+      .filter { !doNotLogClasses.contains(it.className) }
+      .filter { "<generated>" != it.fileName } // generated proxy code
+      .take(3)
     if (stackFrames.isEmpty()) {
-      return Collections.emptyList();
+      return emptyList()
     }
-
-    var firstStack = stackFrames.get(0);
-    var exceptionSettFraNav = String.format(
-        "|> kode i nav: %s.%s(line:%s - %s)",
-        firstStack.getClassName(),
-        firstStack.getMethodName(),
-        firstStack.getLineNumber(),
-        firstStack.getFileName()
-    );
-
-    if (stackFrames.size() > 1) {
-      return List.of(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames));
-    }
-
-    return List.of(exceptionSettFraNav);
+    val firstStack = stackFrames[0]
+    val exceptionSettFraNav = String.format(
+      "|> kode i nav: %s.%s(line:%s - %s)",
+      firstStack.className,
+      firstStack.methodName,
+      firstStack.lineNumber,
+      firstStack.fileName
+    )
+    return if (stackFrames.size > 1) {
+      listOf(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames))
+    } else listOf(exceptionSettFraNav)
   }
 
-  private String fetchFileInfoFromPreviousElements(List<StackTraceElement> stackFrames) {
-    var fileInfo = new StringBuilder();
-
-    for (int i = 1; i < stackFrames.size(); i++) {
-      var stackFrame = stackFrames.get(i);
-      fileInfo.append(String.format(", %s.%s: %s", stackFrame.getFileName(), stackFrame.getMethodName(), stackFrame.getLineNumber()));
+  private fun fetchFileInfoFromPreviousElements(stackFrames: List<StackTraceElement>): String {
+    val fileInfo = StringBuilder()
+    for (i in 1 until stackFrames.size) {
+      val stackFrame = stackFrames[i]
+      fileInfo.append(String.format(", %s.%s: %s", stackFrame.fileName, stackFrame.methodName, stackFrame.lineNumber))
     }
+    return "|> previous frames: " + fileInfo.substring(2)
+  }
 
-    return "|> previous frames: " + fileInfo.substring(2);
+  companion object {
+    private val LOGGER = LoggerFactory.getLogger(ExceptionLogger::class.java)
+    private const val CAUSED_BY_MSG = "|> caused by %s: %s."
+    private val PACKAGE_NO_NAV = ExceptionLogger::class.java.packageName.substring(
+      0, ExceptionLogger::class.java.packageName.indexOf(".bidrag")
+    )
   }
 }

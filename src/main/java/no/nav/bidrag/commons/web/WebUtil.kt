@@ -1,16 +1,11 @@
-package no.nav.bidrag.commons.web;
+package no.nav.bidrag.commons.web
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpHeaders
 
-public final class WebUtil {
-
-  private WebUtil() {
-  }
-
-  public static HttpHeaders initHttpHeadersWith(String name, String value) {
-    var httpHeaders = new HttpHeaders();
-    httpHeaders.add(name, value);
-
-    return httpHeaders;
+object WebUtil {
+  fun initHttpHeadersWith(name: String, value: String?): HttpHeaders {
+    val httpHeaders = HttpHeaders()
+    httpHeaders.add(name, value)
+    return httpHeaders
   }
 }
