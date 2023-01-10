@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.32   | endret       | Endret Java til Kotlin i produksjonskode                                                                                                       |
 | 0.7.31   | endret       | Endret AbstractRestClient til å akseptere tom body                                                                                             |
 | 0.7.30   | endret       | Lagt til `SikkerhetsKontekst` og mulighet til å gjøre kall i applikasjonkontekst                                                               |
 | 0.7.29   | endret       | Oppdater `KildesystemIdenfikator` legg til støtte for forsendelse og refaktorer til Kotlin                                                     |
