@@ -16,7 +16,7 @@ class HttpResponseTest {
   void skalOpprettesMedGitteVerdier() {
     var httpHeaders = new HttpHeaders();
     httpHeaders.add("SVADA", "lada");
-    var httpResponse = HttpResponse.from(101, httpHeaders, HttpStatus.I_AM_A_TEAPOT);
+    var httpResponse = HttpResponse.Companion.from(101, httpHeaders, HttpStatus.I_AM_A_TEAPOT);
 
     assertThat(httpResponse.getResponseEntity()).as("response entity").isNotNull();
 

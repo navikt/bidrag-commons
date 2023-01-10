@@ -102,7 +102,7 @@ class EnhetFilterTest {
 
     assertThat(loggingEvent).isNotNull();
     assertThat(loggingEvent.getFormattedMessage()).as("log").contains("Behandler request 'some url' for enhet med enhetsnummer 007");
-    assertThat(EnhetFilter.fetchForThread()).as("enhetsnummer").isEqualTo("007");
+    assertThat(EnhetFilter.Companion.fetchForThread()).as("enhetsnummer").isEqualTo("007");
   }
 
   @Test
