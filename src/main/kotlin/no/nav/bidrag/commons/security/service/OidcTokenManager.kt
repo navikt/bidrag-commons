@@ -6,56 +6,58 @@ import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 
 class OidcTokenManager {
-    companion object {
-        const val ISSO_ISSUER = "isso"
-        const val AZURE_ISSUER = "aad"
-        const val TOKENX_ISSUER = "tokenx"
-        const val STS_ISSUER = "sts"
-    }
-    fun fetchTokenAsString(): String {
-        return fetchToken().tokenAsString
-    }
+  companion object {
+    const val ISSO_ISSUER = "isso"
+    const val AZURE_ISSUER = "aad"
+    const val TOKENX_ISSUER = "tokenx"
+    const val STS_ISSUER = "sts"
+  }
 
-    private fun hasIssuers(): Boolean {
-        return SpringTokenValidationContextHolder().tokenValidationContext.issuers.isNotEmpty()
-    }
+  fun fetchTokenAsString(): String {
+    return fetchToken().tokenAsString
+  }
 
-    fun isValidTokenIssuedByAzure(): Boolean {
-        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
-    }
+  private fun hasIssuers(): Boolean {
+    return SpringTokenValidationContextHolder().tokenValidationContext.issuers.isNotEmpty()
+  }
 
-    fun isValidTokenIssuedByTokenX(): Boolean {
-        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(TOKENX_ISSUER) != null
-    }
+  fun isValidTokenIssuedByAzure(): Boolean {
+    return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(AZURE_ISSUER) != null
+  }
 
-    fun isValidTokenIssuedByOpenAm(): Boolean {
-        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(ISSO_ISSUER) != null
-    }
+  fun isValidTokenIssuedByTokenX(): Boolean {
+    return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(TOKENX_ISSUER) != null
+  }
 
-    fun isValidTokenIssuedBySTS(): Boolean {
-        return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(STS_ISSUER) != null
-    }
-    
-    private fun hentToken(): String? {
-        if (SpringTokenValidationContextHolder().tokenValidationContext.hasValidToken()){
-            return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken.get().tokenAsString
-        }
-        return null
-    }
+  fun isValidTokenIssuedByOpenAm(): Boolean {
+    return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(ISSO_ISSUER) != null
+  }
 
-    fun hentSaksbehandlerIdentFraToken(): String? {
-        return hentToken()?.let { TokenUtils.fetchSubject(it) }
-    }
-    
-    fun erApplikasjonBruker(): Boolean {
-        return SikkerhetsKontekst.erIApplikasjonKontekst() || TokenUtils.isSystemUser(hentToken())
-    }
+  fun isValidTokenIssuedBySTS(): Boolean {
+    return hasIssuers() && SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken(STS_ISSUER) != null
+  }
 
-    fun getIssuer(): String {
-        return fetchToken().issuer
+  private fun hentToken(): String? {
+    if (SpringTokenValidationContextHolder().tokenValidationContext.hasValidToken()) {
+      return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken.get().tokenAsString
     }
+    return null
+  }
 
-    fun fetchToken(): JwtToken {
-        return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken?.orElse(null) ?: throw IllegalStateException("Fant ingen gyldig token i kontekst")
-    }
+  fun hentSaksbehandlerIdentFraToken(): String? {
+    return hentToken()?.let { TokenUtils.fetchSubject(it) }
+  }
+
+  fun erApplikasjonBruker(): Boolean {
+    return SikkerhetsKontekst.erIApplikasjonKontekst() || TokenUtils.isSystemUser(hentToken())
+  }
+
+  fun getIssuer(): String {
+    return fetchToken().issuer
+  }
+
+  fun fetchToken(): JwtToken {
+    return SpringTokenValidationContextHolder().tokenValidationContext.firstValidToken?.orElse(null)
+      ?: throw IllegalStateException("Fant ingen gyldig token i kontekst")
+  }
 }

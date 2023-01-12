@@ -18,25 +18,25 @@ import org.springframework.context.annotation.Configuration
 @EnableOAuth2Client(cacheEnabled = true)
 class SecurityConfig {
 
-    @Bean
-    fun azureTokenService(
-        clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
-    ) = AzureTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
+  @Bean
+  fun azureTokenService(
+    clientConfigurationProperties: ClientConfigurationProperties,
+    oAuth2AccessTokenService: OAuth2AccessTokenService
+  ) = AzureTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
 
-    @Bean
-    fun tokenxTokenService(
-        clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
-    ) = TokenXTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
+  @Bean
+  fun tokenxTokenService(
+    clientConfigurationProperties: ClientConfigurationProperties,
+    oAuth2AccessTokenService: OAuth2AccessTokenService
+  ) = TokenXTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
 
-    @Bean
-    fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager()
+  @Bean
+  fun oidcTokenManager(tokenValidationContextHolder: TokenValidationContextHolder) = OidcTokenManager()
 
-    @Bean
-    fun stsTokenService() = TokenService("STS")
+  @Bean
+  fun stsTokenService() = TokenService("STS")
 
-    @Bean
-    fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, tokenxTokenService: TokenService) =
-        SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
+  @Bean
+  fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, tokenxTokenService: TokenService) =
+    SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
 }

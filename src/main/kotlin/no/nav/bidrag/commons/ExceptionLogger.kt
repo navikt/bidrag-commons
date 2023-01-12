@@ -2,10 +2,10 @@ package no.nav.bidrag.commons
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.client.HttpStatusCodeException
-import java.util.*
-import java.util.stream.Collectors
 
 class ExceptionLogger(private val application: String, vararg doNotLogClasses: Class<*>) {
+
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
   private val doNotLogClasses = doNotLogClasses.map { it.name }
 
@@ -29,7 +29,7 @@ class ExceptionLogger(private val application: String, vararg doNotLogClasses: C
       }
     }
     exceptionAndDetails.addAll(logFirstThreeStackFramesFromNavCode(throwable))
-    LOGGER.error(java.lang.String.join("\n", exceptionAndDetails))
+    logger.error(java.lang.String.join("\n", exceptionAndDetails))
     return exceptionAndDetails
   }
 
@@ -44,7 +44,7 @@ class ExceptionLogger(private val application: String, vararg doNotLogClasses: C
     }
   }
 
-    private fun fetchAllThrowables(throwable: Throwable): List<Throwable> {
+  private fun fetchAllThrowables(throwable: Throwable): List<Throwable> {
     var cause: Throwable? = throwable
     val allThrowables = ArrayList<Throwable>()
     while (cause != null) {
@@ -87,7 +87,6 @@ class ExceptionLogger(private val application: String, vararg doNotLogClasses: C
   }
 
   companion object {
-    private val LOGGER = LoggerFactory.getLogger(ExceptionLogger::class.java)
     private const val CAUSED_BY_MSG = "|> caused by %s: %s."
     private val PACKAGE_NO_NAV = ExceptionLogger::class.java.packageName.substring(
       0, ExceptionLogger::class.java.packageName.indexOf(".bidrag")

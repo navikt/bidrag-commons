@@ -11,11 +11,10 @@ import org.slf4j.LoggerFactory
 
 open class TokenXTokenService(
   private val clientConfigurationProperties: ClientConfigurationProperties,
-  private val oAuth2AccessTokenService: OAuth2AccessTokenService): TokenService("Azure") {
+  private val oAuth2AccessTokenService: OAuth2AccessTokenService
+) : TokenService("Azure") {
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
-  companion object {
-    private val LOGGER = LoggerFactory.getLogger(TokenXTokenService::class.java)
-  }
   override fun isEnabled() = true
 
   override fun fetchToken(clientRegistrationId: String): String {
@@ -23,13 +22,13 @@ open class TokenXTokenService(
   }
 
   private fun getAccessToken(clientRegistrationId: String): OAuth2AccessTokenResponse {
-    LOGGER.debug("TokenX: Creating token for clientRegistrationId $clientRegistrationId")
+    logger.debug("TokenX: Creating token for clientRegistrationId $clientRegistrationId")
     return oAuth2AccessTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId))
   }
 
-  private fun createClientPropertiesWithGrantType(clientRegistrationId: String): ClientProperties{
+  private fun createClientPropertiesWithGrantType(clientRegistrationId: String): ClientProperties {
     val registration = clientConfigurationProperties.registration["${clientRegistrationId}_tokenx"]
-        ?: throw TokenException("Missing registration for client $clientRegistrationId")
+      ?: throw TokenException("Missing registration for client $clientRegistrationId")
     val tokenExchange = ClientProperties.TokenExchangeProperties(
       registration.tokenExchange.audience.replace(".", ":"),
       ""
@@ -41,6 +40,7 @@ open class TokenXTokenService(
       registration.scope,
       registration.authentication,
       registration.resourceUrl,
-      tokenExchange)
+      tokenExchange
+    )
   }
 }
