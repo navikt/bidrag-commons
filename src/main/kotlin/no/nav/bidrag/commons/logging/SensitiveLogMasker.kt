@@ -8,39 +8,39 @@ import java.util.regex.Pattern
 
 class SensitiveLogMasker : ValueMasker {
 
-    companion object {
-        private val FNR_PATTERN: Pattern = "(?<![0-9])[0-9]{11}(?![0-9])".toPattern()
-        private val AKTOER_PATTERN: Pattern = "(?<![0-9])[0-9]{13}(?![0-9])".toPattern()
-    }
+  companion object {
+    private val FNR_PATTERN: Pattern = "(?<![0-9])[0-9]{11}(?![0-9])".toPattern()
+    private val AKTOER_PATTERN: Pattern = "(?<![0-9])[0-9]{13}(?![0-9])".toPattern()
+  }
 
-    override fun mask(p0: JsonStreamContext?, p1: Any?): Any? {
-        return (if (p1 is CharSequence) {
-            maskLogMessage(p1)
-        } else {
-            p1
-        })
-    }
+  override fun mask(p0: JsonStreamContext?, p1: Any?): Any? {
+    return (if (p1 is CharSequence) {
+      maskLogMessage(p1)
+    } else {
+      p1
+    })
+  }
 
-    fun maskLogMessage(logMessage: CharSequence?): String {
-        val sb = StringBuilder(logMessage)
-        maskAll(sb, AKTOER_PATTERN)
-        maskAll(sb, FNR_PATTERN)
-        return sb.toString()
-    }
+  fun maskLogMessage(logMessage: CharSequence?): String {
+    val sb = StringBuilder(logMessage)
+    maskAll(sb, AKTOER_PATTERN)
+    maskAll(sb, FNR_PATTERN)
+    return sb.toString()
+  }
 
-    private fun maskAll(sb: StringBuilder, pattern: Pattern){
-        val matcher: Matcher = pattern.matcher(sb)
-        while (matcher.find()) {
-            mask(sb, matcher.start(), matcher.end())
-            matcher.start()
-        }
+  private fun maskAll(sb: StringBuilder, pattern: Pattern) {
+    val matcher: Matcher = pattern.matcher(sb)
+    while (matcher.find()) {
+      mask(sb, matcher.start(), matcher.end())
+      matcher.start()
     }
+  }
 
-    private fun mask(sb: StringBuilder, start: Int, end: Int) {
-        for (i in start until end) {
-            sb.setCharAt(i, '*')
-        }
+  private fun mask(sb: StringBuilder, start: Int, end: Int) {
+    for (i in start until end) {
+      sb.setCharAt(i, '*')
     }
+  }
 
 
 }

@@ -6,19 +6,19 @@ import no.nav.bidrag.commons.security.model.TokenForBasicAuthentication
 import no.nav.security.token.support.client.core.OAuth2CacheFactory
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
 import org.slf4j.LoggerFactory
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 
 @EnableConfigurationProperties(StsConfigurationProperties::class)
 @Service("stsTokenService")
-class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) :
-  TokenService("STS") {
+class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) : TokenService("STS") {
+
+  private val logger = LoggerFactory.getLogger(this::class.java)
+
   private val stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(100, 300)
 
   private val restTemplate =
@@ -29,7 +29,6 @@ class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) :
       ).build()
 
   companion object {
-    private val LOGGER = LoggerFactory.getLogger(StsTokenService::class.java)
     private val PARAMETERS: LinkedMultiValueMap<String?, String?> =
       object : LinkedMultiValueMap<String?, String?>(2) {
         init {
@@ -48,7 +47,7 @@ class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) :
   }
 
   private fun getToken(cacheName: String): OAuth2AccessTokenResponse {
-    LOGGER.debug("Fetching STS token")
+    logger.debug("Fetching STS token")
     val tokenForBasicAuthenticationResponse = restTemplate!!.exchange(
       "/",
       HttpMethod.POST,

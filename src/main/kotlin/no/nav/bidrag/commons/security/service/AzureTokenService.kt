@@ -13,13 +13,16 @@ import org.slf4j.LoggerFactory
 
 open class AzureTokenService(
   private val clientConfigurationProperties: ClientConfigurationProperties,
-  private val oAuth2AccessTokenService: OAuth2AccessTokenService): TokenService("Azure") {
+  private val oAuth2AccessTokenService: OAuth2AccessTokenService
+) : TokenService("Azure") {
+
+  private val logger = LoggerFactory.getLogger(this::class.java)
 
   companion object {
-    private val LOGGER = LoggerFactory.getLogger(AzureTokenService::class.java)
     const val AZURE_CLAIM_OID = "oid"
     const val AZURE_CLAIM_SUB = "sub"
   }
+
   override fun isEnabled() = true
 
   override fun fetchToken(clientRegistrationId: String, token: JwtToken?): String {
@@ -27,11 +30,11 @@ open class AzureTokenService(
   }
 
   private fun getAccessToken(clientRegistrationId: String, token: JwtToken?): OAuth2AccessTokenResponse {
-    if (token != null && isOnBehalfOfFlowToken(token)){
-      LOGGER.debug("AZURE: Creating on-behalf-of token")
+    if (token != null && isOnBehalfOfFlowToken(token)) {
+      logger.debug("AZURE: Creating on-behalf-of token")
       return oAuth2AccessTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.JWT_BEARER))
     }
-    LOGGER.debug("AZURE: Creating client credentials token")
+    logger.debug("AZURE: Creating client credentials token")
     return oAuth2AccessTokenService.getAccessToken(createClientPropertiesWithGrantType(clientRegistrationId, OAuth2GrantType.CLIENT_CREDENTIALS))
   }
 
@@ -40,16 +43,17 @@ open class AzureTokenService(
     return jwtTokenClaims.getStringClaim(AZURE_CLAIM_SUB) != jwtTokenClaims.getStringClaim(AZURE_CLAIM_OID)
   }
 
-  private fun createClientPropertiesWithGrantType(clientRegistrationId: String, grantType: OAuth2GrantType?): ClientProperties{
+  private fun createClientPropertiesWithGrantType(clientRegistrationId: String, grantType: OAuth2GrantType?): ClientProperties {
     val registration = clientConfigurationProperties.registration[clientRegistrationId]
-        ?: throw TokenException("Missing registration for client $clientRegistrationId")
+      ?: throw TokenException("Missing registration for client $clientRegistrationId")
     return ClientProperties(
       registration.tokenEndpointUrl,
       registration.wellKnownUrl,
-      grantType?:registration.grantType,
+      grantType ?: registration.grantType,
       registration.scope,
       registration.authentication,
       registration.resourceUrl,
-      registration.tokenExchange)
+      registration.tokenExchange
+    )
   }
 }

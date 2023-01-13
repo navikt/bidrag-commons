@@ -41,7 +41,7 @@ class BearerTokenClientInterceptorTest {
   @Test
   fun `intercept bruker grant type client credentials når det ikke er noen request context`() {
     val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
-    every { req.uri } returns (URI("http://firstResource.no"))
+    every { req.uri } returns URI("http://firstResource.no")
     val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
 
     bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
@@ -56,7 +56,7 @@ class BearerTokenClientInterceptorTest {
     mockBrukerContext("saksbehandler")
 
     val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
-    every { req.uri } returns (URI("http://firstResource.no"))
+    every { req.uri } returns URI("http://firstResource.no")
     val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
 
     bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
