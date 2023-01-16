@@ -46,7 +46,7 @@
     <!-- plugins -->
     <maven-compiler.version>3.8.1</maven-compiler.version>
     <maven-surefire.version>3.0.0-M8</maven-surefire.version>
-    <kotlin.version>1.6.10</kotlin.version>
+    <kotlin.version>1.7.22</kotlin.version>
   </properties>
 
   <distributionManagement>
