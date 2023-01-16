@@ -5,6 +5,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Scope
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Import
 class RestOperationsSts {
 
   @Bean("sts")
+  @Scope("prototype")
   fun restOperationsSts(
     restTemplateBuilder: RestTemplateBuilder,
     stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,

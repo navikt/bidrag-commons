@@ -1,7 +1,7 @@
 package no.nav.bidrag.commons.util
 
-import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringBuilder
-import net.logstash.logback.encoder.org.apache.commons.lang3.builder.ToStringStyle
+import org.apache.commons.lang3.builder.ToStringBuilder
+import org.apache.commons.lang3.builder.ToStringStyle
 import org.slf4j.LoggerFactory
 import java.util.*
 

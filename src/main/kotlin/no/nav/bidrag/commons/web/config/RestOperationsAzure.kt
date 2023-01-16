@@ -6,6 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Scope
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
@@ -13,12 +14,14 @@ import org.springframework.context.annotation.Import
 class RestOperationsAzure {
 
   @Bean("azure")
+  @Scope("prototype")
   fun restOperationsJwtBearer(
     restTemplateBuilder: RestTemplateBuilder,
     bearerTokenClientInterceptor: BearerTokenClientInterceptor
   ) = restTemplateBuilder.additionalInterceptors(bearerTokenClientInterceptor).build()
 
   @Bean("azureService")
+  @Scope("prototype")
   fun restOperationsServiceJwtBearer(
     restTemplateBuilder: RestTemplateBuilder,
     bearerTokenClientInterceptor: ServiceUserAuthTokenInterceptor

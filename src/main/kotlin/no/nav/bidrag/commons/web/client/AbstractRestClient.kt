@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
@@ -38,6 +39,10 @@ abstract class AbstractRestClient(
     return getForEntity(uri, null)
   }
 
+  protected inline fun <reified T : Any> getForNonNullEntity(uri: URI): T {
+    return getForEntity(uri, null) ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, uri.toString())
+  }
+
   protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders?): T? {
     return executeMedMetrics(uri) {
       operations.exchange(
@@ -46,6 +51,10 @@ abstract class AbstractRestClient(
         HttpEntity(null, httpHeaders)
       )
     }
+  }
+
+  protected inline fun <reified T : Any> postForNonNullEntity(uri: URI, payload: Any): T {
+    return postForEntity(uri, payload, null) ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, uri.toString())
   }
 
   protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T? {
@@ -131,8 +140,7 @@ abstract class AbstractRestClient(
         Charsets.UTF_8
       )
     }
-    val payload = respons.body
-    return payload
+    return respons.body
   }
 
   protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T? {
