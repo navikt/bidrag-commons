@@ -45,6 +45,8 @@ class EnhetFilter : Filter {
     private val ENHETSNUMMER_VALUE = ThreadLocal<String>()
     private const val ENHET_MDC = "enhet"
     const val X_ENHET_HEADER = "X-Enhet"
+
+    @JvmStatic
     fun fetchForThread(): String {
       return ENHETSNUMMER_VALUE.get()
     }

@@ -65,6 +65,7 @@ class CorrelationIdFilter : Filter {
 
 
   companion object {
+    @JvmStatic
     fun fetchCorrelationIdForThread(): String {
       return CorrelationId.fetchCorrelationIdForThread()
     }
