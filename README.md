@@ -183,7 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.7.34   | endret       | Lagt til getForNonNullEntity og postForNonNullEntity i AbstractRestClient og oppdatert avhengigheter                                           |
+| 0.7.33   | endret       | Lagt til getForNonNullEntity og postForNonNullEntity i AbstractRestClient og oppdatert avhengigheter                                           |
 | 0.7.32   | endret       | Endret Java til Kotlin i produksjonskode                                                                                                       |
 | 0.7.31   | endret       | Endret AbstractRestClient til å akseptere tom body                                                                                             |
 | 0.7.30   | endret       | Lagt til `SikkerhetsKontekst` og mulighet til å gjøre kall i applikasjonkontekst                                                               |
