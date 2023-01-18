@@ -70,7 +70,7 @@ abstract class AzureTokenClientInterceptor(
       val preferredUsername =
         SpringTokenValidationContextHolder()
           .tokenValidationContext
-          .getClaims("azuread")["preferred_username"]
+          .getClaims("aad")["preferred_username"]
       return preferredUsername == null
     } catch (e: Throwable) {
       // Ingen request context. Skjer ved kall som har opphav i kjørende applikasjon. Ping etc.

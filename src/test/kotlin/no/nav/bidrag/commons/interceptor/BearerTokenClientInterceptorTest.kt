@@ -87,7 +87,7 @@ class BearerTokenClientInterceptorTest {
         RequestAttributes.SCOPE_REQUEST
       )
     } returns tokenValidationContext
-    every { tokenValidationContext.getClaims("azuread") } returns jwtTokenClaims
+    every { tokenValidationContext.getClaims("aad") } returns jwtTokenClaims
     every { jwtTokenClaims.get("preferred_username") } returns preferredUsername
     every { jwtTokenClaims.get("NAVident") } returns preferredUsername
   }

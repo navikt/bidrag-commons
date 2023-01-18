@@ -181,136 +181,137 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 ## release endringer
 
-| versjon  | endringstype | beskrivelse                                                                                                                                 |
-|----------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.7.34   | endret       | Lagt til jvmStatic og andre mindre endringer for kompatibilitet med Java og Spring                                                          |
-| 0.7.33   | endret       | Lagt til getForNonNullEntity og postForNonNullEntity i AbstractRestClient og oppdatert avhengigheter                                        |
-| 0.7.32   | endret       | Endret Java til Kotlin i produksjonskode                                                                                                    |
-| 0.7.31   | endret       | Endret AbstractRestClient til å akseptere tom body                                                                                          |
-| 0.7.30   | endret       | Lagt til `SikkerhetsKontekst` og mulighet til å gjøre kall i applikasjonkontekst                                                            |
-| 0.7.29   | endret       | Oppdater `KildesystemIdenfikator` legg til støtte for forsendelse og refaktorer til Kotlin                                                  |
-| 0.7.28   | endret       | Fiks `BrukerCacheable` til å ta inn cache navn uten å nevne `value`                                                                         |
-| 0.7.27   | endret       | Lagt til `BrukerCacheable` og `InvaliderCacheFørStartenAvArbeidsdag`                                                                        |
-| 0.7.26   | endret       | Lagt til flere headere i `MdcValuesPropagatingInterceptor`                                                                                  |
-| 0.7.25   | opprettet    | Lagt til restTemplate som kun bruker service user til autentisering                                                                         |
-| 0.7.24   | endret       | Endret instantiering av restTemplateBuilder                                                                                                 |
-| 0.7.23   | endret       | Fikset manglende import av proxy                                                                                                            |
-| 0.7.22   | endret       | Endret konfigurasjon for proxy cumstomizer i RestTemlateBuilderBean                                                                         |
-| 0.7.21   | endret       | Endre issuer idporten til tokenx og oppdater TokenUtils                                                                                     |
-| 0.7.20   | endret       | Lagt til stsTokenService dummy bean som brukes hvis stsTokenService bønnen ikke er initialisert                                             |
-| 0.7.19   | endret       | La til støtte for `TokenX` i securityTokenService                                                                                           |
-| 0.7.18   | endret       | Byttet `tokenValidationContextHodler` med `SpringTokenValidationContextHodler()`                                                            |
-| 0.7.17   | endret       | `MdcValuesPropagatingClientInterceptor` Fikset sjekk av riktig MDC-verdi                                                                    |
-| 0.7.16   | endret       | `MdcValuesPropagatingClientInterceptor` Satt riktig headernavn.                                                                             |
-| 0.7.15   | endret       | `SecurityConfig` fiks initialisering av StsTokenService bønne                                                                               |
-| 0.7.14   | endret       | `TokenUtils` fiks fetchAppName som kunne gi nullpointerexception                                                                            |
-| 0.7.13   | endret       | Fikset unødvendig lasting av StsConfigurationProperties.                                                                                    |
-| 0.7.12   | opprettet    | Hjelpeklasser og konfigurasjon for restklienter.                                                                                            |
-| 0.7.11   | endret       | `TokenUtils` forbredet API                                                                                                                  |
-| 0.7.11   | opprettet    | `UserMdcFilter` som legger til brukerid i MDC                                                                                               |
-| 0.7.10   | opprettet    | `TokenUtils` for å kunne hente saksbehandlerident fra token                                                                                 |
-| 0.7.9    | endret       | Lagt til exposed headers på `DefaultCorsFilter`                                                                                             |
-| 0.7.8    | endret       | Endret `CorsFilter` til `DefaultCorsFilter` og oppdatert cors konfigurasjon                                                                 |
-| 0.7.7    | opprettet    | `CorsFilter` for å kunne kalle bidrag-apper rett fra nettleser                                                                              |
-| 0.7.6    | endret       | `SecurityConfig` authTokenInterceptor bruk Azure client-credentials ved service token                                                       |
-| 0.7.5    | endret       | `SecurityConfig` Fiks feil i navConsumerTokenInterceptor                                                                                    |
-| 0.7.4    | endret       | `SecurityConfig` rull tilbake auto skru av default spring sikkerhetskonfigurasjon                                                           |
-| 0.7.3    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                              |
-| 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                             |
-| 0.7.1    | endret       | `SensitiveLogMasker` masker hele sensitiv data istedenfor å vise deler av den                                                               |
-| 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                               |
-| 0.6.7    | endret       | Legg til applikasjon STS token hvis inkommende token er STS                                                                                 |
-| 0.6.6    | endret       | Fjernet SpringSecurityConfig                                                                                                                |
-| 0.6.5    | endret       | Fikset caching i STSTokenService                                                                                                            |
-| 0.6.4    | endret       | Legg til støtte for å mocke bønner i sikkerhetskonfigurasjon                                                                                |
-| 0.6.3    | endret       | Feilfiks sikkerhetskonfigurasjon for StsService bønne                                                                                       |
-| 0.6.2    | endret       | Bruk token-client-spring for sikkerhetskonfigurasjon                                                                                        |
-| 0.6.1    | endret       | Feilfiks i sikkerhetskonfigurasjon og støtte for maskin-maskin kommunikasjon                                                                |
-| 0.6.0    | opprettet    | Lagt til felles sikkerhetskonfigurasjon                                                                                                     |
-| 0.5.24   | endret       | `HttpHeaderRestTemplate`: Endre logger til nivå debug                                                                                       |
-| 0.5.23   | endret       | `HttpHeaderRestTemplate`: Only fetch headergenerator once                                                                                   |
-| 0.5.22   | endret       | `HttpHeaderRestTemplate`: Clear enhet from thread                                                                                           |
-| 0.5.21   | endret       | `HttpHeaderRestTemplate`: Hindre duplikat header for x_enhet                                                                                |
-| 0.5.20   | endret       | `HttpHeaderRestTemplate`: metode for å legge til default headere                                                                            |
-| 0.5.20   | endret       | `EnhetFilter`: legg til MDC                                                                                                                 |
-| 0.5.19   | endret       | `HttpHeaderRestTemplate`: endret hvordan HEADER blir logget                                                                                 |
-| 0.5.18   | endret       | `KildesystemIdentifikator`: ny metode: `erKjentKildesystemMedIdMedIdSomOverstigerInteger()`                                                 |
-| 0.5.17.1 | endret       | Kompilering mot spring-boot 2.5.6                                                                                                           |
-| 0.5.16   | endret       | `HttpHeaderRestTemplate`: logger headere og generatorer bare når de finnes...                                                               |
-| 0.5.15   | endret       | `KildesystemIdentifikator`: Kan hente ut journalpostId som long (og ikke bare som int)                                                      |
-| 0.5.14   | endret       | `ExceptionLogger`: previous frames melding kommer bare hvis det finnes previous frames                                                      |
-| 0.5.13   | endret       | `ExceptionLogger`: delt melding av kode i nav med previous frames på 2 linjer                                                               |
-| 0.5.12   | endret       | `ExceptionLogger`: logger "simple name" til exception, endret hvordan detaljer blir logget                                                  |
-| 0.5.11   | endret       | `HttpResponse`: ny metode `clearContentHeaders()`                                                                                           |
-| 0.5.10   | endret       | `ExceptionLogger`: Vil logge et exception en gang sammen med detaljene for dette exceptionet                                                |
-| 0.5.9    | endret       | `ExceptionLogger`: Vil også returnere logginnslag som en liste av strenger                                                                  |
-| 0.5.8    | endret       | `CorrelationIdFilter`: Prosesserer ikke logging mot actuator, swagger eller api-docs                                                        |
-| 0.5.7    | endret       | `CorrelationId`: Fjernet mulighet for bug når streng er blank, samt kompilering mot spring-boot 2.5.1                                       |
-| 0.5.6    | endret       | `ExceptionLogger`: Logger metodenavn på de siste stack frames fra nav                                                                       |
-| 0.5.5    | avhengighet  | Kompilering mot spring-boot 2.4.3 -> 2.4.4                                                                                                  |
-| 0.5.4    | avhengighet  | Kompilering mot spring-boot 2.4.2 -> 2.4.3                                                                                                  |
-| 0.5.3.3  | endret       | `ExceptionLogger`: Logger 3 siste stack elements sett fra nav                                                                               |
-| 0.5.3.2  | endret       | `ExceptionLogger`: Walking the stack trace, not the stack                                                                                   |
-| 0.5.3.1  | endret       | `ExceptionLogger`: Ikke logging fra klasser som har filnavn lik <generated>                                                                 |
-| 0.5.3    | endret       | `ExceptionLogger`: Vil ikke logge kode auto-generert klassenavn                                                                             |
-| 0.5.2    | endret       | `ExceptionLogger`: Kan instansieres med klasser som ikke skal være del av stack som logges                                                  |
-| 0.5.1    | endret       | `ExceptionLogger`: Henter ikke stack fra exception, men bruker StackWalker.getInstance()                                                    |
-| 0.5.0    | endret       | `HttpHeaderRestTemplate`: Kan fjerne header generator                                                                                       |
-| 0.4.3    | endret       | `pom.xml`: oppgradert spring-boot for å fjerne sårbar avhengighet                                                                           |
-| 0.4.2    | endret       | `pom.xml`: fjernet sårbar avhengighet                                                                                                       |
-| 0.4.1    | endret       | `HttpResponse`: Kan opprettes med "body", `HttpHeaders` og status kode, samt ny metode: `fetchHeaders`                                      |
-| 0.4.0    | opprettet    | `WebUtil`: Util klasse med hjelpemetoder. Første versjon: Kan initialisere `HttpHeadera` fra spring med name/value på header                |
-| 0.4.0    | opprettet    | `HttpResponse`: Mulighet for å videresende `ResponseEntity` fra spring                                                                      |
-| 0.4.0    | deprecated   | `HttpStatusResponse`: Behov for å videresende mer enn bare http status                                                                      |
-| 0.3.7    | endret       | `ExceptionLogger`: Logger ikke response body fra `HttpStatusCodeException` når den mangler                                                  |
-| 0.3.6    | endret       | `ExceptionLogger`: Logger også response body når det er et `HttpStatusCodeException`                                                        |
-| 0.3.5    | endret       | `CorreleationIdFilter`: Fikse IndexOutOfBounds                                                                                              |
-| 0.3.4    | endret       | `CorreleationIdFilter`: Bruker class.getSimpleName() ved logging                                                                            |
-| 0.3.4    | endret       | `EnhetFilter`: Bruker class.getSimpleName() ved logging                                                                                     |
-| 0.3.3    | endret       | `EnhetFilter`: Endre navn på headerfelt X-Enhetsnummer til X-Enhet                                                                          |
-| 0.3.2    | endret       | `HttpHeaderRestTemplate`: Logger header names (ikke values)                                                                                 |
-| 0.3.2    | endret       | `SoapSamlCallback`: Logger ikke SOAP message                                                                                                |
-| 0.3.1    | endret       | `HttpHeaderRestTemplate`: Logger masked Authorization header                                                                                |
-| 0.3.0    | endret       | `KildesystemIdentifikator`: value bean uten statisk tilstand                                                                                |
-| 0.3.0    | endret       | `KildesystemIdentifikator`: Forholder seg ikke til heltallstype ved sjekking av gyldighet (long vs integer)                                 |
-| 0.2.1    | endret       | Fjernet skadelige avhengigheter rapportert av snyk.io                                                                                       |
-| 0.2.0    | -- ingen --  | Overgang til bruk av github som maven-repo                                                                                                  |
-| 0.1.18   | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges                                                         |
-| 0.1.15   | endret       | `CorrelationId`: genererer `<hex>-correlationId` når verdien som blir gitt er null                                                          |
-| 0.1.15   | endret       | `CorrelationId`: genererer correlation id med `-` uten `()`                                                                                 |
-| 0.1.14   | opprettet    | `SoapSamlCallback`: feil ved deploy av versjon 0.1.13                                                                                       |
-| 0.1.13   | opprettet    | `SoapSamlCallback`: `SoapActionCallback` i en web service med et saml-token                                                                 |
-| 0.1.12   | endring      | `EnhetFilter`: tar vare på enhetsinformasjon i ThreadLocal                                                                                  |
-| 0.1.11   | endring      | `EnhetFilter`: error logger hvis ServletRequest ikke er en HttpServletRequest                                                               |
-| 0.1.10   | opprettet    | `HttpStatusResponse.isNotSuccessful()`:                                                                                                     |
-| 0.1.9    | opprettet    | `KildesystemIdenfikator.hentJournalpostId()`:                                                                                               |
-| 0.1.8    | opprettet    | `KildesystemIdenfikator`: til å identifisere                                                                                                |
-| 0.1.7    | endring      | fix vulnerabilities reported on snyk.io                                                                                                     |
-| 0.1.6    | endring      | `ExceptionLogger`: logger exception sett fra nav kode uten exception cause også                                                             |
-| 0.1.5    | endring      | `ExceptionLogger`: logger ikke egne innslag for exception uten cause                                                                        |
-| 0.1.3    | endring      | `ExceptionLogger`: logger siste StackTraceElement fra no.nav før exception og skipper logging fra stack                                     |
-| 0.1.2    | endring      | `ExceptionLogger`: utbedret logging, samt redusert logging til å bare logge full stack på root causeœ                                       |
-| 0.1.1    | slettet      | `HttpStatusResponse`: metode `fetchBody()`                                                                                                  |
-| 0.1.0    | endring      | `HttpStatusResponse`: navn på metoder (`isEmpty()` -> `isBodyEmpty`)                                                                        |
-| 0.1.0    | endring      | `HttpStatusResponse`: ny metode (`fetchBody()`)                                                                                             |
-| 0.1.0    | endring      | `HttpStatusResponse`: ny metode (`isBodyPresent()`)                                                                                         |
-| 0.0.32   | endret       | `EnhetFilter`: logger ikke kall mot "actuator"-tjenester                                                                                    |
-| 0.0.31   | endret       | `EnhetFilter`: fortsetter filtrering med `javax.servlet.FilterChain`                                                                        |
-| 0.0.30   | opprettet    | `EnhetFilter`: et `javax.servlet.Filter` som videresender header med enhetsnummer                                                           |
-| 0.0.29   | endring      | `HttpStatusResponse`: konstruktør bare for `HttpStatus`                                                                                     |
-| 0.0.28   | endring      | `HttpStatusResponse`: metode (`isEmpty()`)                                                                                                  |
-| 0.0.28   | endring      | `HttpHeaderRestTemplate`: akspeterer at et "callback" ikke gjøres med en `HttpEntity`                                                       |
-| 0.0.27   | endring      | `HttpStatusResponse`: metode (`toString()`)                                                                                                 |
-| 0.0.25   | opprettet    | `HttpStatusResponse` for å videresende HttpStatus sammen med resultat fra consumer                                                          |
-| 0.0.23   | endring      | ny java baseline - java 12                                                                                                                  |
-| 0.0.21   | slettet      | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!                                                                  |
+| versjon  | endringstype | beskrivelse                                                                                                                                    |
+|----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.35   | opprettet    | Lagt til rammeverk for audit-logging                                                                                                           |
+| 0.7.34   | endret       | Lagt til jvmStatic og andre mindre endringer for kompatibilitet med Java og Spring                                                             |
+| 0.7.33   | endret       | Lagt til getForNonNullEntity og postForNonNullEntity i AbstractRestClient og oppdatert avhengigheter                                           |
+| 0.7.32   | endret       | Endret Java til Kotlin i produksjonskode                                                                                                       |
+| 0.7.31   | endret       | Endret AbstractRestClient til å akseptere tom body                                                                                             |
+| 0.7.30   | endret       | Lagt til `SikkerhetsKontekst` og mulighet til å gjøre kall i applikasjonkontekst                                                               |
+| 0.7.29   | endret       | Oppdater `KildesystemIdenfikator` legg til støtte for forsendelse og refaktorer til Kotlin                                                     |
+| 0.7.28   | endret       | Fiks `BrukerCacheable` til å ta inn cache navn uten å nevne `value`                                                                            |
+| 0.7.27   | endret       | Lagt til `BrukerCacheable` og `InvaliderCacheFørStartenAvArbeidsdag`                                                                           |
+| 0.7.26   | endret       | Lagt til flere headere i `MdcValuesPropagatingInterceptor`                                                                                     |
+| 0.7.25   | opprettet    | Lagt til restTemplate som kun bruker service user til autentisering                                                                            |
+| 0.7.24   | endret       | Endret instantiering av restTemplateBuilder                                                                                                    |
+| 0.7.23   | endret       | Fikset manglende import av proxy                                                                                                               |
+| 0.7.22   | endret       | Endret konfigurasjon for proxy cumstomizer i RestTemlateBuilderBean                                                                            |
+| 0.7.21   | endret       | Endre issuer idporten til tokenx og oppdater TokenUtils                                                                                        |
+| 0.7.20   | endret       | Lagt til stsTokenService dummy bean som brukes hvis stsTokenService bønnen ikke er initialisert                                                |
+| 0.7.19   | endret       | La til støtte for `TokenX` i securityTokenService                                                                                              |
+| 0.7.18   | endret       | Byttet `tokenValidationContextHodler` med `SpringTokenValidationContextHodler()`                                                               |
+| 0.7.17   | endret       | `MdcValuesPropagatingClientInterceptor` Fikset sjekk av riktig MDC-verdi                                                                       |
+| 0.7.16   | endret       | `MdcValuesPropagatingClientInterceptor` Satt riktig headernavn.                                                                                |
+| 0.7.15   | endret       | `SecurityConfig` fiks initialisering av StsTokenService bønne                                                                                  |
+| 0.7.14   | endret       | `TokenUtils` fiks fetchAppName som kunne gi nullpointerexception                                                                               |
+| 0.7.13   | endret       | Fikset unødvendig lasting av StsConfigurationProperties.                                                                                       |
+| 0.7.12   | opprettet    | Hjelpeklasser og konfigurasjon for restklienter.                                                                                               |
+| 0.7.11   | endret       | `TokenUtils` forbredet API                                                                                                                     |
+| 0.7.11   | opprettet    | `UserMdcFilter` som legger til brukerid i MDC                                                                                                  |
+| 0.7.10   | opprettet    | `TokenUtils` for å kunne hente saksbehandlerident fra token                                                                                    |
+| 0.7.9    | endret       | Lagt til exposed headers på `DefaultCorsFilter`                                                                                                |
+| 0.7.8    | endret       | Endret `CorsFilter` til `DefaultCorsFilter` og oppdatert cors konfigurasjon                                                                    |
+| 0.7.7    | opprettet    | `CorsFilter` for å kunne kalle bidrag-apper rett fra nettleser                                                                                 |
+| 0.7.6    | endret       | `SecurityConfig` authTokenInterceptor bruk Azure client-credentials ved service token                                                          |
+| 0.7.5    | endret       | `SecurityConfig` Fiks feil i navConsumerTokenInterceptor                                                                                       |
+| 0.7.4    | endret       | `SecurityConfig` rull tilbake auto skru av default spring sikkerhetskonfigurasjon                                                              |
+| 0.7.3    | endret       | `SecurityConfig` feilretting av skru av default spring sikkerhetskonfigurasjon                                                                 |
+| 0.7.1    | endret       | `SecurityConfig` skru av default spring sikkerhetskonfigurasjon                                                                                |
+| 0.7.1    | endret       | `SensitiveLogMasker` masker hele sensitiv data istedenfor å vise deler av den                                                                  |
+| 0.7.0    | opprettet    | `SensitiveLogMasker` for bruk i logback for maskering av sensitiv data i logg                                                                  |
+| 0.6.7    | endret       | Legg til applikasjon STS token hvis inkommende token er STS                                                                                    |
+| 0.6.6    | endret       | Fjernet SpringSecurityConfig                                                                                                                   |
+| 0.6.5    | endret       | Fikset caching i STSTokenService                                                                                                               |
+| 0.6.4    | endret       | Legg til støtte for å mocke bønner i sikkerhetskonfigurasjon                                                                                   |
+| 0.6.3    | endret       | Feilfiks sikkerhetskonfigurasjon for StsService bønne                                                                                          |
+| 0.6.2    | endret       | Bruk token-client-spring for sikkerhetskonfigurasjon                                                                                           |
+| 0.6.1    | endret       | Feilfiks i sikkerhetskonfigurasjon og støtte for maskin-maskin kommunikasjon                                                                   |
+| 0.6.0    | opprettet    | Lagt til felles sikkerhetskonfigurasjon                                                                                                        |
+| 0.5.24   | endret       | `HttpHeaderRestTemplate`: Endre logger til nivå debug                                                                                          |
+| 0.5.23   | endret       | `HttpHeaderRestTemplate`: Only fetch headergenerator once                                                                                      |
+| 0.5.22   | endret       | `HttpHeaderRestTemplate`: Clear enhet from thread                                                                                              |
+| 0.5.21   | endret       | `HttpHeaderRestTemplate`: Hindre duplikat header for x_enhet                                                                                   |
+| 0.5.20   | endret       | `HttpHeaderRestTemplate`: metode for å legge til default headere                                                                               |
+| 0.5.20   | endret       | `EnhetFilter`: legg til MDC                                                                                                                    |
+| 0.5.19   | endret       | `HttpHeaderRestTemplate`: endret hvordan HEADER blir logget                                                                                    |
+| 0.5.18   | endret       | `KildesystemIdentifikator`: ny metode: `erKjentKildesystemMedIdMedIdSomOverstigerInteger()`                                                    |
+| 0.5.17.1 | endret       | Kompilering mot spring-boot 2.5.6                                                                                                              |
+| 0.5.16   | endret       | `HttpHeaderRestTemplate`: logger headere og generatorer bare når de finnes...                                                                  |
+| 0.5.15   | endret       | `KildesystemIdentifikator`: Kan hente ut journalpostId som long (og ikke bare som int)                                                         |
+| 0.5.14   | endret       | `ExceptionLogger`: previous frames melding kommer bare hvis det finnes previous frames                                                         |
+| 0.5.13   | endret       | `ExceptionLogger`: delt melding av kode i nav med previous frames på 2 linjer                                                                  |
+| 0.5.12   | endret       | `ExceptionLogger`: logger "simple name" til exception, endret hvordan detaljer blir logget                                                     |
+| 0.5.11   | endret       | `HttpResponse`: ny metode `clearContentHeaders()`                                                                                              |
+| 0.5.10   | endret       | `ExceptionLogger`: Vil logge et exception en gang sammen med detaljene for dette exceptionet                                                   |
+| 0.5.9    | endret       | `ExceptionLogger`: Vil også returnere logginnslag som en liste av strenger                                                                     |
+| 0.5.8    | endret       | `CorrelationIdFilter`: Prosesserer ikke logging mot actuator, swagger eller api-docs                                                           |
+| 0.5.7    | endret       | `CorrelationId`: Fjernet mulighet for bug når streng er blank, samt kompilering mot spring-boot 2.5.1                                          |
+| 0.5.6    | endret       | `ExceptionLogger`: Logger metodenavn på de siste stack frames fra nav                                                                          |
+| 0.5.5    | avhengighet  | Kompilering mot spring-boot 2.4.3 -> 2.4.4                                                                                                     |
+| 0.5.4    | avhengighet  | Kompilering mot spring-boot 2.4.2 -> 2.4.3                                                                                                     |
+| 0.5.3.3  | endret       | `ExceptionLogger`: Logger 3 siste stack elements sett fra nav                                                                                  |
+| 0.5.3.2  | endret       | `ExceptionLogger`: Walking the stack trace, not the stack                                                                                      |
+| 0.5.3.1  | endret       | `ExceptionLogger`: Ikke logging fra klasser som har filnavn lik <generated>                                                                    |
+| 0.5.3    | endret       | `ExceptionLogger`: Vil ikke logge kode auto-generert klassenavn                                                                                |
+| 0.5.2    | endret       | `ExceptionLogger`: Kan instansieres med klasser som ikke skal være del av stack som logges                                                     |
+| 0.5.1    | endret       | `ExceptionLogger`: Henter ikke stack fra exception, men bruker StackWalker.getInstance()                                                       |
+| 0.5.0    | endret       | `HttpHeaderRestTemplate`: Kan fjerne header generator                                                                                          |
+| 0.4.3    | endret       | `pom.xml`: oppgradert spring-boot for å fjerne sårbar avhengighet                                                                              |
+| 0.4.2    | endret       | `pom.xml`: fjernet sårbar avhengighet                                                                                                          |
+| 0.4.1    | endret       | `HttpResponse`: Kan opprettes med "body", `HttpHeaders` og status kode, samt ny metode: `fetchHeaders`                                         |
+| 0.4.0    | opprettet    | `WebUtil`: Util klasse med hjelpemetoder. Første versjon: Kan initialisere `HttpHeadera` fra spring med name/value på header                   |
+| 0.4.0    | opprettet    | `HttpResponse`: Mulighet for å videresende `ResponseEntity` fra spring                                                                         |
+| 0.4.0    | deprecated   | `HttpStatusResponse`: Behov for å videresende mer enn bare http status                                                                         |
+| 0.3.7    | endret       | `ExceptionLogger`: Logger ikke response body fra `HttpStatusCodeException` når den mangler                                                     |
+| 0.3.6    | endret       | `ExceptionLogger`: Logger også response body når det er et `HttpStatusCodeException`                                                           |
+| 0.3.5    | endret       | `CorreleationIdFilter`: Fikse IndexOutOfBounds                                                                                                 |
+| 0.3.4    | endret       | `CorreleationIdFilter`: Bruker class.getSimpleName() ved logging                                                                               |
+| 0.3.4    | endret       | `EnhetFilter`: Bruker class.getSimpleName() ved logging                                                                                        |
+| 0.3.3    | endret       | `EnhetFilter`: Endre navn på headerfelt X-Enhetsnummer til X-Enhet                                                                             |
+| 0.3.2    | endret       | `HttpHeaderRestTemplate`: Logger header names (ikke values)                                                                                    |
+| 0.3.2    | endret       | `SoapSamlCallback`: Logger ikke SOAP message                                                                                                   |
+| 0.3.1    | endret       | `HttpHeaderRestTemplate`: Logger masked Authorization header                                                                                   |
+| 0.3.0    | endret       | `KildesystemIdentifikator`: value bean uten statisk tilstand                                                                                   |
+| 0.3.0    | endret       | `KildesystemIdentifikator`: Forholder seg ikke til heltallstype ved sjekking av gyldighet (long vs integer)                                    |
+| 0.2.1    | endret       | Fjernet skadelige avhengigheter rapportert av snyk.io                                                                                          |
+| 0.2.0    | -- ingen --  | Overgang til bruk av github som maven-repo                                                                                                     |
+| 0.1.18   | endret       | `ExceptionLogger`: Exception med massage blir printet først i meldingene som logges                                                            |
+| 0.1.15   | endret       | `CorrelationId`: genererer `<hex>-correlationId` når verdien som blir gitt er null                                                             |
+| 0.1.15   | endret       | `CorrelationId`: genererer correlation id med `-` uten `()`                                                                                    |
+| 0.1.14   | opprettet    | `SoapSamlCallback`: feil ved deploy av versjon 0.1.13                                                                                          |
+| 0.1.13   | opprettet    | `SoapSamlCallback`: `SoapActionCallback` i en web service med et saml-token                                                                    |
+| 0.1.12   | endring      | `EnhetFilter`: tar vare på enhetsinformasjon i ThreadLocal                                                                                     |
+| 0.1.11   | endring      | `EnhetFilter`: error logger hvis ServletRequest ikke er en HttpServletRequest                                                                  |
+| 0.1.10   | opprettet    | `HttpStatusResponse.isNotSuccessful()`:                                                                                                        |
+| 0.1.9    | opprettet    | `KildesystemIdenfikator.hentJournalpostId()`:                                                                                                  |
+| 0.1.8    | opprettet    | `KildesystemIdenfikator`: til å identifisere                                                                                                   |
+| 0.1.7    | endring      | fix vulnerabilities reported on snyk.io                                                                                                        |
+| 0.1.6    | endring      | `ExceptionLogger`: logger exception sett fra nav kode uten exception cause også                                                                |
+| 0.1.5    | endring      | `ExceptionLogger`: logger ikke egne innslag for exception uten cause                                                                           |
+| 0.1.3    | endring      | `ExceptionLogger`: logger siste StackTraceElement fra no.nav før exception og skipper logging fra stack                                        |
+| 0.1.2    | endring      | `ExceptionLogger`: utbedret logging, samt redusert logging til å bare logge full stack på root causeœ                                          |
+| 0.1.1    | slettet      | `HttpStatusResponse`: metode `fetchBody()`                                                                                                     |
+| 0.1.0    | endring      | `HttpStatusResponse`: navn på metoder (`isEmpty()` -> `isBodyEmpty`)                                                                           |
+| 0.1.0    | endring      | `HttpStatusResponse`: ny metode (`fetchBody()`)                                                                                                |
+| 0.1.0    | endring      | `HttpStatusResponse`: ny metode (`isBodyPresent()`)                                                                                            |
+| 0.0.32   | endret       | `EnhetFilter`: logger ikke kall mot "actuator"-tjenester                                                                                       |
+| 0.0.31   | endret       | `EnhetFilter`: fortsetter filtrering med `javax.servlet.FilterChain`                                                                           |
+| 0.0.30   | opprettet    | `EnhetFilter`: et `javax.servlet.Filter` som videresender header med enhetsnummer                                                              |
+| 0.0.29   | endring      | `HttpStatusResponse`: konstruktør bare for `HttpStatus`                                                                                        |
+| 0.0.28   | endring      | `HttpStatusResponse`: metode (`isEmpty()`)                                                                                                     |
+| 0.0.28   | endring      | `HttpHeaderRestTemplate`: akspeterer at et "callback" ikke gjøres med en `HttpEntity`                                                          |
+| 0.0.27   | endring      | `HttpStatusResponse`: metode (`toString()`)                                                                                                    |
+| 0.0.25   | opprettet    | `HttpStatusResponse` for å videresende HttpStatus sammen med resultat fra consumer                                                             |
+| 0.0.23   | endring      | ny java baseline - java 12                                                                                                                     |
+| 0.0.21   | slettet      | `HttpHeaderRestTemplate.Header` removed. Not a backword compatible change!                                                                     |
 | 0.0.19   | endring      | Correlation Id without public constructors and the CorrelationIdFilter will always have the last part of the request uri containing plain text |
-| 0.0.17   | endring      | Header name of correlation id is also present on the value bean                                                                             |
-| 0.0.15   | endring      | Check correlation id header on request and name of header X_CORRELATION_ID -> X-Correlation-ID                                              |
-| 0.0.13   | endring      | `CorrelationId` as value bean                                                                                                               |
-| 0.0.11   | endring      | `ExceptionLogger` logger `Throwable` type                                                                                                   |
-| 0.0.9    | endring      | `ExceptionLogger` logger `Exception` cause                                                                                                  |
-| 0.0.8    | opprettet    | `ExceptionLogger`                                                                                                                           |
-| 0.0.6    | endring      | `CorrelationIdFilter` legger generert id på `ThreadLocal`                                                                                   |
-| 0.0.4    | endring      | `HttpHeaderRestTemplate.Header` fra et interface til en klasse for enklere bruk                                                             |
-| 0.0.1    | opprettet    | `CorrelationIdFilter` og `HttpHeaderRestTemplate`                                                                                           |
+| 0.0.17   | endring      | Header name of correlation id is also present on the value bean                                                                                |
+| 0.0.15   | endring      | Check correlation id header on request and name of header X_CORRELATION_ID -> X-Correlation-ID                                                 |
+| 0.0.13   | endring      | `CorrelationId` as value bean                                                                                                                  |
+| 0.0.11   | endring      | `ExceptionLogger` logger `Throwable` type                                                                                                      |
+| 0.0.9    | endring      | `ExceptionLogger` logger `Exception` cause                                                                                                     |
+| 0.0.8    | opprettet    | `ExceptionLogger`                                                                                                                              |
+| 0.0.6    | endring      | `CorrelationIdFilter` legger generert id på `ThreadLocal`                                                                                      |
+| 0.0.4    | endring      | `HttpHeaderRestTemplate.Header` fra et interface til en klasse for enklere bruk                                                                |
+| 0.0.1    | opprettet    | `CorrelationIdFilter` og `HttpHeaderRestTemplate`                                                                                              |
