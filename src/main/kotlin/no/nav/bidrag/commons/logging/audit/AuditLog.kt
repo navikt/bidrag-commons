@@ -5,8 +5,18 @@ package no.nav.bidrag.commons.logging.audit
 @MustBeDocumented
 annotation class AuditLog(
     val auditLoggerEvent: AuditLoggerEvent,
-    val oppslagsparameter: String
-) // brukes kun i GET request/request uten body
+    val oppslagsparameter: String,
+    val parametertype: Parametertype = Parametertype.DEFAULT
+)
+
+/**
+ * Brukes for å overstyre parametertype som utledes av requesttype
+ */
+enum class Parametertype {
+    DEFAULT,
+    ENKELTVERDI,
+    REQUEST_BODY
+}
 
 enum class AuditLoggerEvent(val type: String) {
     CREATE("create"),
