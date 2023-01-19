@@ -1,6 +1,5 @@
 package no.nav.bidrag.commons.web
 
-import no.nav.bidrag.commons.security.service.OidcTokenManager
 import no.nav.bidrag.commons.security.utils.TokenUtils
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
@@ -15,16 +14,9 @@ import javax.servlet.ServletResponse
 @Component
 class UserMdcFilter : Filter {
 
-  val oidcTokenManager: OidcTokenManager = OidcTokenManager()
-
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
-    val token = try {
-      oidcTokenManager.fetchTokenAsString()
-    } catch (_: Exception) {
-      null
-    }
-    val user = token?.let { TokenUtils.fetchSubject(it) }
-    val appName = token?.let { TokenUtils.fetchAppName(it) }
+    val user = TokenUtils.hentBruker()
+    val appName = TokenUtils.hentApplikasjonNavn()
     user?.apply { MDC.put(USER_MDC, user) }
     appName?.apply { MDC.put(APP_NAME_MDC, appName) }
 

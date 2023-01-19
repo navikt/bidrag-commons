@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.36   | endret       | Oppdatert API i 'TokenUtils'                                                                                                                   |
 | 0.7.35   | opprettet    | Lagt til rammeverk for audit-logging                                                                                                           |
 | 0.7.34   | endret       | Lagt til jvmStatic og andre mindre endringer for kompatibilitet med Java og Spring                                                             |
 | 0.7.33   | endret       | Lagt til getForNonNullEntity og postForNonNullEntity i AbstractRestClient og oppdatert avhengigheter                                           |

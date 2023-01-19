@@ -48,7 +48,7 @@ class EnhetFilter : Filter {
 
     @JvmStatic
     fun fetchForThread(): String {
-      return ENHETSNUMMER_VALUE.get()
+      return ENHETSNUMMER_VALUE.get() ?: ""
     }
   }
 }

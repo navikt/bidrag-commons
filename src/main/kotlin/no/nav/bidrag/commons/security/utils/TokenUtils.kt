@@ -2,14 +2,16 @@ package no.nav.bidrag.commons.security.utils
 
 import com.nimbusds.jwt.JWTParser
 import com.nimbusds.jwt.SignedJWT
+import no.nav.bidrag.commons.security.SikkerhetsKontekst
+import no.nav.bidrag.commons.security.service.OidcTokenManager
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 
-enum class TokenIssuer {
+enum class TokenUtsteder {
   AZURE,
   TOKENX,
   STS,
-  UNKOWN
+  UKJENT
 }
 
 object TokenUtils {
@@ -18,32 +20,56 @@ object TokenUtils {
   private const val ISSUER_TOKENX_IDENTIFIER = "tokendings"
   private const val ISSUER_IDPORTEN_IDENTIFIER = "idporten"
   private const val ISSUER_STS_IDENTIFIER = "security-token-service"
+  @JvmStatic
+  fun hentSaksbehandlerIdent(): String? {
+    return if (!erApplikasjonBruker()) hentBruker() else null
+  }
+  @JvmStatic
+  fun erApplikasjonBruker(): Boolean {
+    return SikkerhetsKontekst.erIApplikasjonKontekst() || erApplikasjonBruker(hentToken())
+  }
 
   @JvmStatic
-  fun fetchSubject(token: String): String? {
-    LOGGER.debug("Skal finne subject fra id-token")
+  fun hentApplikasjonNavn(): String? {
+       return hentToken()?.let { hentApplikasjonNavn(it) }
+  }
+
+  @JvmStatic
+  fun hentBruker(): String? {
+    return hentBruker(hentToken())
+  }
+
+  @JvmStatic
+  fun hentApplikasjonNavn(token: String): String? {
     return try {
-      fetchSubject(parseIdToken(token))
+      hentApplikasjonNavnFraToken(konverterTokenTilJwt(token))
     } catch (var2: Exception) {
       LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
       return null
     }
   }
-
   @JvmStatic
-  fun fetchAppName(token: String): String? {
+  fun erTokenUtstedtAv(tokenUtsteder: TokenUtsteder): Boolean {
+      return hentToken()?.let { hentTokenUtsteder(it) == tokenUtsteder } ?: false
+  }
+
+  private fun hentTokenUtsteder(token: String): TokenUtsteder {
     return try {
-      fetchAppNameFromToken(parseIdToken(token))
-    } catch (var2: Exception) {
-      LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
-      return null
+      val tokenJWT = konverterTokenTilJwt(token)
+      if (erTokenUtstedtAvAzure(tokenJWT)) TokenUtsteder.AZURE
+      else if (erTokenUtstedtAvSTS(tokenJWT)) TokenUtsteder.STS
+      else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenUtsteder.TOKENX
+      else TokenUtsteder.UKJENT
+    } catch (var5: ParseException) {
+      LOGGER.error("Kunne ikke hente informasjon om tokenets issuer", var5)
+      TokenUtsteder.UKJENT
     }
   }
 
   @JvmStatic
-  fun isSystemUser(idToken: String?): Boolean {
+  private fun erApplikasjonBruker(idToken: String?): Boolean {
     return try {
-      val claims = parseIdToken(idToken).jwtClaimsSet
+      val claims = konverterTokenTilJwt(idToken).jwtClaimsSet
       val systemRessurs = "Systemressurs" == claims.getStringClaim("identType")
       val roles = claims.getStringListClaim("roles")
       val azureApp = roles != null && roles.contains("access_as_application")
@@ -54,87 +80,84 @@ object TokenUtils {
   }
 
   @JvmStatic
-  fun fetchTokenIssuer(token: String): TokenIssuer {
+  private fun hentBruker(token: String?): String? {
     return try {
-      val tokenJWT = parseIdToken(token)
-      if (isTokenIssuedByAzure(tokenJWT)) TokenIssuer.AZURE
-      else if (isTokenIssuedBySTS(tokenJWT)) TokenIssuer.STS
-      else if (isTokenIssuedByTokenX(tokenJWT)) TokenIssuer.TOKENX
-      else TokenIssuer.UNKOWN
-    } catch (var5: ParseException) {
-      LOGGER.error("Kunne ikke hente informasjon om tokenets issuer", var5)
-      TokenIssuer.UNKOWN
+      hentBruker(konverterTokenTilJwt(token))
+    } catch (var2: Exception) {
+      LOGGER.error("Klarte ikke parse ${token?.substring(0, token.length.coerceAtMost(10))}...", var2)
+      return null
     }
   }
 
-  private fun isTokenIssuedBySTS(signedJWT: SignedJWT): Boolean {
+  private fun erTokenUtstedtAvSTS(signedJWT: SignedJWT): Boolean {
     return try {
       val issuer = signedJWT.jwtClaimsSet.issuer
-      isTokenIssuedBySTS(issuer)
+      erTokenUtstedtAvSTS(issuer)
     } catch (var2: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
     }
   }
 
-  private fun isTokenIssuedByAzure(signedJWT: SignedJWT): Boolean {
+  private fun erTokenUtstedtAvAzure(signedJWT: SignedJWT): Boolean {
     return try {
       val issuer = signedJWT.jwtClaimsSet.issuer
-      isTokenIssuedByAzure(issuer)
+      erTokenUtstedtAvAzure(issuer)
     } catch (var2: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
     }
   }
 
-  private fun isTokenProviderIdPorten(signedJWT: SignedJWT): Boolean {
+  private fun erTokenUtstedtAvIdPorten(signedJWT: SignedJWT): Boolean {
     return try {
       val issuer = signedJWT.jwtClaimsSet.issuer
       val idp = signedJWT.jwtClaimsSet.getStringClaim("idp")
-      isTokenIssuedByTokenX(issuer) && isIdPorten(idp)
+      erTokenUtstedtAvTokenX(issuer) && erIdPorten(idp)
     } catch (var2: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
     }
   }
 
-  private fun isTokenIssuedByTokenX(signedJWT: SignedJWT): Boolean {
+  private fun erTokenUtstedtAvTokenX(signedJWT: SignedJWT): Boolean {
     return try {
       val issuer = signedJWT.jwtClaimsSet.issuer
-      isTokenIssuedByTokenX(issuer)
+      erTokenUtstedtAvTokenX(issuer)
     } catch (var2: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
     }
   }
 
-  private fun isTokenIssuedByAzure(issuer: String?): Boolean {
+  private fun erTokenUtstedtAvAzure(issuer: String?): Boolean {
     return issuer != null && issuer.contains(ISSUER_AZURE_AD_IDENTIFIER)
   }
 
-  private fun isTokenIssuedBySTS(issuer: String?): Boolean {
+  private fun erTokenUtstedtAvSTS(issuer: String?): Boolean {
     return issuer != null && issuer.contains(ISSUER_STS_IDENTIFIER)
   }
 
-  private fun isIdPorten(issuer: String?): Boolean {
+  private fun erIdPorten(issuer: String?): Boolean {
     return !issuer.isNullOrEmpty() && issuer.contains(ISSUER_IDPORTEN_IDENTIFIER)
   }
 
-  private fun isTokenIssuedByTokenX(issuer: String?): Boolean {
+  private fun erTokenUtstedtAvTokenX(issuer: String?): Boolean {
     return !issuer.isNullOrEmpty() && issuer.contains(ISSUER_TOKENX_IDENTIFIER)
   }
 
-  private fun fetchAppNameFromToken(signedJWT: SignedJWT): String? {
+  private fun hentApplikasjonNavnFraToken(signedJWT: SignedJWT): String? {
     return try {
       val claims = signedJWT.jwtClaimsSet
-      if (isTokenIssuedByAzure(signedJWT)) {
+      if (erTokenUtstedtAvAzure(signedJWT)) {
         val application = claims.getStringClaim("azp_name") ?: claims.getStringClaim("azp")
-        return getApplicationNameFromAzp(application)
-      } else {
-        claims.audience[0]
-      }
+        return hentApplikasjonNavnFraAzp(application)
+      } else if (erTokenUtstedtAvTokenX(signedJWT)) {
+        val application = claims.getStringClaim("client_id")
+        return hentApplikasjonNavnFraAzp(application)
+      } else claims.audience[0]
     } catch (var4: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var4)
     }
   }
 
-  private fun fetchSubjectIdFromIdportenToken(signedJWT: SignedJWT): String? {
+  private fun hentBrukerIdFraIdportenToken(signedJWT: SignedJWT): String? {
     return try {
       val claims = signedJWT.jwtClaimsSet
       claims.getStringClaim("pid")
@@ -143,28 +166,28 @@ object TokenUtils {
     }
   }
 
-  private fun fetchSubjectIdFromAzureToken(signedJWT: SignedJWT): String? {
+  private fun hentBrukerIdFraAzureToken(signedJWT: SignedJWT): String? {
     return try {
       val claims = signedJWT.jwtClaimsSet
       val navIdent = claims.getStringClaim("NAVident")
       val application = claims.getStringClaim("azp_name")
-      navIdent ?: getApplicationNameFromAzp(application)
+      navIdent ?: hentApplikasjonNavnFraAzp(application)
     } catch (var4: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var4)
     }
   }
 
-  private fun fetchSubject(signedJWT: SignedJWT): String? {
+  private fun hentBruker(signedJWT: SignedJWT): String? {
     return try {
-      if (isTokenIssuedByAzure(signedJWT)) fetchSubjectIdFromAzureToken(signedJWT)
-      else if (isTokenProviderIdPorten(signedJWT)) fetchSubjectIdFromIdportenToken(signedJWT)
+      if (erTokenUtstedtAvAzure(signedJWT)) hentBrukerIdFraAzureToken(signedJWT)
+      else if (erTokenUtstedtAvIdPorten(signedJWT)) hentBrukerIdFraIdportenToken(signedJWT)
       else signedJWT.jwtClaimsSet.subject
     } catch (var2: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
     }
   }
 
-  private fun getApplicationNameFromAzp(azpName: String?): String? {
+  private fun hentApplikasjonNavnFraAzp(azpName: String?): String? {
     return if (azpName == null) {
       null
     } else {
@@ -174,8 +197,11 @@ object TokenUtils {
     }
   }
 
+  private fun hentToken(): String? = try {
+    OidcTokenManager().hentToken()
+  } catch (_: Exception) { null }
 
-  private fun parseIdToken(idToken: String?): SignedJWT {
+  private fun konverterTokenTilJwt(idToken: String?): SignedJWT {
     return JWTParser.parse(idToken) as SignedJWT
   }
 }

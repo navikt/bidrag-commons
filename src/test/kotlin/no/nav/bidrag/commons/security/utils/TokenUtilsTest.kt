@@ -1,7 +1,17 @@
 package no.nav.bidrag.commons.security.utils
 
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.mockk
+import no.nav.bidrag.commons.security.SikkerhetsKontekst.Companion.medApplikasjonKontekst
+import no.nav.security.token.support.core.context.TokenValidationContext
+import no.nav.security.token.support.core.jwt.JwtToken
+import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
+import java.util.Optional
 
 internal class TokenUtilsTest {
   // Generated using http://jwtbuilder.jamiekurtz.com/
@@ -13,18 +23,35 @@ internal class TokenUtilsTest {
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vdGVzdC92Mi4wIiwiaWF0IjoxNjU1ODc3MDQwLCJleHAiOjE2ODc0MTMwNDAsImF1ZCI6IjY3NjY2NDUtNTNkNS00OGY5LWJlOTctOTljN2ZjNzRmMDlhIiwic3ViIjoiNTU1NTU1LTUzZDUtNDhmOS1iZTk3LTk5YzdmYzc0ZjA5YSIsImF6cF9uYW1lIjoiZGV2LWZzczpiaWRyYWc6YmlkcmFnLWRva3VtZW50LWZlYXR1cmUiLCJyb2xlcyI6WyJhY2Nlc3NfYXNfYXBwbGljYXRpb24iLCJzb21ldGhpbmcgZWxzZSJdfQ.XvdyJCtIt-ME4t956z76xOf2hrkM7WOvTRWjI6QcYiA"
   private val azureUserToken =
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vdGVzdC92Mi4wIiwiaWF0IjoxNjU1ODc3MDQwLCJleHAiOjE2ODc0MTMwNDAsImF1ZCI6IjY3NjY2NDUtNTNkNS00OGY5LWJlOTctOTljN2ZjNzRmMDlhIiwic3ViIjoiNTU1NTU1LTUzZDUtNDhmOS1iZTk3LTk5YzdmYzc0ZjA5YSIsImF6cF9uYW1lIjoiZGV2LWZzczpiaWRyYWc6YmlkcmFnLXVpLWZlYXR1cmUiLCJSb2xlIjoiYWNjZXNzX2FzX2FwcGxpY2F0aW9uIiwiTkFWaWRlbnQiOiJaOTk0OTc3In0.7XhNn27iaKY-z4voUp-ZfR__5u3Rv5rJCgTpSNVW1nY"
+  private val tokenXUserToken =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3Rva2VuZGluZ3MuZGV2LWdjcC5uYWlzLmlvIiwiaWF0IjoxNjc0MTEyODk3LCJleHAiOjE3MDU2NDg4OTcsImF1ZCI6ImRldi1nY3A6YmlkcmFnOmJpZHJhZy1yZWlzZWtvc3RuYWQtYXBpIiwic3ViIjoiel9xZmw5RUhlLWoySGtZQ3RLeUZuT05hR1E5TWJLUTBRQm00MUgtVEVCVT0iLCJjbGllbnRfaWQiOiJkZXYtZ2NwOmJpZHJhZzpiaWRyYWctcmVpc2Vrb3N0bmFkLXVpIiwicGlkIjoiMTQ4MTcyOTgwMTAiLCJhY3IiOiJMZXZlbDQiLCJpZHAiOiJodHRwczovL29pZGMtdmVyMi5kaWZpLm5vL2lkcG9ydGVuLW9pZGMtcHJvdmlkZXIvIiwic2NvcGUiOiJvcGVuaWQiLCJjbGllbnRfb3Jnbm8iOiI4ODk2NDA3ODIifQ.KauxVua8ebC9Lc-Wx4XE2NlI_0_c1YvJi1Y5drEOoUM"
+  @AfterEach
+  fun clearTokenContext(){
+    RequestContextHolder.resetRequestAttributes()
+  }
 
   @Test
   fun skalHenteSubjectFraAzureSystemToken() {
-    val subject = TokenUtils.fetchSubject(azureSystemToken)
+    mockTokenContext(azureSystemToken)
+    val subject = TokenUtils.hentApplikasjonNavn()
 
     // then
     subject shouldBe "bidrag-dokument-feature"
   }
 
   @Test
-  fun skalHenteSubjectFraAzureToken() {
-    val subject = TokenUtils.fetchSubject(azureUserToken)
+  fun skalHenteSaksbehandlerFraAzureToken() {
+    mockTokenContext(azureUserToken)
+    val subject = TokenUtils.hentBruker()
+
+    // then
+    subject shouldBe "Z994977"
+  }
+
+  @Test
+  fun skalHenteSaksbehandlerIdentFraAzureToken() {
+    mockTokenContext(azureUserToken)
+    val subject = TokenUtils.hentSaksbehandlerIdent()
 
     // then
     subject shouldBe "Z994977"
@@ -32,7 +59,8 @@ internal class TokenUtilsTest {
 
   @Test
   fun skalHenteSubjectFraIssoToken() {
-    val subject = TokenUtils.fetchSubject(issoUser)
+    mockTokenContext(issoUser)
+    val subject = TokenUtils.hentBruker()
 
     // then
     subject shouldBe "Z994977"
@@ -40,7 +68,8 @@ internal class TokenUtilsTest {
 
   @Test
   fun skalHenteAppNavnFraIssoToken() {
-    val subject = TokenUtils.fetchAppName(issoUser)
+    mockTokenContext(issoUser)
+    val subject = TokenUtils.hentApplikasjonNavn()
 
     // then
     subject shouldBe "bidrag-ui-feature-q1"
@@ -48,26 +77,77 @@ internal class TokenUtilsTest {
 
   @Test
   fun skalHenteAppNavnFraAzureToken() {
-    val subject = TokenUtils.fetchAppName(azureUserToken)
+    mockTokenContext(azureUserToken)
+    val subject = TokenUtils.hentApplikasjonNavn()
 
     // then
     subject shouldBe "bidrag-ui-feature"
   }
 
   @Test
+  fun skalIkkeHenteSaksbehandlerHvisApplikasjonToken() {
+    mockTokenContext(azureSystemToken)
+
+    // then
+    TokenUtils.hentSaksbehandlerIdent() shouldBe null
+  }
+
+
+  @Test
+  fun skalHenteApplikasjonsnavnFraTokenxToken(){
+    mockTokenContext(tokenXUserToken)
+    TokenUtils.hentApplikasjonNavn() shouldBe "bidrag-reisekostnad-ui"
+  }
+
+  @Test
+  fun skalHenteFødselsnummerFraTokenxToken(){
+    mockTokenContext(tokenXUserToken)
+    TokenUtils.hentBruker() shouldBe "14817298010"
+  }
+
+  @Test
   fun shouldValidateSystemToken() {
 
-    // when
-    val resultAzure = TokenUtils.isSystemUser(azureSystemToken)
-    val resultSTS = TokenUtils.isSystemUser(stsToken)
-    val resultAzureUser = TokenUtils.isSystemUser(azureUserToken)
-    val resultIsso = TokenUtils.isSystemUser(issoUser)
+    mockTokenContext(azureSystemToken)
+    val resultAzure = TokenUtils.erApplikasjonBruker()
+
+    mockTokenContext(stsToken)
+    val resultSTS = TokenUtils.erApplikasjonBruker()
+
+    mockTokenContext(azureUserToken)
+    val resultAzureUser = TokenUtils.erApplikasjonBruker()
+
+    mockTokenContext(issoUser)
+    val resultIsso = TokenUtils.erApplikasjonBruker()
 
     // then
     resultAzure shouldBe true
     resultSTS shouldBe true
     resultAzureUser shouldBe false
     resultIsso shouldBe false
+  }
+
+  @Test
+  fun skalValidereApplikasjonBrukerIAppKontekst() {
+
+    medApplikasjonKontekst {
+      TokenUtils.erApplikasjonBruker() shouldBe true
+      TokenUtils.hentApplikasjonNavn() shouldBe null
+    }
+  }
+
+  fun mockTokenContext(token: String) {
+    val tokenValidationContext = mockk<TokenValidationContext>()
+    val requestAttributes = mockk<RequestAttributes>()
+    RequestContextHolder.setRequestAttributes(requestAttributes)
+    every {
+      requestAttributes.getAttribute(
+        SpringTokenValidationContextHolder::class.java.name,
+        RequestAttributes.SCOPE_REQUEST
+      )
+    } returns tokenValidationContext
+    every { tokenValidationContext.hasValidToken() } returns true
+    every { tokenValidationContext.firstValidToken } returns Optional.ofNullable(JwtToken(token))
   }
 
 }
