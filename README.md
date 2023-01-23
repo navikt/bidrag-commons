@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.38   | endret       | `TokenUtils` refaktorering og bugfiks                                                                                                          |
 | 0.7.37   | endret       | Endret litt på logikken i audit-logging                                                                                                        |
 | 0.7.36   | endret       | Oppdatert API i 'TokenUtils'                                                                                                                   |
 | 0.7.35   | opprettet    | Lagt til rammeverk for audit-logging                                                                                                           |

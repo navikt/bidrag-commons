@@ -7,7 +7,7 @@ import no.nav.bidrag.commons.security.service.OidcTokenManager
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 
-enum class TokenUtsteder {
+enum class TokenIssuer {
   AZURE,
   TOKENX,
   STS,
@@ -31,7 +31,7 @@ object TokenUtils {
 
   @JvmStatic
   fun hentApplikasjonNavn(): String? {
-       return hentToken()?.let { hentApplikasjonNavn(it) }
+     return hentToken()?.let { hentApplikasjonNavn(it) }
   }
 
   @JvmStatic
@@ -40,40 +40,43 @@ object TokenUtils {
   }
 
   @JvmStatic
-  fun hentApplikasjonNavn(token: String): String? {
+  fun erTokenUtstedtAv(tokenIssuer: TokenIssuer): Boolean {
+      return hentToken()?.let { hentTokenUtsteder(it) == tokenIssuer } ?: false
+  }
+
+  @JvmStatic
+  private fun hentApplikasjonNavn(token: String): String? {
     return try {
-      hentApplikasjonNavnFraToken(konverterTokenTilJwt(token))
+      konverterTokenTilJwt(token)?.let { hentApplikasjonNavnFraToken(it) }
     } catch (var2: Exception) {
       LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
       return null
     }
   }
-  @JvmStatic
-  fun erTokenUtstedtAv(tokenUtsteder: TokenUtsteder): Boolean {
-      return hentToken()?.let { hentTokenUtsteder(it) == tokenUtsteder } ?: false
-  }
 
-  private fun hentTokenUtsteder(token: String): TokenUtsteder {
+  private fun hentTokenUtsteder(token: String): TokenIssuer {
     return try {
-      val tokenJWT = konverterTokenTilJwt(token)
-      if (erTokenUtstedtAvAzure(tokenJWT)) TokenUtsteder.AZURE
-      else if (erTokenUtstedtAvSTS(tokenJWT)) TokenUtsteder.STS
-      else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenUtsteder.TOKENX
-      else TokenUtsteder.UKJENT
+      val tokenJWT = konverterTokenTilJwt(token) ?: return TokenIssuer.UKJENT
+      if (erTokenUtstedtAvAzure(tokenJWT)) TokenIssuer.AZURE
+      else if (erTokenUtstedtAvSTS(tokenJWT)) TokenIssuer.STS
+      else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenIssuer.TOKENX
+      else TokenIssuer.UKJENT
     } catch (var5: ParseException) {
       LOGGER.error("Kunne ikke hente informasjon om tokenets issuer", var5)
-      TokenUtsteder.UKJENT
+      TokenIssuer.UKJENT
     }
   }
 
   @JvmStatic
   private fun erApplikasjonBruker(idToken: String?): Boolean {
     return try {
-      val claims = konverterTokenTilJwt(idToken).jwtClaimsSet
-      val systemRessurs = "Systemressurs" == claims.getStringClaim("identType")
-      val roles = claims.getStringListClaim("roles")
-      val azureApp = roles != null && roles.contains("access_as_application")
-      systemRessurs || azureApp
+      konverterTokenTilJwt(idToken)?.let {
+        val claims = it.jwtClaimsSet
+        val systemRessurs = "Systemressurs" == claims.getStringClaim("identType")
+        val roles = claims.getStringListClaim("roles")
+        val azureApp = roles != null && roles.contains("access_as_application")
+        systemRessurs || azureApp
+      } ?: false
     } catch (var5: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var5)
     }
@@ -82,7 +85,7 @@ object TokenUtils {
   @JvmStatic
   private fun hentBruker(token: String?): String? {
     return try {
-      hentBruker(konverterTokenTilJwt(token))
+      konverterTokenTilJwt(token)?.let { hentBruker(it) }
     } catch (var2: Exception) {
       LOGGER.error("Klarte ikke parse ${token?.substring(0, token.length.coerceAtMost(10))}...", var2)
       return null
@@ -201,7 +204,7 @@ object TokenUtils {
     OidcTokenManager().hentToken()
   } catch (_: Exception) { null }
 
-  private fun konverterTokenTilJwt(idToken: String?): SignedJWT {
-    return JWTParser.parse(idToken) as SignedJWT
+  private fun konverterTokenTilJwt(idToken: String?): SignedJWT? {
+    return idToken?.let {JWTParser.parse(idToken) as SignedJWT}
   }
 }

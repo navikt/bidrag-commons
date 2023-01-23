@@ -128,6 +128,26 @@ internal class TokenUtilsTest {
   }
 
   @Test
+  fun shouldValidateTokenIssuedBy() {
+
+    mockTokenContext(azureSystemToken)
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe true
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe false
+
+    mockTokenContext(stsToken)
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe true
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe false
+
+    mockTokenContext(tokenXUserToken)
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe true
+
+  }
+
+  @Test
   fun skalValidereApplikasjonBrukerIAppKontekst() {
 
     medApplikasjonKontekst {
