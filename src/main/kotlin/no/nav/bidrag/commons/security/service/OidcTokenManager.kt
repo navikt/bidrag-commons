@@ -52,7 +52,7 @@ class OidcTokenManager {
 
   @Deprecated("Bruk TokenUtils istedenfor")
   fun erApplikasjonBruker(): Boolean {
-    return SikkerhetsKontekst.erIApplikasjonKontekst() || TokenUtils.erApplikasjonBruker()
+    return SikkerhetsKontekst.erIApplikasjonKontekst() || TokenUtils.erApplikasjonsbruker()
   }
 
   fun getIssuer(): String {

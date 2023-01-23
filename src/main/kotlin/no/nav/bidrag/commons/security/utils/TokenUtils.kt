@@ -22,16 +22,16 @@ object TokenUtils {
   private const val ISSUER_STS_IDENTIFIER = "security-token-service"
   @JvmStatic
   fun hentSaksbehandlerIdent(): String? {
-    return if (!erApplikasjonBruker()) hentBruker() else null
+    return if (!erApplikasjonsbruker()) hentBruker() else null
   }
   @JvmStatic
-  fun erApplikasjonBruker(): Boolean {
-    return SikkerhetsKontekst.erIApplikasjonKontekst() || erApplikasjonBruker(hentToken())
+  fun erApplikasjonsbruker(): Boolean {
+    return SikkerhetsKontekst.erIApplikasjonKontekst() || erApplikasjonsbruker(hentToken())
   }
 
   @JvmStatic
-  fun hentApplikasjonNavn(): String? {
-       return hentToken()?.let { hentApplikasjonNavn(it) }
+  fun hentApplikasjonsnavn(): String? {
+     return hentToken()?.let { hentApplikasjonsnavn(it) }
   }
 
   @JvmStatic
@@ -40,22 +40,23 @@ object TokenUtils {
   }
 
   @JvmStatic
-  fun hentApplikasjonNavn(token: String): String? {
+  fun erTokenUtstedtAv(tokenUtsteder: TokenUtsteder): Boolean {
+      return hentToken()?.let { hentTokenUtsteder(it) == tokenUtsteder } ?: false
+  }
+
+  @JvmStatic
+  private fun hentApplikasjonsnavn(token: String): String? {
     return try {
-      hentApplikasjonNavnFraToken(konverterTokenTilJwt(token))
+      konverterTokenTilJwt(token)?.let { hentApplikasjonNavnFraToken(it) }
     } catch (var2: Exception) {
       LOGGER.error("Klarte ikke parse ${token.substring(0, token.length.coerceAtMost(10))}...", var2)
       return null
     }
   }
-  @JvmStatic
-  fun erTokenUtstedtAv(tokenUtsteder: TokenUtsteder): Boolean {
-      return hentToken()?.let { hentTokenUtsteder(it) == tokenUtsteder } ?: false
-  }
 
   private fun hentTokenUtsteder(token: String): TokenUtsteder {
     return try {
-      val tokenJWT = konverterTokenTilJwt(token)
+      val tokenJWT = konverterTokenTilJwt(token) ?: return TokenUtsteder.UKJENT
       if (erTokenUtstedtAvAzure(tokenJWT)) TokenUtsteder.AZURE
       else if (erTokenUtstedtAvSTS(tokenJWT)) TokenUtsteder.STS
       else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenUtsteder.TOKENX
@@ -67,13 +68,15 @@ object TokenUtils {
   }
 
   @JvmStatic
-  private fun erApplikasjonBruker(idToken: String?): Boolean {
+  private fun erApplikasjonsbruker(idToken: String?): Boolean {
     return try {
-      val claims = konverterTokenTilJwt(idToken).jwtClaimsSet
-      val systemRessurs = "Systemressurs" == claims.getStringClaim("identType")
-      val roles = claims.getStringListClaim("roles")
-      val azureApp = roles != null && roles.contains("access_as_application")
-      systemRessurs || azureApp
+      konverterTokenTilJwt(idToken)?.let {
+        val claims = it.jwtClaimsSet
+        val systemRessurs = "Systemressurs" == claims.getStringClaim("identType")
+        val roles = claims.getStringListClaim("roles")
+        val azureApp = roles != null && roles.contains("access_as_application")
+        systemRessurs || azureApp
+      } ?: false
     } catch (var5: ParseException) {
       throw IllegalStateException("Kunne ikke hente informasjon om tokenets issuer", var5)
     }
@@ -82,7 +85,7 @@ object TokenUtils {
   @JvmStatic
   private fun hentBruker(token: String?): String? {
     return try {
-      hentBruker(konverterTokenTilJwt(token))
+      konverterTokenTilJwt(token)?.let { hentBruker(it) }
     } catch (var2: Exception) {
       LOGGER.error("Klarte ikke parse ${token?.substring(0, token.length.coerceAtMost(10))}...", var2)
       return null
@@ -201,7 +204,7 @@ object TokenUtils {
     OidcTokenManager().hentToken()
   } catch (_: Exception) { null }
 
-  private fun konverterTokenTilJwt(idToken: String?): SignedJWT {
-    return JWTParser.parse(idToken) as SignedJWT
+  private fun konverterTokenTilJwt(idToken: String?): SignedJWT? {
+    return idToken?.let {JWTParser.parse(idToken) as SignedJWT}
   }
 }

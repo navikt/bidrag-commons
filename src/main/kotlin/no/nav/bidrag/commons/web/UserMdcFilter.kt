@@ -16,7 +16,7 @@ class UserMdcFilter : Filter {
 
   override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
     val user = TokenUtils.hentBruker()
-    val appName = TokenUtils.hentApplikasjonNavn()
+    val appName = TokenUtils.hentApplikasjonsnavn()
     user?.apply { MDC.put(USER_MDC, user) }
     appName?.apply { MDC.put(APP_NAME_MDC, appName) }
 
