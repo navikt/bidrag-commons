@@ -7,7 +7,7 @@ import no.nav.bidrag.commons.security.service.OidcTokenManager
 import org.slf4j.LoggerFactory
 import java.text.ParseException
 
-enum class TokenIssuer {
+enum class TokenUtsteder {
   AZURE,
   TOKENX,
   STS,
@@ -40,8 +40,8 @@ object TokenUtils {
   }
 
   @JvmStatic
-  fun erTokenUtstedtAv(tokenIssuer: TokenIssuer): Boolean {
-      return hentToken()?.let { hentTokenUtsteder(it) == tokenIssuer } ?: false
+  fun erTokenUtstedtAv(tokenUtsteder: TokenUtsteder): Boolean {
+      return hentToken()?.let { hentTokenUtsteder(it) == tokenUtsteder } ?: false
   }
 
   @JvmStatic
@@ -54,16 +54,16 @@ object TokenUtils {
     }
   }
 
-  private fun hentTokenUtsteder(token: String): TokenIssuer {
+  private fun hentTokenUtsteder(token: String): TokenUtsteder {
     return try {
-      val tokenJWT = konverterTokenTilJwt(token) ?: return TokenIssuer.UKJENT
-      if (erTokenUtstedtAvAzure(tokenJWT)) TokenIssuer.AZURE
-      else if (erTokenUtstedtAvSTS(tokenJWT)) TokenIssuer.STS
-      else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenIssuer.TOKENX
-      else TokenIssuer.UKJENT
+      val tokenJWT = konverterTokenTilJwt(token) ?: return TokenUtsteder.UKJENT
+      if (erTokenUtstedtAvAzure(tokenJWT)) TokenUtsteder.AZURE
+      else if (erTokenUtstedtAvSTS(tokenJWT)) TokenUtsteder.STS
+      else if (erTokenUtstedtAvTokenX(tokenJWT)) TokenUtsteder.TOKENX
+      else TokenUtsteder.UKJENT
     } catch (var5: ParseException) {
       LOGGER.error("Kunne ikke hente informasjon om tokenets issuer", var5)
-      TokenIssuer.UKJENT
+      TokenUtsteder.UKJENT
     }
   }
 

@@ -131,19 +131,19 @@ internal class TokenUtilsTest {
   fun shouldValidateTokenIssuedBy() {
 
     mockTokenContext(azureSystemToken)
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe true
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe false
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.AZURE) shouldBe true
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.STS) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.TOKENX) shouldBe false
 
     mockTokenContext(stsToken)
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe false
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe true
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.AZURE) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.STS) shouldBe true
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.TOKENX) shouldBe false
 
     mockTokenContext(tokenXUserToken)
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.AZURE) shouldBe false
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.STS) shouldBe false
-    TokenUtils.erTokenUtstedtAv(TokenIssuer.TOKENX) shouldBe true
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.AZURE) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.STS) shouldBe false
+    TokenUtils.erTokenUtstedtAv(TokenUtsteder.TOKENX) shouldBe true
 
   }
 
