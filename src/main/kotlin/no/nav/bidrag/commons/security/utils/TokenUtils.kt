@@ -22,16 +22,16 @@ object TokenUtils {
   private const val ISSUER_STS_IDENTIFIER = "security-token-service"
   @JvmStatic
   fun hentSaksbehandlerIdent(): String? {
-    return if (!erApplikasjonBruker()) hentBruker() else null
+    return if (!erApplikasjonsbruker()) hentBruker() else null
   }
   @JvmStatic
-  fun erApplikasjonBruker(): Boolean {
-    return SikkerhetsKontekst.erIApplikasjonKontekst() || erApplikasjonBruker(hentToken())
+  fun erApplikasjonsbruker(): Boolean {
+    return SikkerhetsKontekst.erIApplikasjonKontekst() || erApplikasjonsbruker(hentToken())
   }
 
   @JvmStatic
-  fun hentApplikasjonNavn(): String? {
-     return hentToken()?.let { hentApplikasjonNavn(it) }
+  fun hentApplikasjonsnavn(): String? {
+     return hentToken()?.let { hentApplikasjonsnavn(it) }
   }
 
   @JvmStatic
@@ -45,7 +45,7 @@ object TokenUtils {
   }
 
   @JvmStatic
-  private fun hentApplikasjonNavn(token: String): String? {
+  private fun hentApplikasjonsnavn(token: String): String? {
     return try {
       konverterTokenTilJwt(token)?.let { hentApplikasjonNavnFraToken(it) }
     } catch (var2: Exception) {
@@ -68,7 +68,7 @@ object TokenUtils {
   }
 
   @JvmStatic
-  private fun erApplikasjonBruker(idToken: String?): Boolean {
+  private fun erApplikasjonsbruker(idToken: String?): Boolean {
     return try {
       konverterTokenTilJwt(idToken)?.let {
         val claims = it.jwtClaimsSet

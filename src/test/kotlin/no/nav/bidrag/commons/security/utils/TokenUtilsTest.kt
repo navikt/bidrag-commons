@@ -33,7 +33,7 @@ internal class TokenUtilsTest {
   @Test
   fun skalHenteSubjectFraAzureSystemToken() {
     mockTokenContext(azureSystemToken)
-    val subject = TokenUtils.hentApplikasjonNavn()
+    val subject = TokenUtils.hentApplikasjonsnavn()
 
     // then
     subject shouldBe "bidrag-dokument-feature"
@@ -69,7 +69,7 @@ internal class TokenUtilsTest {
   @Test
   fun skalHenteAppNavnFraIssoToken() {
     mockTokenContext(issoUser)
-    val subject = TokenUtils.hentApplikasjonNavn()
+    val subject = TokenUtils.hentApplikasjonsnavn()
 
     // then
     subject shouldBe "bidrag-ui-feature-q1"
@@ -78,7 +78,7 @@ internal class TokenUtilsTest {
   @Test
   fun skalHenteAppNavnFraAzureToken() {
     mockTokenContext(azureUserToken)
-    val subject = TokenUtils.hentApplikasjonNavn()
+    val subject = TokenUtils.hentApplikasjonsnavn()
 
     // then
     subject shouldBe "bidrag-ui-feature"
@@ -96,7 +96,7 @@ internal class TokenUtilsTest {
   @Test
   fun skalHenteApplikasjonsnavnFraTokenxToken(){
     mockTokenContext(tokenXUserToken)
-    TokenUtils.hentApplikasjonNavn() shouldBe "bidrag-reisekostnad-ui"
+    TokenUtils.hentApplikasjonsnavn() shouldBe "bidrag-reisekostnad-ui"
   }
 
   @Test
@@ -109,16 +109,16 @@ internal class TokenUtilsTest {
   fun shouldValidateSystemToken() {
 
     mockTokenContext(azureSystemToken)
-    val resultAzure = TokenUtils.erApplikasjonBruker()
+    val resultAzure = TokenUtils.erApplikasjonsbruker()
 
     mockTokenContext(stsToken)
-    val resultSTS = TokenUtils.erApplikasjonBruker()
+    val resultSTS = TokenUtils.erApplikasjonsbruker()
 
     mockTokenContext(azureUserToken)
-    val resultAzureUser = TokenUtils.erApplikasjonBruker()
+    val resultAzureUser = TokenUtils.erApplikasjonsbruker()
 
     mockTokenContext(issoUser)
-    val resultIsso = TokenUtils.erApplikasjonBruker()
+    val resultIsso = TokenUtils.erApplikasjonsbruker()
 
     // then
     resultAzure shouldBe true
@@ -151,8 +151,8 @@ internal class TokenUtilsTest {
   fun skalValidereApplikasjonBrukerIAppKontekst() {
 
     medApplikasjonKontekst {
-      TokenUtils.erApplikasjonBruker() shouldBe true
-      TokenUtils.hentApplikasjonNavn() shouldBe null
+      TokenUtils.erApplikasjonsbruker() shouldBe true
+      TokenUtils.hentApplikasjonsnavn() shouldBe null
     }
   }
 
