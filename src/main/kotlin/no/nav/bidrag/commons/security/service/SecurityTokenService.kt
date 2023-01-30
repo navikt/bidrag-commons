@@ -1,6 +1,6 @@
 package no.nav.bidrag.commons.security.service
 
-import no.nav.bidrag.commons.security.SikkerhetsKontekst.Companion.erIApplikasjonKontekst
+import no.nav.bidrag.commons.security.SikkerhetsKontekst.erIApplikasjonKontekst
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution

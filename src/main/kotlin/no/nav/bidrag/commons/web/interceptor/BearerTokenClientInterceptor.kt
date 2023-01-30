@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.web.interceptor
 
+import no.nav.bidrag.commons.security.SikkerhetsKontekst
 import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.OAuth2GrantType
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
@@ -67,6 +68,7 @@ abstract class AzureTokenClientInterceptor(
 
   private fun erSystembruker(): Boolean {
     return try {
+      if (SikkerhetsKontekst.erIApplikasjonKontekst()) return true
       val preferredUsername =
         SpringTokenValidationContextHolder()
           .tokenValidationContext
