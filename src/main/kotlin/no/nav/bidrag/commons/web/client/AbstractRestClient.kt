@@ -53,6 +53,20 @@ abstract class AbstractRestClient(
     }
   }
 
+  protected inline fun <reified T : Any> optionsForEntity(uri: URI): T? {
+    return optionsForEntity(uri, null)
+  }
+
+  protected inline fun <reified T : Any> optionsForEntity(uri: URI, httpHeaders: HttpHeaders?): T? {
+    return executeMedMetrics(uri) {
+      operations.exchange(
+              uri,
+              HttpMethod.OPTIONS,
+              HttpEntity(null, httpHeaders)
+      )
+    }
+  }
+
   protected inline fun <reified T : Any> postForNonNullEntity(uri: URI, payload: Any): T {
     return postForEntity(uri, payload, null) ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, uri.toString())
   }

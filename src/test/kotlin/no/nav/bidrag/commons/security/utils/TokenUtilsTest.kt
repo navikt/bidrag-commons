@@ -3,7 +3,7 @@ package no.nav.bidrag.commons.security.utils
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.bidrag.commons.security.SikkerhetsKontekst.Companion.medApplikasjonKontekst
+import no.nav.bidrag.commons.security.SikkerhetsKontekst.medApplikasjonKontekst
 import no.nav.security.token.support.core.context.TokenValidationContext
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
