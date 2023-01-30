@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.web.interceptor
 
+import no.nav.bidrag.commons.web.BidragHttpHeaders
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ConsumerIdClientInterceptor(
-  @Value("\${spring.application.name}") private val appName: String,
+  @Value("\${NAIS_APP_NAME}") private val appName: String,
   @Value("\${credential.username:}") private val serviceUser: String
 ) : ClientHttpRequestInterceptor {
 
@@ -19,12 +20,8 @@ class ConsumerIdClientInterceptor(
     body: ByteArray,
     execution: ClientHttpRequestExecution
   ): ClientHttpResponse {
-    request.headers.add(NAV_CONSUMER_ID, serviceUser.ifBlank { appName })
+    request.headers.add(BidragHttpHeaders.NAV_CONSUMER_ID, serviceUser.ifBlank { appName })
     return execution.execute(request, body)
-  }
-
-  companion object {
-    const val NAV_CONSUMER_ID = "Nav-Consumer-Id"
   }
 
 }
