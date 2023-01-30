@@ -2,6 +2,7 @@ package no.nav.bidrag.commons.web.config
 
 import no.nav.bidrag.commons.web.interceptor.ConsumerIdClientInterceptor
 import no.nav.bidrag.commons.web.interceptor.MdcValuesPropagatingClientInterceptor
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -12,20 +13,20 @@ import java.time.temporal.ChronoUnit
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class)
+@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class, MetricsRestTemplateCustomizer::class)
 class RestTemplateBuilderBean {
 
   @Bean
   @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.proxy_url")
   fun restTemplateBuilder(
     iNaisProxyCustomizer: INaisProxyCustomizer,
-    consumerIdClientInterceptor: ConsumerIdClientInterceptor
+    consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+    metricsRestTemplateCustomizer: MetricsRestTemplateCustomizer
   ) = RestTemplateBuilder()
     .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
-    .additionalCustomizers(iNaisProxyCustomizer)
+    .additionalCustomizers(iNaisProxyCustomizer, metricsRestTemplateCustomizer)
     .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
     .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
-
 
   /**
    * Denne bønnnen initialiseres hvis proxy-url ikke finnes. Hvis proxy-url finnnes vil bønnen over
@@ -38,8 +39,11 @@ class RestTemplateBuilderBean {
     matchIfMissing = true,
     havingValue = "Umulig verdi"
   )
-  fun restTemplateBuilderNoProxy(consumerIdClientInterceptor: ConsumerIdClientInterceptor)
-      : RestTemplateBuilder = RestTemplateBuilder()
+  fun restTemplateBuilderNoProxy(
+    consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+    metricsRestTemplateCustomizer: MetricsRestTemplateCustomizer
+  ): RestTemplateBuilder = RestTemplateBuilder()
+    .additionalCustomizers(metricsRestTemplateCustomizer)
     .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
     .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
     .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))

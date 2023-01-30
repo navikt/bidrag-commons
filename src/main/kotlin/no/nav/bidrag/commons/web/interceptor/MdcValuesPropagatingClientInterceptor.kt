@@ -1,7 +1,9 @@
 package no.nav.bidrag.commons.web.interceptor
 
-import no.nav.bidrag.commons.CorrelationId
-import no.nav.bidrag.commons.web.CorrelationIdFilter
+import no.nav.bidrag.commons.web.BidragHttpHeaders
+import no.nav.bidrag.commons.web.EnhetFilter
+import no.nav.bidrag.commons.web.MdcConstants
+import no.nav.bidrag.commons.web.MdcFilter.Companion.NAV_CALL_ID_HEADER_NAMES
 import org.slf4j.MDC
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
@@ -18,10 +20,16 @@ class MdcValuesPropagatingClientInterceptor : ClientHttpRequestInterceptor {
     body: ByteArray,
     execution: ClientHttpRequestExecution
   ): ClientHttpResponse {
-    val callId = MDC.get(NAV_CALL_ID) ?: generateId()
-    val correlationId = MDC.get(CorrelationId.CORRELATION_ID_HEADER) ?: generateId()
-    request.headers.add(NAV_CALL_ID, callId)
-    request.headers.add(CorrelationIdFilter.CORRELATION_ID_HEADER, correlationId)
+
+    val callId = MDC.get(MdcConstants.MDC_CALL_ID) ?: generateId()
+    // Propagerer alle alternativer for callId inntil alle applikasjonene våre er samskjørte.
+    NAV_CALL_ID_HEADER_NAMES.forEach {
+      request.headers.add(it, callId)
+    }
+
+    val enhet = MDC.get(EnhetFilter.X_ENHET_HEADER) ?: EnhetFilter.fetchForThread()
+    request.headers.add(BidragHttpHeaders.X_ENHET, enhet)
+
     return execution.execute(request, body)
   }
 
@@ -29,9 +37,5 @@ class MdcValuesPropagatingClientInterceptor : ClientHttpRequestInterceptor {
     val uuid = UUID.randomUUID()
     return java.lang.Long.toHexString(uuid.mostSignificantBits) +
         java.lang.Long.toHexString(uuid.leastSignificantBits)
-  }
-
-  companion object {
-    const val NAV_CALL_ID = "Nav-Call-Id"
   }
 }

@@ -2,7 +2,7 @@ package no.nav.bidrag.commons.logging.audit
 
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.web.CorrelationIdFilter
-import no.nav.bidrag.commons.web.interceptor.MdcValuesPropagatingClientInterceptor
+import no.nav.bidrag.commons.web.MdcConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
@@ -56,7 +56,7 @@ class AuditLogger(@Value("\${NAIS_APP_NAME}") private val applicationName: Strin
 
   private fun getCallId(): String {
     return MDC.get(CorrelationIdFilter.CORRELATION_ID_MDC)
-      ?: MDC.get(MdcValuesPropagatingClientInterceptor.NAV_CALL_ID)
+      ?: MDC.get(MdcConstants.MDC_CALL_ID)
       ?: throw IllegalStateException("Mangler correlationId/callId")
   }
 }
