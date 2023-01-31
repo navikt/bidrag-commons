@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class, MetricsRestTemplateCustomizer::class)
+@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class)
 class RestTemplateBuilderBean {
 
   @Bean
