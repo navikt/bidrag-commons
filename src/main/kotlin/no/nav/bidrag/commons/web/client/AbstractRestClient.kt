@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.exchange
@@ -166,17 +167,17 @@ abstract class AbstractRestClient(
       return validerOgPakkUt(responseEntity, uri)
     } catch (e: RestClientResponseException) {
       responsFailure.increment()
-      secureLogger.warn("RestClientResponseException ved kall mot uri=$uri", e)
-      throw e
-    } catch (e: HttpClientErrorException) {
-      responsFailure.increment()
-      secureLogger.warn("HttpClientErrorException ved kall mot uri=$uri", e)
+      log.warn("RestClientResponseException ved kall mot uri=$uri. ${hentFeilmeldingFraWarningHeader(e)}", e)
       throw e
     } catch (e: Exception) {
       responsFailure.increment()
-      secureLogger.warn("Feil ved kall mot uri=$uri", e)
+      log.warn("Feil ved kall mot uri=$uri", e)
       throw RuntimeException("Feil ved kall mot uri=$uri", e)
     }
+  }
+
+  private fun hentFeilmeldingFraWarningHeader(exception: RestClientResponseException): String {
+    return exception.responseHeaders?.get("Warning")?.let { "Detaljer: ${it.joinToString(", ")}"  } ?: ""
   }
 
   override fun toString(): String = this::class.simpleName + " [operations=" + operations + "]"
