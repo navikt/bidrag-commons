@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.43   | endret       | `AbstractRestClient` legg til warning header i feilmelding                                                                                     |
 | 0.7.42   | endret       | Fjernet @Import av MetricsRestTemplateCustomizer.                                                                                              |
 | 0.7.41   | opprettet    | Lagt til BidragHttpHeader, MdcConstants og MDCFilter for ha en felles logikk for dette.                                                        |
 | 0.7.40   | endret       | Lagt til options i `AbstractRestClient`                                                                                                        |
