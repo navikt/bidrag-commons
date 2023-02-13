@@ -183,6 +183,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.44   | endret       | `HttpHeaderRestTemplate` endre til åpen klasse for å støtte mocking                                                                            |
+| 0.7.43   | endret       | `AbstractRestClient` legg til warning header i feilmelding                                                                                     |
 | 0.7.43   | endret       | `AbstractRestClient` legg til warning header i feilmelding                                                                                     |
 | 0.7.42   | endret       | Fjernet @Import av MetricsRestTemplateCustomizer.                                                                                              |
 | 0.7.41   | opprettet    | Lagt til BidragHttpHeader, MdcConstants og MDCFilter for ha en felles logikk for dette.                                                        |

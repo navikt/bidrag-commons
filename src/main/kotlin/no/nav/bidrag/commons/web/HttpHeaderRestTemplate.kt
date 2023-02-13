@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate
 import java.lang.reflect.Type
 import java.util.*
 
-class HttpHeaderRestTemplate : RestTemplate {
+open class HttpHeaderRestTemplate : RestTemplate {
   private val headerGenerators: MutableMap<String, () -> String> = HashMap()
 
   private val log = LoggerFactory.getLogger(this::class.java)
