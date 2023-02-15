@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                    |
 |----------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.45   | opprettet    | `PersonidentGenerator` opprettet for å kunne generere gydlige personident til bruk i test                                                      |
 | 0.7.44   | endret       | `HttpHeaderRestTemplate` endre til åpen klasse for å støtte mocking                                                                            |
 | 0.7.43   | endret       | `AbstractRestClient` legg til warning header i feilmelding                                                                                     |
 | 0.7.43   | endret       | `AbstractRestClient` legg til warning header i feilmelding                                                                                     |
