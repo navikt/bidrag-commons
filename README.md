@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                         |
 |----------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.47   | endret       | Lagt tilbake et par metoder i HttpHeaderRestTemplate for bakoverkompatibilitet.                                                                     |
 | 0.7.46   | endret       | `CorrelationId.fetchCorrelationIdForThread` endret fra å være nullable til å generere en ny basert på timestamp om thread ikke har en correlationId |
 | 0.7.45   | opprettet    | `PersonidentGenerator` opprettet for å kunne generere gydlige personident til bruk i test                                                           |
 | 0.7.44   | endret       | `HttpHeaderRestTemplate` endre til åpen klasse for å støtte mocking                                                                                 |

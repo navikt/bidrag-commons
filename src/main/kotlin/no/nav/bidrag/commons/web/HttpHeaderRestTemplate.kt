@@ -81,8 +81,17 @@ open class HttpHeaderRestTemplate : RestTemplate {
     headerGenerators[headerName] = valueGenerator
   }
 
+  fun addHeaderGenerator(headerName: String, valueGenerator: ValueGenerator) {
+    headerGenerators[headerName] = valueGenerator
+  }
+
   fun removeHeaderGenerator(headerName: String) {
     headerGenerators.remove(headerName)
+  }
+
+  @FunctionalInterface
+  interface ValueGenerator : () -> String {
+      fun  generate(): String
   }
 
 }
