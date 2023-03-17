@@ -91,6 +91,7 @@ open class HttpHeaderRestTemplate : RestTemplate {
 
   @FunctionalInterface
   interface ValueGenerator : () -> String {
+      override fun invoke() = generate()
       fun  generate(): String
   }
 
