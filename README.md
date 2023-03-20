@@ -183,6 +183,7 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                         |
 |----------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| 0.7.49   | endret       | SensitivLogMasker oppdater regex til å ignorere correlationId.                                                                                      |
 | 0.7.48   | endret       | Lagt til default override i ValueGenerator for bakoverkompatibilitet.                                                                               |
 | 0.7.47   | endret       | Lagt tilbake et par metoder i HttpHeaderRestTemplate for bakoverkompatibilitet.                                                                     |
 | 0.7.46   | endret       | `CorrelationId.fetchCorrelationIdForThread` endret fra å være nullable til å generere en ny basert på timestamp om thread ikke har en correlationId |

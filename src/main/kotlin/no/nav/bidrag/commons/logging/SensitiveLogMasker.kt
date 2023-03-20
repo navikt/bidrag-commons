@@ -9,8 +9,8 @@ import java.util.regex.Pattern
 class SensitiveLogMasker : ValueMasker {
 
   companion object {
-    private val FNR_PATTERN: Pattern = "(?<![0-9])[0-9]{11}(?![0-9])".toPattern()
-    private val AKTOER_PATTERN: Pattern = "(?<![0-9])[0-9]{13}(?![0-9])".toPattern()
+    private val FNR_PATTERN: Pattern = "(?<!\\bcorrelationId\":\")(\\b\\d{11}\\b)(?!\\d)".toPattern()
+    private val AKTOER_PATTERN: Pattern = "(?<!\\bcorrelationId\":\")(\\b\\d{13}\\b)(?!\\d)".toPattern()
   }
 
   override fun mask(p0: JsonStreamContext?, p1: Any?): Any? {

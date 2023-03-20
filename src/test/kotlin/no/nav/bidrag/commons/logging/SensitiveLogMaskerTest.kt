@@ -13,6 +13,13 @@ internal class SensitiveLogMaskerTest {
   }
 
   @Test
+  fun shouldNotMaskCorrelationId() {
+    val masker = SensitiveLogMasker()
+    val maskedMessage = masker.maskLogMessage("{\"applicationKey\":\"asdasd-sadas-ddas-qwe\",\"correlationId\":\"1234567891033-avvik\",\"user\":\"Z999444\",\"@timestamp\":\"2023-03-20T07:11:37.596+01:00\",\"message\":\"Some sensitive message 1234567891033\",\"level\":\"INFO\"}\n")
+    maskedMessage shouldBe "{\"applicationKey\":\"asdasd-sadas-ddas-qwe\",\"correlationId\":\"1234567891033-avvik\",\"user\":\"Z999444\",\"@timestamp\":\"2023-03-20T07:11:37.596+01:00\",\"message\":\"Some sensitive message *************\",\"level\":\"INFO\"}\n"
+  }
+
+  @Test
   fun shouldMaskFNR() {
     val masker = SensitiveLogMasker()
     val maskedMessage = masker.maskLogMessage("Some message 12345678910 fnr")
