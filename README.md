@@ -183,7 +183,8 @@ Gjøres med 'workflows' og 'actions' fra GitHub. Se `.github/workflows/*` for de
 
 | versjon  | endringstype | beskrivelse                                                                                                                                         |
 |----------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| 0.7.50    | opprettet    | Oppretter string extension for å rimme string og sette den til null om verdien er blank                                                               |
+| 0.7.51   | endret       | Endret audit-logger til å hente parameternavn fra enkeltfelter via joinPoint                                                                        |
+| 0.7.50   | opprettet    | Oppretter string extension for å rimme string og sette den til null om verdien er blank                                                             |
 | 0.7.49   | endret       | SensitivLogMasker oppdater regex til å ignorere correlationId.                                                                                      |
 | 0.7.48   | endret       | Lagt til default override i ValueGenerator for bakoverkompatibilitet.                                                                               |
 | 0.7.47   | endret       | Lagt tilbake et par metoder i HttpHeaderRestTemplate for bakoverkompatibilitet.                                                                     |

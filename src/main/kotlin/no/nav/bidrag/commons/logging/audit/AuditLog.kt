@@ -5,7 +5,7 @@ package no.nav.bidrag.commons.logging.audit
 @MustBeDocumented
 annotation class AuditLog(
     val auditLoggerEvent: AuditLoggerEvent,
-    val oppslagsparameter: String,
+    val oppslagsparameter: String = "", // Kun nødvendig for spørringer med multiverdiobjekter som parameter
     val parametertype: Parametertype = Parametertype.DEFAULT
 )
 
