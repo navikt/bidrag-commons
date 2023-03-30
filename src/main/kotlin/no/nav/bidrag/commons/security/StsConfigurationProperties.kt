@@ -10,7 +10,7 @@ import org.springframework.validation.annotation.Validated
 data class StsConfigurationProperties(val properties: StsProperties)
 
 data class StsProperties(
-  val url: String,
-  val username: String,
-  val password: String,
+    val url: String,
+    val username: String,
+    val password: String
 )

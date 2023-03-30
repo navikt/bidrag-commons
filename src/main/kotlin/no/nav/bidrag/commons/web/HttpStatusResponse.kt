@@ -6,19 +6,19 @@ import java.util.*
 @Deprecated("")
 class HttpStatusResponse<T : Any> @JvmOverloads constructor(val httpStatus: HttpStatus, val body: T? = null) {
 
-  fun fetchOptionalResult(): Optional<T> {
-    return Optional.ofNullable(body)
-  }
+    fun fetchOptionalResult(): Optional<T> {
+        return Optional.ofNullable(body)
+    }
 
-  val isNotSuccessful: Boolean
-    get() = !httpStatus.is2xxSuccessful
+    val isNotSuccessful: Boolean
+        get() = !httpStatus.is2xxSuccessful
 
-  override fun toString(): String {
-    return "HttpStatusResponse{httpStatus=$httpStatus, body=$body}"
-  }
+    override fun toString(): String {
+        return "HttpStatusResponse{httpStatus=$httpStatus, body=$body}"
+    }
 
-  val isBodyEmpty: Boolean
-    get() = body == null
-  val isBodyPresent: Boolean
-    get() = body != null
+    val isBodyEmpty: Boolean
+        get() = body == null
+    val isBodyPresent: Boolean
+        get() = body != null
 }

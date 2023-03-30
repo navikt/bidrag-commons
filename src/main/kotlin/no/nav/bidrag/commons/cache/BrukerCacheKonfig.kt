@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class BrukerCacheKonfig {
-  @Bean(BrukerCacheNøkkel.GENERATOR_BØNNE)
-  fun brukerCacheNøkkelGenerator(): KeyGenerator = BrukerCacheNøkkelGenerator()
+    @Bean(BrukerCacheNøkkel.GENERATOR_BØNNE)
+    fun brukerCacheNøkkelGenerator(): KeyGenerator = BrukerCacheNøkkelGenerator()
 }

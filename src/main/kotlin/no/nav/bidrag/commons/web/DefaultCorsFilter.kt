@@ -7,21 +7,24 @@ import org.springframework.web.filter.CorsFilter
 
 @Component
 class DefaultCorsFilter : CorsFilter(
-  UrlBasedCorsConfigurationSource().apply {
-    this.registerCorsConfiguration("/**", CorsConfiguration().apply {
-      this.allowedOrigins = listOf("*")
-      this.allowedHeaders = listOf(
-        "Content-Type",
-        "Authorization",
-        "Content-Length",
-        "X-Requested-With",
-        "X-Correlation-ID",
-        "X-Enhet",
-        "Nav-Call-Id",
-        "Nav-Consumer-Id"
-      )
-      this.exposedHeaders = listOf("Warning", "X-Enhet", "X-Correlation-Id")
-      this.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-    })
-  }
+    UrlBasedCorsConfigurationSource().apply {
+        this.registerCorsConfiguration(
+            "/**",
+            CorsConfiguration().apply {
+                this.allowedOrigins = listOf("*")
+                this.allowedHeaders = listOf(
+                    "Content-Type",
+                    "Authorization",
+                    "Content-Length",
+                    "X-Requested-With",
+                    "X-Correlation-ID",
+                    "X-Enhet",
+                    "Nav-Call-Id",
+                    "Nav-Consumer-Id"
+                )
+                this.exposedHeaders = listOf("Warning", "X-Enhet", "X-Correlation-Id")
+                this.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+            }
+        )
+    }
 )

@@ -9,5 +9,4 @@ import java.lang.annotation.Inherited
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 @Import(SecurityConfig::class)
-annotation class EnableSecurityConfiguration(
-)
+annotation class EnableSecurityConfiguration()

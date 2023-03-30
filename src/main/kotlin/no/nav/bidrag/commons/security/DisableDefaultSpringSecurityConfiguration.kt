@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 class DisableDefaultSpringSecurityConfiguration : WebSecurityConfigurerAdapter() {
 
-  override fun configure(web: WebSecurity) {
-    web.ignoring().antMatchers("/**")
-  }
+    override fun configure(web: WebSecurity) {
+        web.ignoring().antMatchers("/**")
+    }
 }

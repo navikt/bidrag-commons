@@ -14,97 +14,97 @@ import org.springframework.stereotype.Component
 import java.net.URI
 
 abstract class AzureTokenClientInterceptor(
-  private val oAuth2AccessTokenService: OAuth2AccessTokenService,
-  private val clientConfigurationProperties: ClientConfigurationProperties
+    private val oAuth2AccessTokenService: OAuth2AccessTokenService,
+    private val clientConfigurationProperties: ClientConfigurationProperties
 ) :
-  ClientHttpRequestInterceptor {
+    ClientHttpRequestInterceptor {
 
-  protected fun genererAccessToken(
-    request: HttpRequest,
-    oAuth2GrantType: OAuth2GrantType? = null
-  ): String {
-    val clientProperties = clientPropertiesFor(
-      request.uri,
-      clientConfigurationProperties,
-      oAuth2GrantType
-    )
-    return oAuth2AccessTokenService.getAccessToken(clientProperties).accessToken
-  }
-
-  /**
-   * Finds client property for grantType:
-   *  - Returns first client property, if there is only one
-   *  - Returns client property for client_credentials or jwt_bearer
-   */
-  private fun clientPropertiesFor(
-    uri: URI,
-    clientConfigurationProperties: ClientConfigurationProperties,
-    oAuth2GrantType: OAuth2GrantType? = null
-  ): ClientProperties {
-    val clientProperties = filterClientProperties(clientConfigurationProperties, uri)
-
-    return ClientProperties(
-      clientProperties.tokenEndpointUrl,
-      clientProperties.wellKnownUrl,
-      oAuth2GrantType ?: clientCredentialOrJwtBearer(),
-      clientProperties.scope,
-      clientProperties.authentication,
-      clientProperties.resourceUrl,
-      clientProperties.tokenExchange
-    )
-  }
-
-  private fun filterClientProperties(
-    clientConfigurationProperties: ClientConfigurationProperties,
-    uri: URI
-  ) = clientConfigurationProperties
-    .registration
-    .values
-    .firstOrNull { uri.toString().startsWith(it.resourceUrl.toString()) }
-    ?: error("could not find oauth2 client config for uri=$uri")
-
-  private fun clientCredentialOrJwtBearer() =
-    if (erSystembruker()) OAuth2GrantType.CLIENT_CREDENTIALS else OAuth2GrantType.JWT_BEARER
-
-  private fun erSystembruker(): Boolean {
-    return try {
-      if (SikkerhetsKontekst.erIApplikasjonKontekst()) return true
-      val preferredUsername =
-        SpringTokenValidationContextHolder()
-          .tokenValidationContext
-          .getClaims("aad")["preferred_username"]
-      return preferredUsername == null
-    } catch (e: Throwable) {
-      // Ingen request context. Skjer ved kall som har opphav i kjørende applikasjon. Ping etc.
-      true
+    protected fun genererAccessToken(
+        request: HttpRequest,
+        oAuth2GrantType: OAuth2GrantType? = null
+    ): String {
+        val clientProperties = clientPropertiesFor(
+            request.uri,
+            clientConfigurationProperties,
+            oAuth2GrantType
+        )
+        return oAuth2AccessTokenService.getAccessToken(clientProperties).accessToken
     }
-  }
+
+    /**
+     * Finds client property for grantType:
+     *  - Returns first client property, if there is only one
+     *  - Returns client property for client_credentials or jwt_bearer
+     */
+    private fun clientPropertiesFor(
+        uri: URI,
+        clientConfigurationProperties: ClientConfigurationProperties,
+        oAuth2GrantType: OAuth2GrantType? = null
+    ): ClientProperties {
+        val clientProperties = filterClientProperties(clientConfigurationProperties, uri)
+
+        return ClientProperties(
+            clientProperties.tokenEndpointUrl,
+            clientProperties.wellKnownUrl,
+            oAuth2GrantType ?: clientCredentialOrJwtBearer(),
+            clientProperties.scope,
+            clientProperties.authentication,
+            clientProperties.resourceUrl,
+            clientProperties.tokenExchange
+        )
+    }
+
+    private fun filterClientProperties(
+        clientConfigurationProperties: ClientConfigurationProperties,
+        uri: URI
+    ) = clientConfigurationProperties
+        .registration
+        .values
+        .firstOrNull { uri.toString().startsWith(it.resourceUrl.toString()) }
+        ?: error("could not find oauth2 client config for uri=$uri")
+
+    private fun clientCredentialOrJwtBearer() =
+        if (erSystembruker()) OAuth2GrantType.CLIENT_CREDENTIALS else OAuth2GrantType.JWT_BEARER
+
+    private fun erSystembruker(): Boolean {
+        return try {
+            if (SikkerhetsKontekst.erIApplikasjonKontekst()) return true
+            val preferredUsername =
+                SpringTokenValidationContextHolder()
+                    .tokenValidationContext
+                    .getClaims("aad")["preferred_username"]
+            return preferredUsername == null
+        } catch (e: Throwable) {
+            // Ingen request context. Skjer ved kall som har opphav i kjørende applikasjon. Ping etc.
+            true
+        }
+    }
 }
 
 @Component
 class BearerTokenClientInterceptor(
-  oAuth2AccessTokenService: OAuth2AccessTokenService,
-  clientConfigurationProperties: ClientConfigurationProperties
+    oAuth2AccessTokenService: OAuth2AccessTokenService,
+    clientConfigurationProperties: ClientConfigurationProperties
 ) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
 
-  override fun intercept(
-    request: HttpRequest,
-    body: ByteArray,
-    execution: ClientHttpRequestExecution
-  ): ClientHttpResponse {
-    request.headers.setBearerAuth(genererAccessToken(request))
-    return execution.execute(request, body)
-  }
+    override fun intercept(
+        request: HttpRequest,
+        body: ByteArray,
+        execution: ClientHttpRequestExecution
+    ): ClientHttpResponse {
+        request.headers.setBearerAuth(genererAccessToken(request))
+        return execution.execute(request, body)
+    }
 }
 
 @Component
 class ServiceUserAuthTokenInterceptor(
-  oAuth2AccessTokenService: OAuth2AccessTokenService,
-  clientConfigurationProperties: ClientConfigurationProperties
+    oAuth2AccessTokenService: OAuth2AccessTokenService,
+    clientConfigurationProperties: ClientConfigurationProperties
 ) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
 
-  override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-    request.headers.setBearerAuth(genererAccessToken(request, OAuth2GrantType.CLIENT_CREDENTIALS))
-    return execution.execute(request, body)
-  }
+    override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
+        request.headers.setBearerAuth(genererAccessToken(request, OAuth2GrantType.CLIENT_CREDENTIALS))
+        return execution.execute(request, body)
+    }
 }
