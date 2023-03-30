@@ -10,18 +10,16 @@ import org.springframework.stereotype.Component
 
 @Component
 class ConsumerIdClientInterceptor(
-  @Value("\${NAIS_APP_NAME}") private val appName: String,
-  @Value("\${credential.username:}") private val serviceUser: String
+    @Value("\${NAIS_APP_NAME}") private val appName: String,
+    @Value("\${credential.username:}") private val serviceUser: String
 ) : ClientHttpRequestInterceptor {
 
-
-  override fun intercept(
-    request: HttpRequest,
-    body: ByteArray,
-    execution: ClientHttpRequestExecution
-  ): ClientHttpResponse {
-    request.headers.add(BidragHttpHeaders.NAV_CONSUMER_ID, serviceUser.ifBlank { appName })
-    return execution.execute(request, body)
-  }
-
+    override fun intercept(
+        request: HttpRequest,
+        body: ByteArray,
+        execution: ClientHttpRequestExecution
+    ): ClientHttpResponse {
+        request.headers.add(BidragHttpHeaders.NAV_CONSUMER_ID, serviceUser.ifBlank { appName })
+        return execution.execute(request, body)
+    }
 }

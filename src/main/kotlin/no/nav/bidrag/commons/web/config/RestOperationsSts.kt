@@ -10,16 +10,15 @@ import org.springframework.context.annotation.Scope
 @Suppress("SpringFacetCodeInspection")
 @Configuration
 @Import(
-  RestTemplateBuilderBean::class,
-  StsBearerTokenClientInterceptor::class,
+    RestTemplateBuilderBean::class,
+    StsBearerTokenClientInterceptor::class
 )
 class RestOperationsSts {
 
-  @Bean("sts")
-  @Scope("prototype")
-  fun restOperationsSts(
-    restTemplateBuilder: RestTemplateBuilder,
-    stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
-  ) = restTemplateBuilder.additionalInterceptors(stsBearerTokenClientInterceptor).build()
-
+    @Bean("sts")
+    @Scope("prototype")
+    fun restOperationsSts(
+        restTemplateBuilder: RestTemplateBuilder,
+        stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor
+    ) = restTemplateBuilder.additionalInterceptors(stsBearerTokenClientInterceptor).build()
 }

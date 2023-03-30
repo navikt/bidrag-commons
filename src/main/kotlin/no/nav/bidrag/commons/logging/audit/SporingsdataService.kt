@@ -6,6 +6,5 @@ package no.nav.bidrag.commons.logging.audit
  */
 interface SporingsdataService {
 
-  fun findSporingsdataForFelt(feltnavn: String, oppslagsfelt: Any): Sporingsdata
-
+    fun findSporingsdataForFelt(feltnavn: String, oppslagsfelt: Any): Sporingsdata
 }

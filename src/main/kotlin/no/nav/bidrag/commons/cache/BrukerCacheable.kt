@@ -15,7 +15,7 @@ import org.springframework.core.annotation.AliasFor
 @MustBeDocumented
 @Cacheable(keyGenerator = BrukerCacheNøkkel.GENERATOR_BØNNE)
 annotation class BrukerCacheable(
-  @get:AliasFor(annotation = Cacheable::class) vararg val value: String = [],
-  @get:AliasFor(annotation = Cacheable::class) val cacheManager: String = "",
-  @get:AliasFor(annotation = Cacheable::class) val cacheNames: Array<String> = []
+    @get:AliasFor(annotation = Cacheable::class) vararg val value: String = [],
+    @get:AliasFor(annotation = Cacheable::class) val cacheManager: String = "",
+    @get:AliasFor(annotation = Cacheable::class) val cacheNames: Array<String> = []
 )

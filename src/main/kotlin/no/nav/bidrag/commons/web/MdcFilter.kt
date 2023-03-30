@@ -15,45 +15,44 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class MdcFilter : HttpFilter() {
 
-  override fun doFilter(
-    httpServletRequest: HttpServletRequest,
-    httpServletResponse: HttpServletResponse,
-    filterChain: FilterChain
-  ) {
+    override fun doFilter(
+        httpServletRequest: HttpServletRequest,
+        httpServletResponse: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val enhetsnummer = httpServletRequest.getHeader(EnhetFilter.X_ENHET_HEADER) ?: EnhetFilter.fetchForThread()
+        val userId = TokenUtils.hentBruker()
+        val callId = resolveCallId(httpServletRequest)
 
-    val enhetsnummer = httpServletRequest.getHeader(EnhetFilter.X_ENHET_HEADER) ?: EnhetFilter.fetchForThread()
-    val userId = TokenUtils.hentBruker()
-    val callId = resolveCallId(httpServletRequest)
+        MDC.put(MDC_CALL_ID, callId)
+        MDC.put(MDC_USER_ID, userId)
+        MDC.put(MDC_ENHET, enhetsnummer)
 
-    MDC.put(MDC_CALL_ID, callId)
-    MDC.put(MDC_USER_ID, userId)
-    MDC.put(MDC_ENHET, enhetsnummer)
-
-    httpServletResponse.setHeader(BidragHttpHeaders.NAV_CALL_ID, callId)
-    httpServletResponse.setHeader(BidragHttpHeaders.X_ENHET, enhetsnummer)
-    try {
-      filterChain.doFilter(httpServletRequest, httpServletResponse)
-    } finally {
-      MDC.clear()
+        httpServletResponse.setHeader(BidragHttpHeaders.NAV_CALL_ID, callId)
+        httpServletResponse.setHeader(BidragHttpHeaders.X_ENHET, enhetsnummer)
+        try {
+            filterChain.doFilter(httpServletRequest, httpServletResponse)
+        } finally {
+            MDC.clear()
+        }
     }
-  }
 
-  private fun resolveCallId(httpServletRequest: HttpServletRequest): String {
-    return NAV_CALL_ID_HEADER_NAMES
-      .mapNotNull { httpServletRequest.getHeader(it) }
-      .firstOrNull { it.isNotEmpty() }
-      ?: IdUtils.generateId()
-  }
+    private fun resolveCallId(httpServletRequest: HttpServletRequest): String {
+        return NAV_CALL_ID_HEADER_NAMES
+            .mapNotNull { httpServletRequest.getHeader(it) }
+            .firstOrNull { it.isNotEmpty() }
+            ?: IdUtils.generateId()
+    }
 
-  companion object {
-    // there is no consensus in NAV about header-names for correlation ids, so we support 'em all!
-    // https://nav-it.slack.com/archives/C9UQ16AH4/p1538488785000100
-    val NAV_CALL_ID_HEADER_NAMES =
-      arrayOf(
-        BidragHttpHeaders.NAV_CALL_ID,
-        "Nav-CallId",
-        "Nav-Callid",
-        "X-Correlation-Id"
-      )
-  }
+    companion object {
+        // there is no consensus in NAV about header-names for correlation ids, so we support 'em all!
+        // https://nav-it.slack.com/archives/C9UQ16AH4/p1538488785000100
+        val NAV_CALL_ID_HEADER_NAMES =
+            arrayOf(
+                BidragHttpHeaders.NAV_CALL_ID,
+                "Nav-CallId",
+                "Nav-Callid",
+                "X-Correlation-Id"
+            )
+    }
 }

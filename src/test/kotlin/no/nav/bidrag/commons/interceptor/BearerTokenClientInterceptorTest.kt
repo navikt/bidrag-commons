@@ -21,78 +21,78 @@ import java.net.URI
 
 class BearerTokenClientInterceptorTest {
 
-  private lateinit var bearerTokenClientInterceptor: BearerTokenClientInterceptor
+    private lateinit var bearerTokenClientInterceptor: BearerTokenClientInterceptor
 
-  private val oAuth2AccessTokenService = mockk<OAuth2AccessTokenService>(relaxed = true)
+    private val oAuth2AccessTokenService = mockk<OAuth2AccessTokenService>(relaxed = true)
 
-  @BeforeEach
-  fun setup() {
-    bearerTokenClientInterceptor = BearerTokenClientInterceptor(
-      oAuth2AccessTokenService,
-      clientConfigurationProperties
-    )
-  }
-
-  @AfterEach
-  internal fun tearDown() {
-    clearBrukerContext()
-  }
-
-  @Test
-  fun `intercept bruker grant type client credentials når det ikke er noen request context`() {
-    val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
-    every { req.uri } returns URI("http://firstResource.no")
-    val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
-
-    bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
-
-    verify {
-      oAuth2AccessTokenService.getAccessToken(clientConfigurationProperties.registration["1"])
-    }
-  }
-
-  @Test
-  fun `intercept bruker grant type jwt token når det finnes saksbehandler context`() {
-    mockBrukerContext("saksbehandler")
-
-    val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
-    every { req.uri } returns URI("http://firstResource.no")
-    val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
-
-    bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
-
-    verify {
-      oAuth2AccessTokenService.getAccessToken(
-        ClientProperties(
-          clientConfigurationProperties.registration["1"]?.tokenEndpointUrl,
-          clientConfigurationProperties.registration["1"]?.wellKnownUrl,
-          OAuth2GrantType.JWT_BEARER,
-          clientConfigurationProperties.registration["1"]?.scope,
-          clientConfigurationProperties.registration["1"]?.authentication,
-          clientConfigurationProperties.registration["1"]?.resourceUrl,
-          clientConfigurationProperties.registration["1"]?.tokenExchange
+    @BeforeEach
+    fun setup() {
+        bearerTokenClientInterceptor = BearerTokenClientInterceptor(
+            oAuth2AccessTokenService,
+            clientConfigurationProperties
         )
-      )
     }
-  }
 
-  fun mockBrukerContext(preferredUsername: String) {
-    val tokenValidationContext = mockk<TokenValidationContext>()
-    val jwtTokenClaims = mockk<JwtTokenClaims>()
-    val requestAttributes = mockk<RequestAttributes>()
-    RequestContextHolder.setRequestAttributes(requestAttributes)
-    every {
-      requestAttributes.getAttribute(
-        SpringTokenValidationContextHolder::class.java.name,
-        RequestAttributes.SCOPE_REQUEST
-      )
-    } returns tokenValidationContext
-    every { tokenValidationContext.getClaims("aad") } returns jwtTokenClaims
-    every { jwtTokenClaims.get("preferred_username") } returns preferredUsername
-    every { jwtTokenClaims.get("NAVident") } returns preferredUsername
-  }
+    @AfterEach
+    internal fun tearDown() {
+        clearBrukerContext()
+    }
 
-  fun clearBrukerContext() {
-    RequestContextHolder.resetRequestAttributes()
-  }
+    @Test
+    fun `intercept bruker grant type client credentials når det ikke er noen request context`() {
+        val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
+        every { req.uri } returns URI("http://firstResource.no")
+        val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
+
+        bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
+
+        verify {
+            oAuth2AccessTokenService.getAccessToken(clientConfigurationProperties.registration["1"])
+        }
+    }
+
+    @Test
+    fun `intercept bruker grant type jwt token når det finnes saksbehandler context`() {
+        mockBrukerContext("saksbehandler")
+
+        val req = mockk<HttpRequest>(relaxed = true, relaxUnitFun = true)
+        every { req.uri } returns URI("http://firstResource.no")
+        val execution = mockk<ClientHttpRequestExecution>(relaxed = true)
+
+        bearerTokenClientInterceptor.intercept(req, ByteArray(0), execution)
+
+        verify {
+            oAuth2AccessTokenService.getAccessToken(
+                ClientProperties(
+                    clientConfigurationProperties.registration["1"]?.tokenEndpointUrl,
+                    clientConfigurationProperties.registration["1"]?.wellKnownUrl,
+                    OAuth2GrantType.JWT_BEARER,
+                    clientConfigurationProperties.registration["1"]?.scope,
+                    clientConfigurationProperties.registration["1"]?.authentication,
+                    clientConfigurationProperties.registration["1"]?.resourceUrl,
+                    clientConfigurationProperties.registration["1"]?.tokenExchange
+                )
+            )
+        }
+    }
+
+    fun mockBrukerContext(preferredUsername: String) {
+        val tokenValidationContext = mockk<TokenValidationContext>()
+        val jwtTokenClaims = mockk<JwtTokenClaims>()
+        val requestAttributes = mockk<RequestAttributes>()
+        RequestContextHolder.setRequestAttributes(requestAttributes)
+        every {
+            requestAttributes.getAttribute(
+                SpringTokenValidationContextHolder::class.java.name,
+                RequestAttributes.SCOPE_REQUEST
+            )
+        } returns tokenValidationContext
+        every { tokenValidationContext.getClaims("aad") } returns jwtTokenClaims
+        every { jwtTokenClaims.get("preferred_username") } returns preferredUsername
+        every { jwtTokenClaims.get("NAVident") } returns preferredUsername
+    }
+
+    fun clearBrukerContext() {
+        RequestContextHolder.resetRequestAttributes()
+    }
 }
