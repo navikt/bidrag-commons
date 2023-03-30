@@ -51,7 +51,6 @@ class AuditAdvice(
             fields.find { auditLog.oppslagsparameter == it.name }
                 ?: error("Feltet ${auditLog.oppslagsparameter} finnes ikke i requestBody.")
 
-
         val oppslagsfelt = oppslagsfeltFraRequest.getter.call(requestBody)
             ?: error("Uthenting av verdien til ${auditLog.oppslagsparameter} for audit-logging feilet!")
         val sporingsdata = sporingsdataService.findSporingsdataForFelt(auditLog.oppslagsparameter, oppslagsfelt)
