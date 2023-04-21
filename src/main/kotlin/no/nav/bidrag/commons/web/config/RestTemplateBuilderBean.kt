@@ -2,7 +2,6 @@ package no.nav.bidrag.commons.web.config
 
 import no.nav.bidrag.commons.web.interceptor.ConsumerIdClientInterceptor
 import no.nav.bidrag.commons.web.interceptor.MdcValuesPropagatingClientInterceptor
-import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -13,7 +12,7 @@ import java.time.temporal.ChronoUnit
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class, ObservationRestTemplateCustomizer::class)
+@Import(ConsumerIdClientInterceptor::class, NaisProxyCustomizer::class)
 class RestTemplateBuilderBean {
 
     @Bean
@@ -39,10 +38,8 @@ class RestTemplateBuilderBean {
         havingValue = "Umulig verdi"
     )
     fun restTemplateBuilderNoProxy(
-        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-        metricsRestTemplateCustomizer: ObservationRestTemplateCustomizer
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor
     ): RestTemplateBuilder = RestTemplateBuilder()
-        .additionalCustomizers(metricsRestTemplateCustomizer)
         .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
         .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
         .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
