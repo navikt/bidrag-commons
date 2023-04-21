@@ -1,12 +1,12 @@
 package no.nav.bidrag.commons.web
 
+import jakarta.servlet.Filter
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
 import no.nav.bidrag.commons.security.utils.TokenUtils
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
-import javax.servlet.Filter
-import javax.servlet.FilterChain
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
 
 /**
  * Adds user to MDC for logging

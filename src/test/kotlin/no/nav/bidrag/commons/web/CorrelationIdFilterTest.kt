@@ -9,15 +9,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponseWrapper
 import no.nav.bidrag.commons.web.CorrelationIdFilter.Companion.fetchCorrelationIdForThread
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import javax.servlet.FilterChain
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponseWrapper
 
 internal class CorrelationIdFilterTest {
     private val correlationIdFilter = CorrelationIdFilter()

@@ -1,5 +1,9 @@
 package no.nav.bidrag.commons.web
 
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpFilter
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import no.nav.bidrag.commons.security.utils.TokenUtils
 import no.nav.bidrag.commons.util.IdUtils
 import no.nav.bidrag.commons.web.MdcConstants.MDC_CALL_ID
@@ -7,10 +11,6 @@ import no.nav.bidrag.commons.web.MdcConstants.MDC_ENHET
 import no.nav.bidrag.commons.web.MdcConstants.MDC_USER_ID
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
-import javax.servlet.FilterChain
-import javax.servlet.http.HttpFilter
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Component
 class MdcFilter : HttpFilter() {
