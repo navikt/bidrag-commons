@@ -1,16 +1,15 @@
 package no.nav.bidrag.commons.web
 
+import jakarta.servlet.Filter
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import no.nav.bidrag.commons.CorrelationId
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.stereotype.Component
-import java.util.UUID
-import javax.servlet.Filter
-import javax.servlet.FilterChain
-import javax.servlet.ServletRequest
-import javax.servlet.ServletResponse
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Component
 class CorrelationIdFilter : Filter {
@@ -72,7 +71,7 @@ class CorrelationIdFilter : Filter {
     companion object {
         @JvmStatic
         fun fetchCorrelationIdForThread(): String {
-            return CorrelationId.fetchCorrelationIdForThread() ?: UUID.randomUUID().toString()
+            return CorrelationId.fetchCorrelationIdForThread()
         }
 
         const val CORRELATION_ID_MDC = "correlationId"

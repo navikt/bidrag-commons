@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.logging.audit
 
+import jakarta.servlet.http.HttpServletRequest
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.MdcConstants
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
-import javax.servlet.http.HttpServletRequest
 
 @Component
 class AuditLogger(@Value("\${NAIS_APP_NAME}") private val applicationName: String) {

@@ -33,7 +33,7 @@ class HttpResponse<T>(val responseEntity: ResponseEntity<T>) {
 
         val headers = HttpHeaders(CollectionUtils.toMultiValueMap(headersMap))
         headers.clearContentHeaders()
-        return from(responseEntity.body, headers, responseEntity.statusCode)
+        return from(responseEntity.body, headers, HttpStatus.valueOf(responseEntity.statusCode.value()))
     }
 
     companion object {

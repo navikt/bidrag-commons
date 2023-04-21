@@ -2,7 +2,6 @@ package no.nav.bidrag.commons.web.config
 
 import no.nav.bidrag.commons.web.interceptor.ConsumerIdClientInterceptor
 import no.nav.bidrag.commons.web.interceptor.MdcValuesPropagatingClientInterceptor
-import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -20,11 +19,10 @@ class RestTemplateBuilderBean {
     @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.proxy_url")
     fun restTemplateBuilder(
         iNaisProxyCustomizer: INaisProxyCustomizer,
-        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-        metricsRestTemplateCustomizer: MetricsRestTemplateCustomizer
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor
     ) = RestTemplateBuilder()
         .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
-        .additionalCustomizers(iNaisProxyCustomizer, metricsRestTemplateCustomizer)
+        .additionalCustomizers(iNaisProxyCustomizer)
         .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
         .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
 
@@ -40,10 +38,8 @@ class RestTemplateBuilderBean {
         havingValue = "Umulig verdi"
     )
     fun restTemplateBuilderNoProxy(
-        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-        metricsRestTemplateCustomizer: MetricsRestTemplateCustomizer
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor
     ): RestTemplateBuilder = RestTemplateBuilder()
-        .additionalCustomizers(metricsRestTemplateCustomizer)
         .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
         .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
         .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))

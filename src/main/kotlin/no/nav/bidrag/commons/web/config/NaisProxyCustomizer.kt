@@ -1,12 +1,11 @@
 package no.nav.bidrag.commons.web.config
 
-import org.apache.http.HttpHost
-import org.apache.http.HttpRequest
-import org.apache.http.client.HttpClient
-import org.apache.http.client.config.RequestConfig
-import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner
-import org.apache.http.protocol.HttpContext
+import org.apache.hc.client5.http.config.RequestConfig
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner
+import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.http.protocol.HttpContext
+import org.apache.hc.core5.util.Timeout
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -17,35 +16,34 @@ interface INaisProxyCustomizer : RestTemplateCustomizer
 
 @Component
 class NaisProxyCustomizer(
-    @Value("\${bidrag.nais.proxy.connectTimeout:15000}") val connectTimeout: Int,
-    @Value("\${bidrag.nais.proxy.socketTimeout:15000}") val socketTimeout: Int,
-    @Value("\${bidrag.nais.proxy.requestTimeout:15000}") val requestTimeout: Int
+    @Value("\${bidrag.nais.proxy.connectTimeout:15000}") val connectTimeout: Long,
+    @Value("\${bidrag.nais.proxy.socketTimeout:15000}") val socketTimeout: Long,
+    @Value("\${bidrag.nais.proxy.requestTimeout:15000}") val requestTimeout: Long
 ) : INaisProxyCustomizer {
 
     override fun customize(restTemplate: RestTemplate) {
         val proxy = HttpHost("webproxy-nais.nav.no", 8088)
-        val client: HttpClient = HttpClientBuilder.create()
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setConnectTimeout(connectTimeout)
-                    .setSocketTimeout(socketTimeout)
-                    .setConnectionRequestTimeout(requestTimeout)
-                    .build()
-            )
-            .setRoutePlanner(object : DefaultProxyRoutePlanner(proxy) {
+        val connectTimeout = Timeout.ofMilliseconds(connectTimeout)
+        val requestTimeout = Timeout.ofMilliseconds(requestTimeout)
 
-                public override fun determineProxy(
-                    target: HttpHost,
-                    request: HttpRequest,
-                    context: HttpContext
-                ): HttpHost? {
-                    return if (target.hostName.contains("microsoft")) {
-                        super.determineProxy(target, request, context)
-                    } else {
-                        null
-                    }
+        val client = HttpClients.custom().setDefaultRequestConfig(
+            RequestConfig.custom()
+                .setConnectTimeout(connectTimeout)
+                .setConnectionRequestTimeout(requestTimeout)
+                .build()
+        ).setRoutePlanner(object : DefaultProxyRoutePlanner(proxy) {
+
+            public override fun determineProxy(
+                target: HttpHost,
+                context: HttpContext
+            ): HttpHost? {
+                return if (target.hostName.contains("microsoft")) {
+                    super.determineProxy(target, context)
+                } else {
+                    null
                 }
-            }).build()
+            }
+        }).build()
 
         restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory(client)
     }
