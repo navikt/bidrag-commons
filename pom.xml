@@ -42,7 +42,6 @@
     <mockk.version>1.13.4</mockk.version>
     <kotest.version>5.5.4</kotest.version>
     <token-support.version>3.0.10</token-support.version>
-    <httpclient.version>5.2.1</httpclient.version>
 
     <!-- language -->
     <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
@@ -103,11 +102,6 @@
       <artifactId>token-client-spring</artifactId>
       <version>${token-support.version}</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents.client5</groupId>
-      <artifactId>httpclient5</artifactId>
-      <version>${httpclient.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
