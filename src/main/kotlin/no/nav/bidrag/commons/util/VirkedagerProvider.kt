@@ -34,7 +34,7 @@ object VirkedagerProvider {
         )
     }
 
-    fun nesteVirkedag(dagensDato: LocalDate): LocalDate {
+    fun nesteVirkedag(dagensDato: LocalDate = LocalDate.now()): LocalDate {
         var nesteDag = dagensDato.plusDays(1)
 
         while (erHelgEllerHelligdag(nesteDag)) {
