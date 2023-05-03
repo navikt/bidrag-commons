@@ -38,10 +38,10 @@
     <!-- dependencies -->
     <logback-encoder.version>7.3</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
-    <spring-boot.version>3.0.5</spring-boot.version>
-    <mockk.version>1.13.4</mockk.version>
+    <spring-boot.version>3.0.6</spring-boot.version>
+    <mockk.version>1.13.5</mockk.version>
     <kotest.version>5.5.4</kotest.version>
-    <token-support.version>3.0.10</token-support.version>
+    <token-support.version>3.0.11</token-support.version>
 
     <!-- language -->
     <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
@@ -50,7 +50,7 @@
     <kotlin.code.style>official</kotlin.code.style>
 
     <!-- plugins -->
-    <maven-compiler.version>3.8.1</maven-compiler.version>
+    <maven-compiler.version>3.11.0</maven-compiler.version>
     <maven-surefire.version>3.0.0-M8</maven-surefire.version>
   </properties>
 
@@ -77,6 +77,11 @@
             <type>pom</type>
             <scope>import</scope>
           </dependency>
+          <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
+          </dependency>
         </dependencies>
   </dependencyManagement>
 
@@ -91,6 +96,15 @@
       <artifactId>spring-expression</artifactId>
       <version>6.0.8</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.micrometer</groupId>-->
+<!--      <artifactId>micrometer-core</artifactId>-->
+<!--      <version>1.10.6</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>no.nav.security</groupId>
       <artifactId>token-validation-spring</artifactId>
@@ -132,7 +146,7 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
-      <version>1.10.5</version>
+      <version>1.10.6</version>
     </dependency>
     <!-- test -->
     <dependency>
