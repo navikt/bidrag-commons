@@ -39,8 +39,8 @@
     <logback-encoder.version>7.3</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
     <spring-boot.version>3.0.6</spring-boot.version>
-    <mockk.version>1.13.4</mockk.version>
-    <kotest.version>5.6.1</kotest.version>
+    <mockk.version>1.13.5</mockk.version>
+    <kotest.version>5.5.4</kotest.version>
     <token-support.version>3.0.11</token-support.version>
 
     <!-- language -->
