@@ -1,10 +1,12 @@
 package no.nav.bidrag.commons.web.interceptor
 
+import no.nav.bidrag.commons.util.IdUtils
 import no.nav.bidrag.commons.web.BidragHttpHeaders
 import no.nav.bidrag.commons.web.EnhetFilter
 import no.nav.bidrag.commons.web.MdcConstants
 import no.nav.bidrag.commons.web.MdcFilter.Companion.NAV_CALL_ID_HEADER_NAMES
 import org.slf4j.MDC
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
@@ -13,15 +15,16 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class MdcValuesPropagatingClientInterceptor : ClientHttpRequestInterceptor {
+@Import(IdUtils::class)
+class MdcValuesPropagatingClientInterceptor(private val idUtils: IdUtils) : ClientHttpRequestInterceptor {
 
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
         execution: ClientHttpRequestExecution
     ): ClientHttpResponse {
-        val callId = MDC.get(MdcConstants.MDC_CALL_ID) ?: generateId()
-        // Propagerer alle alternativer for callId inntil alle applikasjonene våre er samskjørte.
+        val callId = MDC.get(MdcConstants.MDC_CALL_ID) ?: idUtils.generateId()
+        // Propagerer alle alternativer for callId inntil alle applikasjonene våre er samkjørte.
         NAV_CALL_ID_HEADER_NAMES.forEach {
             request.headers.add(it, callId)
         }
@@ -32,9 +35,4 @@ class MdcValuesPropagatingClientInterceptor : ClientHttpRequestInterceptor {
         return execution.execute(request, body)
     }
 
-    fun generateId(): String {
-        val uuid = UUID.randomUUID()
-        return java.lang.Long.toHexString(uuid.mostSignificantBits) +
-            java.lang.Long.toHexString(uuid.leastSignificantBits)
-    }
 }
