@@ -10,10 +10,12 @@ import no.nav.bidrag.commons.web.MdcConstants.MDC_CALL_ID
 import no.nav.bidrag.commons.web.MdcConstants.MDC_ENHET
 import no.nav.bidrag.commons.web.MdcConstants.MDC_USER_ID
 import org.slf4j.MDC
+import org.springframework.context.annotation.Import
 import org.springframework.stereotype.Component
 
 @Component
-class MdcFilter : HttpFilter() {
+@Import(IdUtils::class)
+class MdcFilter(private val idUtils: IdUtils) : HttpFilter() {
 
     override fun doFilter(
         httpServletRequest: HttpServletRequest,
@@ -41,7 +43,7 @@ class MdcFilter : HttpFilter() {
         return NAV_CALL_ID_HEADER_NAMES
             .mapNotNull { httpServletRequest.getHeader(it) }
             .firstOrNull { it.isNotEmpty() }
-            ?: IdUtils.generateId()
+            ?: idUtils.generateId()
     }
 
     companion object {

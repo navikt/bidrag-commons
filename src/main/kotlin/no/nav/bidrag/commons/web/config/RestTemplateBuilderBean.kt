@@ -14,15 +14,16 @@ import java.time.temporal.ChronoUnit
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
-@Import(ConsumerIdClientInterceptor::class)
+@Import(ConsumerIdClientInterceptor::class, MdcValuesPropagatingClientInterceptor::class)
 class RestTemplateBuilderBean {
 
     @Bean
     fun restTemplateBuilderNoProxy(
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-        observationRestTemplateCustomizer: ObservationRestTemplateCustomizer
+        observationRestTemplateCustomizer: ObservationRestTemplateCustomizer,
+        mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor
     ): RestTemplateBuilder = RestTemplateBuilder()
-        .additionalInterceptors(consumerIdClientInterceptor, MdcValuesPropagatingClientInterceptor())
+        .additionalInterceptors(consumerIdClientInterceptor, mdcValuesPropagatingClientInterceptor)
         .additionalCustomizers(observationRestTemplateCustomizer)
         .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
         .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
