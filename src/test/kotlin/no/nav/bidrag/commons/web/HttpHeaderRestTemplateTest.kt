@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders
 import java.lang.reflect.Type
 
 internal class HttpHeaderRestTemplateTest {
+
     private val httpHeaderRestTemplate = HttpHeaderRestTemplate()
 
     private val appenderMock: Appender<ILoggingEvent> = mockk(relaxed = true)
