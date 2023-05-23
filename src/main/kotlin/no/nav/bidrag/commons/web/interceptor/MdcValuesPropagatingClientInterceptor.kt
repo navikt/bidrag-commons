@@ -34,5 +34,4 @@ class MdcValuesPropagatingClientInterceptor(private val idUtils: IdUtils) : Clie
 
         return execution.execute(request, body)
     }
-
 }

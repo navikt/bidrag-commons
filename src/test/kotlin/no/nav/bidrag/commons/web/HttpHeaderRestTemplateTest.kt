@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.web
 
+import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.Appender
@@ -17,6 +18,7 @@ import org.springframework.http.HttpHeaders
 import java.lang.reflect.Type
 
 internal class HttpHeaderRestTemplateTest {
+
     private val httpHeaderRestTemplate = HttpHeaderRestTemplate()
 
     private val appenderMock: Appender<ILoggingEvent> = mockk(relaxed = true)
@@ -26,6 +28,7 @@ internal class HttpHeaderRestTemplateTest {
     @BeforeEach
     fun initMocks() {
         val logger = LoggerFactory.getLogger(HttpHeaderRestTemplate::class.java) as Logger
+        logger.level = Level.DEBUG
         every { appenderMock.name } returns "MOCK"
         every { appenderMock.isStarted } returns true
         logger.addAppender(appenderMock)
