@@ -1,22 +1,24 @@
 package no.nav.bidrag.commons.logging.audit
 
 import no.nav.bidrag.commons.security.ContextService
+import no.nav.bidrag.commons.tilgang.TilgangClient
+import no.nav.bidrag.commons.util.FeltEkstraherer
+import no.nav.bidrag.domain.ident.PersonIdent
+import no.nav.bidrag.domain.string.Saksnummer
+import no.nav.bidrag.transport.tilgang.Sporingsdata
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.reflect.CodeSignature
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
 
 @Aspect
 @Configuration
 @Import(AuditLogger::class)
 class AuditAdvice(
     private val auditLogger: AuditLogger,
-    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    private val sporingsdataService: SporingsdataService
+    private val tilgangClient: TilgangClient
 ) {
 
     @Before("@annotation(auditLog) ")
@@ -25,39 +27,66 @@ class AuditAdvice(
             return
         }
 
-        val parameter = joinpoint.args.first()
-
-        when (auditLog.parametertype) {
-            Parametertype.DEFAULT -> {
-                when (auditLog.auditLoggerEvent) {
-                    AuditLoggerEvent.ACCESS, AuditLoggerEvent.DELETE -> auditForEnkeltverdi(parameter, joinpoint, auditLog)
-                    AuditLoggerEvent.CREATE, AuditLoggerEvent.UPDATE -> auditForBody(parameter, auditLog)
-                }
-            }
-            Parametertype.ENKELTVERDI -> auditForEnkeltverdi(parameter, joinpoint, auditLog)
-            Parametertype.REQUEST_BODY -> auditForBody(parameter, auditLog)
+        if (auditLog.oppslagsparameter == "") {
+            auditForParameter(joinpoint.args.first(), auditLog.auditLoggerEvent)
+        } else {
+            auditForNavngittParameter(joinpoint, auditLog)
         }
     }
 
-    private fun auditForEnkeltverdi(parameter: Any, joinpoint: JoinPoint, auditLog: AuditLog) {
-        val parameternavn = (joinpoint.signature as CodeSignature).parameterNames.first()
-        val sporingsdata = sporingsdataService.findSporingsdataForFelt(parameternavn, parameter)
-        logAccess(auditLog, sporingsdata)
+    private fun auditForNavngittParameter(joinpoint: JoinPoint, auditLog: AuditLog) {
+        val parameternavn: Array<String> = (joinpoint.signature as CodeSignature).parameterNames
+        val index = parameternavn.indexOf(auditLog.oppslagsparameter)
+        if (index > -1) {
+            auditForParameter(joinpoint.args[index], auditLog.auditLoggerEvent)
+        } else {
+            val sporingsdata = finnSporingsdataForNavngittFeltIRequestBody(joinpoint.args.first(), auditLog.oppslagsparameter)
+            auditLogger.log(auditLog.auditLoggerEvent, sporingsdata)
+        }
     }
 
-    private fun auditForBody(requestBody: Any, auditLog: AuditLog) {
-        val fields: Collection<KProperty1<out Any, *>> = requestBody::class.declaredMemberProperties
-        val oppslagsfeltFraRequest =
-            fields.find { auditLog.oppslagsparameter == it.name }
-                ?: error("Feltet ${auditLog.oppslagsparameter} finnes ikke i requestBody.")
-
-        val oppslagsfelt = oppslagsfeltFraRequest.getter.call(requestBody)
-            ?: error("Uthenting av verdien til ${auditLog.oppslagsparameter} for audit-logging feilet!")
-        val sporingsdata = sporingsdataService.findSporingsdataForFelt(auditLog.oppslagsparameter, oppslagsfelt)
-        logAccess(auditLog, sporingsdata)
+    private fun finnSporingsdataForNavngittFeltIRequestBody(requestBody: Any, feltnavn: String): Sporingsdata {
+        return finnSporingsdataForFeltIRequestBody(requestBody, feltnavn)
     }
 
-    fun logAccess(auditLog: AuditLog, sporingsdata: Sporingsdata) {
-        auditLogger.log(auditLog.auditLoggerEvent, sporingsdata)
+    private fun finnSporingsdataForFørsteKonstruktørparameterIRequestBody(requestBody: Any): Sporingsdata {
+        val feltnavn = FeltEkstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
+        return finnSporingsdataForFeltIRequestBody(requestBody, feltnavn)
+    }
+
+    private fun auditForParameter(param: Any, auditLoggerEvent: AuditLoggerEvent) {
+        val sporingsdata: Sporingsdata = when (param) {
+            is Saksnummer -> finnSporingsdataForSaksnummer(param)
+            is PersonIdent -> finnSporingsdataForPersonIdent(param)
+            is String -> finnSporingsdataForString(param)
+            else -> finnSporingsdataForFørsteKonstruktørparameterIRequestBody(param)
+        }
+        auditLogger.log(auditLoggerEvent, sporingsdata)
+    }
+
+    private fun finnSporingsdataForFeltIRequestBody(requestBody: Any, feltnavn: String): Sporingsdata {
+        val param = FeltEkstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
+        return when (param) {
+            is Saksnummer -> finnSporingsdataForSaksnummer(param)
+            is PersonIdent -> finnSporingsdataForPersonIdent(param)
+            is String -> finnSporingsdataForString(param)
+            else -> error("Type på konstruktørparameter ikke støttet av audit-log")
+        }
+    }
+
+    private fun finnSporingsdataForString(s: String): Sporingsdata {
+        return when {
+            Saksnummer(s).gyldig() -> tilgangClient.hentSporingsdataSak(s)
+            PersonIdent(s).gyldig() -> tilgangClient.hentSporingsdataPerson(s)
+            else -> error("Type på oppslagsfelt ikke støttet av audit-log")
+        }
+    }
+
+    private fun finnSporingsdataForPersonIdent(personIdent: PersonIdent): Sporingsdata {
+        return tilgangClient.hentSporingsdataPerson(personIdent.verdi)
+    }
+
+    private fun finnSporingsdataForSaksnummer(saksnummer: Saksnummer): Sporingsdata {
+        return tilgangClient.hentSporingsdataSak(saksnummer.verdi)
     }
 }
