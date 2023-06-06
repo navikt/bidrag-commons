@@ -3,14 +3,14 @@ package no.nav.bidrag.commons.util
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Random
 
 private val K1_VEKT = intArrayOf(3, 7, 6, 1, 8, 9, 4, 5, 2)
 private val K2_VEKT = intArrayOf(5, 4, 3, 2, 7, 6, 5, 4, 3, 2)
 
 object PersonidentGenerator {
 
-    fun genererPersonnummer(innsendtFodselsdato: LocalDate? = null, innsendtKjonn: Kjonn? = null): String {
+    fun genererFødselsnummer(innsendtFodselsdato: LocalDate? = null, innsendtKjonn: Kjonn? = null): String {
         val fodselsdato = innsendtFodselsdato ?: opprettTilfeldigFodselsdato()
         val kjonn = innsendtKjonn ?: hentTilfeldigKjonn()
 
@@ -19,12 +19,12 @@ object PersonidentGenerator {
         try {
             fodselsnummer = opprettKontrollsiffer(K1_VEKT, fodselsnummer)
         } catch (e: IllegalStateException) {
-            return genererPersonnummer(fodselsdato, kjonn)
+            return genererFødselsnummer(fodselsdato, kjonn)
         }
         try {
             fodselsnummer = opprettKontrollsiffer(K2_VEKT, fodselsnummer)
         } catch (e: IllegalStateException) {
-            return genererPersonnummer(fodselsdato, kjonn)
+            return genererFødselsnummer(fodselsdato, kjonn)
         }
 
         return fodselsnummer
@@ -39,16 +39,13 @@ object PersonidentGenerator {
     }
 
     private fun genererIndividnummer(fodselsAr: Int, kjonn: Kjonn): String {
-        if (fodselsAr in 1940..1999) {
-            return opprettTilfeldigIndividnummer(kjonn, 900, 999)
-        } else if (fodselsAr in 1854..1899) {
-            return opprettTilfeldigIndividnummer(kjonn, 500, 749)
-        } else if (fodselsAr in 1900..1999) {
-            return opprettTilfeldigIndividnummer(kjonn, 0, 499)
-        } else if (fodselsAr in 2000..2039) {
-            return opprettTilfeldigIndividnummer(kjonn, 500, 999)
+        return when (fodselsAr) {
+            in 1940..1999 -> opprettTilfeldigIndividnummer(kjonn, 900, 999)
+            in 1854..1899 -> opprettTilfeldigIndividnummer(kjonn, 500, 749)
+            in 1900..1999 -> opprettTilfeldigIndividnummer(kjonn, 0, 499)
+            in 2000..2039 -> opprettTilfeldigIndividnummer(kjonn, 500, 999)
+            else -> throw IllegalArgumentException("Fant ikke gyldig serie for årstallet $fodselsAr")
         }
-        throw IllegalArgumentException("Fant ikke gyldig serie for årstallet $fodselsAr")
     }
 
     private fun opprettTilfeldigIndividnummer(kjonn: Kjonn, fraInklusiv: Int, tilInklusiv: Int): String {

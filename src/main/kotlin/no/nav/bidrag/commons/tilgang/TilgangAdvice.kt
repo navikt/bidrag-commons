@@ -16,52 +16,52 @@ class TilgangAdvice(
     private val tilgangClient: TilgangClient
 ) {
 
-    @Before("@annotation(auditLog) ")
-    fun loggTilgang(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
+    @Before("@annotation(tilgangskontroll) ")
+    fun sjekkTilgang(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
         if (ContextService.erMaskinTilMaskinToken()) {
             return
         }
 
         if (tilgangskontroll.oppslagsparameter == "") {
-            auditForParameter(joinpoint.args.first())
+            sjekkForParameter(joinpoint.args.first())
         } else {
-            auditForNavngittParameter(joinpoint, tilgangskontroll)
+            sjekkForNavngittParameter(joinpoint, tilgangskontroll)
         }
     }
 
-    private fun auditForNavngittParameter(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
+    private fun sjekkForNavngittParameter(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
         val parameternavn: Array<String> = (joinpoint.signature as CodeSignature).parameterNames
         val index = parameternavn.indexOf(tilgangskontroll.oppslagsparameter)
         if (index > -1) {
-            auditForParameter(joinpoint.args[index])
+            sjekkForParameter(joinpoint.args[index])
         } else {
-            finnTilgangForNavngittFeltIRequestBody(joinpoint.args.first(), tilgangskontroll.oppslagsparameter)
+            sjekkTilgangForNavngittFeltIRequestBody(joinpoint.args.first(), tilgangskontroll.oppslagsparameter)
         }
     }
 
-    private fun finnTilgangForNavngittFeltIRequestBody(requestBody: Any, feltnavn: String) {
-        return finnTilgangForFeltIRequestBody(requestBody, feltnavn)
+    private fun sjekkTilgangForNavngittFeltIRequestBody(requestBody: Any, feltnavn: String) {
+        return sjekkTilgangForFeltIRequestBody(requestBody, feltnavn)
     }
 
-    private fun finnTilgangForFørsteKonstruktørparameterIRequestBody(requestBody: Any) {
+    private fun sjekkTilgangForFørsteKonstruktørparameterIRequestBody(requestBody: Any) {
         val feltnavn = FeltEkstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
-        return finnTilgangForFeltIRequestBody(requestBody, feltnavn)
+        return sjekkTilgangForFeltIRequestBody(requestBody, feltnavn)
     }
 
-    private fun auditForParameter(param: Any) {
+    private fun sjekkForParameter(param: Any) {
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param)
-            is PersonIdent -> sjekkTilgang(param)
+            is PersonIdent -> sjekkTilgangTilPerson(param)
             is String -> sjekkTilgangForString(param)
-            else -> finnTilgangForFørsteKonstruktørparameterIRequestBody(param)
+            else -> sjekkTilgangForFørsteKonstruktørparameterIRequestBody(param)
         }
     }
 
-    private fun finnTilgangForFeltIRequestBody(requestBody: Any, feltnavn: String) {
+    private fun sjekkTilgangForFeltIRequestBody(requestBody: Any, feltnavn: String) {
         val param = FeltEkstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param)
-            is PersonIdent -> sjekkTilgang(param)
+            is PersonIdent -> sjekkTilgangTilPerson(param)
             is String -> sjekkTilgangForString(param)
             else -> error("Type på konstruktørparameter ikke støttet av audit-log")
         }
@@ -69,17 +69,17 @@ class TilgangAdvice(
 
     private fun sjekkTilgangForString(s: String) {
         when {
-            Saksnummer(s).gyldig() -> tilgangClient.sjekkTilgang(s)
+            Saksnummer(s).gyldig() -> tilgangClient.sjekkTilgangSaksnummer(s)
             PersonIdent(s).gyldig() -> tilgangClient.sjekkTilgangPerson(s)
             else -> error("Type på oppslagsfelt ikke støttet av audit-log")
         }
     }
 
-    private fun sjekkTilgang(personIdent: PersonIdent) {
+    private fun sjekkTilgangTilPerson(personIdent: PersonIdent) {
         tilgangClient.sjekkTilgangPerson(personIdent.verdi)
     }
 
     private fun sjekkTilgangTilSak(saksnummer: Saksnummer) {
-        tilgangClient.sjekkTilgang(saksnummer.verdi)
+        tilgangClient.sjekkTilgangSaksnummer(saksnummer.verdi)
     }
 }

@@ -25,7 +25,7 @@ class TilgangClient(
     val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("sak", "sporingsdata").build().toUri()
     val sporingsdataPersonUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("person", "sporingsdata").build().toUri()
 
-    fun sjekkTilgang(saksnummer: String) {
+    fun sjekkTilgangSaksnummer(saksnummer: String) {
         val tilgang: Boolean = postForNonNullEntity(sakUri, saksnummer)
         if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til sak: $saksnummer.")
     }
