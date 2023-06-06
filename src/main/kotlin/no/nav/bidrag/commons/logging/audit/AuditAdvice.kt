@@ -2,7 +2,7 @@ package no.nav.bidrag.commons.logging.audit
 
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.tilgang.TilgangClient
-import no.nav.bidrag.commons.util.FeltEkstraherer
+import no.nav.bidrag.commons.util.Feltekstraherer
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.string.Saksnummer
 import no.nav.bidrag.transport.tilgang.Sporingsdata
@@ -50,7 +50,7 @@ class AuditAdvice(
     }
 
     private fun finnSporingsdataForFørsteKonstruktørparameterIRequestBody(requestBody: Any): Sporingsdata {
-        val feltnavn = FeltEkstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
+        val feltnavn = Feltekstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
         return finnSporingsdataForFeltIRequestBody(requestBody, feltnavn)
     }
 
@@ -65,7 +65,7 @@ class AuditAdvice(
     }
 
     private fun finnSporingsdataForFeltIRequestBody(requestBody: Any, feltnavn: String): Sporingsdata {
-        val param = FeltEkstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
+        val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         return when (param) {
             is Saksnummer -> finnSporingsdataForSaksnummer(param)
             is PersonIdent -> finnSporingsdataForPersonIdent(param)

@@ -1,7 +1,7 @@
 package no.nav.bidrag.commons.tilgang
 
 import no.nav.bidrag.commons.security.ContextService
-import no.nav.bidrag.commons.util.FeltEkstraherer
+import no.nav.bidrag.commons.util.Feltekstraherer
 import no.nav.bidrag.domain.ident.PersonIdent
 import no.nav.bidrag.domain.string.Saksnummer
 import org.aspectj.lang.JoinPoint
@@ -44,7 +44,7 @@ class TilgangAdvice(
     }
 
     private fun sjekkTilgangForFørsteKonstruktørparameterIRequestBody(requestBody: Any) {
-        val feltnavn = FeltEkstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
+        val feltnavn = Feltekstraherer.finnNavnPåFørsteKonstruktørParameter(requestBody)
         return sjekkTilgangForFeltIRequestBody(requestBody, feltnavn)
     }
 
@@ -58,7 +58,7 @@ class TilgangAdvice(
     }
 
     private fun sjekkTilgangForFeltIRequestBody(requestBody: Any, feltnavn: String) {
-        val param = FeltEkstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
+        val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param)
             is PersonIdent -> sjekkTilgangTilPerson(param)

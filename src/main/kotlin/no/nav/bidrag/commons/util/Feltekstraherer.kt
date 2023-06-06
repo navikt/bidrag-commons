@@ -4,7 +4,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 
-object FeltEkstraherer {
+object Feltekstraherer {
 
     fun finnFeltverdiForNavn(entitet: Any, feltnavn: String): Any {
         val felt = finnFeltForFeltnavn(entitet, feltnavn) ?: error("Fant ikke felt ved navn $feltnavn i ${entitet.javaClass.name}")
