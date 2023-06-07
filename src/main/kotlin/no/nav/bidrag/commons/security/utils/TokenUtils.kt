@@ -20,6 +20,7 @@ object TokenUtils {
     private const val ISSUER_TOKENX_IDENTIFIER = "tokendings"
     private const val ISSUER_IDPORTEN_IDENTIFIER = "idporten"
     private const val ISSUER_STS_IDENTIFIER = "security-token-service"
+    private const val ISSUER_MASKINPORTEN_IDENTIFIER = "maskinporten"
 
     @JvmStatic
     fun hentSaksbehandlerIdent(): String? {
@@ -152,16 +153,29 @@ object TokenUtils {
         return !issuer.isNullOrEmpty() && issuer.contains(ISSUER_TOKENX_IDENTIFIER)
     }
 
+    private fun erTokenUtstedtAvMaskinporten(signedJWT: SignedJWT): Boolean {
+        return try {
+            val issuer = signedJWT.jwtClaimsSet.issuer
+            erTokenUtstedtAvMaskinporten(issuer)
+        } catch (var2: ParseException) {
+            throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
+        }
+    }
+
+    private fun erTokenUtstedtAvMaskinporten(issuer: String?): Boolean {
+        return !issuer.isNullOrEmpty() && issuer.contains(ISSUER_MASKINPORTEN_IDENTIFIER)
+    }
+
     private fun hentApplikasjonNavnFraToken(signedJWT: SignedJWT): String? {
         return try {
             val claims = signedJWT.jwtClaimsSet
             if (erTokenUtstedtAvAzure(signedJWT)) {
                 val application = claims.getStringClaim("azp_name") ?: claims.getStringClaim("azp")
                 return hentApplikasjonNavnFraAzp(application)
-            } else if (erTokenUtstedtAvTokenX(signedJWT)) {
+            } else if (erTokenUtstedtAvTokenX(signedJWT) || erTokenUtstedtAvMaskinporten(signedJWT)) {
                 val application = claims.getStringClaim("client_id")
                 return hentApplikasjonNavnFraAzp(application)
-            } else {
+            }  else {
                 claims.audience[0]
             }
         } catch (var4: ParseException) {
