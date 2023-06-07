@@ -34,7 +34,7 @@
     <changelist>-SNAPSHOT</changelist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
+    <bidrag-transport.version>20230526151013_bb68e09</bidrag-transport.version>
     <!-- dependencies -->
     <logback-encoder.version>7.3</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
@@ -61,6 +61,13 @@
     </repository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/navikt/bidrag-commons</url>
+    </repository>
+  </repositories>
+
   <scm>
     <developerConnection>scm:git:git@github.com:navikt/bidrag-commons.git</developerConnection>
     <connection>scm:git:git@github.com:navikt/bidrag-commons.git</connection>
@@ -69,20 +76,20 @@
   </scm>
 
   <dependencyManagement>
-        <dependencies>
-          <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-dependencies</artifactId>
-            <version>${spring-boot.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-          </dependency>
-          <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.0</version>
-          </dependency>
-        </dependencies>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>2.0</version>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
 
   <dependencies>
@@ -111,6 +118,11 @@
       <artifactId>token-client-spring</artifactId>
       <version>${token-support.version}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>no.nav.bidrag</groupId>
+      <artifactId>bidrag-transport</artifactId>
+      <version>${bidrag-transport.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
