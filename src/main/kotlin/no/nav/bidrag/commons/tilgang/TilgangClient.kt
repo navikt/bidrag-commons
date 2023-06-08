@@ -6,9 +6,7 @@ import no.nav.bidrag.transport.tilgang.Sporingsdata
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Import
-import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -25,14 +23,12 @@ class TilgangClient(
     val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("sak", "sporingsdata").build().toUri()
     val sporingsdataPersonUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("person", "sporingsdata").build().toUri()
 
-    fun sjekkTilgangSaksnummer(saksnummer: String) {
-        val tilgang: Boolean = postForNonNullEntity(sakUri, saksnummer)
-        if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til sak: $saksnummer.")
+    fun sjekkTilgangSaksnummer(saksnummer: String): Boolean {
+        return postForNonNullEntity(sakUri, saksnummer)
     }
 
-    fun sjekkTilgangPerson(personIdent: String) {
-        val tilgang: Boolean = postForNonNullEntity(personUri, personIdent)
-        if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til denne personen.")
+    fun sjekkTilgangPerson(personIdent: String): Boolean {
+        return postForNonNullEntity(personUri, personIdent)
     }
 
     fun hentSporingsdataSak(saksnummer: String): Sporingsdata {

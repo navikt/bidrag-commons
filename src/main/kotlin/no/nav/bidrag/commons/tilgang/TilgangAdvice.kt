@@ -10,6 +10,8 @@ import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.reflect.CodeSignature
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatusCode
+import org.springframework.web.client.HttpClientErrorException
 
 @Aspect
 @Configuration
@@ -52,8 +54,8 @@ class TilgangAdvice(
 
     private fun sjekkForParameter(param: Any) {
         when (param) {
-            is Saksnummer -> sjekkTilgangTilSak(param)
-            is PersonIdent -> sjekkTilgangTilPerson(param)
+            is Saksnummer -> sjekkTilgangTilSak(param.verdi)
+            is PersonIdent -> sjekkTilgangTilPerson(param.verdi)
             is String -> sjekkTilgangForString(param)
             else -> sjekkTilgangForFørsteKonstruktørparameterIRequestBody(param)
         }
@@ -62,8 +64,8 @@ class TilgangAdvice(
     private fun sjekkTilgangForFeltIRequestBody(requestBody: Any, feltnavn: String) {
         val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         when (param) {
-            is Saksnummer -> sjekkTilgangTilSak(param)
-            is PersonIdent -> sjekkTilgangTilPerson(param)
+            is Saksnummer -> sjekkTilgangTilSak(param.verdi)
+            is PersonIdent -> sjekkTilgangTilPerson(param.verdi)
             is String -> sjekkTilgangForString(param)
             else -> error("Type på konstruktørparameter ikke støttet av audit-log")
         }
@@ -71,17 +73,21 @@ class TilgangAdvice(
 
     private fun sjekkTilgangForString(s: String) {
         when {
-            Saksnummer(s).gyldig() -> tilgangClient.sjekkTilgangSaksnummer(s)
-            PersonIdent(s).gyldig() -> tilgangClient.sjekkTilgangPerson(s)
+            Saksnummer(s).gyldig() -> sjekkTilgangTilSak(s)
+            PersonIdent(s).gyldig() -> sjekkTilgangTilPerson(s)
             else -> error("Type på oppslagsfelt ikke støttet av audit-log")
         }
     }
 
-    private fun sjekkTilgangTilPerson(personIdent: PersonIdent) {
-        tilgangClient.sjekkTilgangPerson(personIdent.verdi)
+    private fun sjekkTilgangTilPerson(personIdent: String) {
+        val tilgang = tilgangClient.sjekkTilgangPerson(personIdent)
+        if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til denne personen.")
+
+
     }
 
-    private fun sjekkTilgangTilSak(saksnummer: Saksnummer) {
-        tilgangClient.sjekkTilgangSaksnummer(saksnummer.verdi)
+    private fun sjekkTilgangTilSak(saksnummer: String) {
+        val tilgang = tilgangClient.sjekkTilgangSaksnummer(saksnummer)
+        if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til sak: $saksnummer.")
     }
 }
