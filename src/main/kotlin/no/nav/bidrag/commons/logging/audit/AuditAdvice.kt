@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import
 
 @Aspect
 @Configuration
-@Import(AuditLogger::class)
+@Import(AuditLogger::class, TilgangClient::class)
 class AuditAdvice(
     private val auditLogger: AuditLogger,
     private val tilgangClient: TilgangClient

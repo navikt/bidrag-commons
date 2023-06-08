@@ -2,14 +2,12 @@ package no.nav.bidrag.commons.logging.audit
 
 import jakarta.servlet.http.HttpServletRequest
 import no.nav.bidrag.commons.security.ContextService
-import no.nav.bidrag.commons.tilgang.TilgangClient
 import no.nav.bidrag.commons.web.CorrelationIdFilter
 import no.nav.bidrag.commons.web.MdcConstants
 import no.nav.bidrag.transport.tilgang.Sporingsdata
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
@@ -17,7 +15,6 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 
 @Component
-@Import(TilgangClient::class)
 class AuditLogger(
     @Value("\${NAIS_APP_NAME}") private val applicationName: String
 ) {
