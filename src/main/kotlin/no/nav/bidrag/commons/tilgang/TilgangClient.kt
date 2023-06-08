@@ -23,11 +23,11 @@ class TilgangClient(
     val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("sak", "sporingsdata").build().toUri()
     val sporingsdataPersonUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("person", "sporingsdata").build().toUri()
 
-    fun sjekkTilgangSaksnummer(saksnummer: String): Boolean {
+    fun harTilgangSaksnummer(saksnummer: String): Boolean {
         return postForNonNullEntity(sakUri, saksnummer)
     }
 
-    fun sjekkTilgangPerson(personIdent: String): Boolean {
+    fun harTilgangPerson(personIdent: String): Boolean {
         return postForNonNullEntity(personUri, personIdent)
     }
 

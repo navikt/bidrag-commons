@@ -35,8 +35,8 @@ class TilgangAdviceTest {
     fun init() {
         mockkObject(ContextService)
         every { ContextService.erMaskinTilMaskinToken() } returns false
-        every { tilgangClient.sjekkTilgangSaksnummer(any()) } returns true
-        every { tilgangClient.sjekkTilgangPerson(any()) } returns true
+        every { tilgangClient.harTilgangSaksnummer(any()) } returns true
+        every { tilgangClient.harTilgangPerson(any()) } returns true
 
     }
 
@@ -53,7 +53,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -64,7 +64,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -74,7 +74,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -85,7 +85,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -103,7 +103,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -114,7 +114,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -124,7 +124,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -135,7 +135,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -156,7 +156,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("id"))
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -170,7 +170,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("id"))
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -183,7 +183,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("id"))
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -197,7 +197,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("id"))
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -221,7 +221,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("saksnummer"))
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -235,7 +235,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("fnr"))
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -248,7 +248,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("fnr"))
 
-        verify { tilgangClient.sjekkTilgangSaksnummer("0123456") }
+        verify { tilgangClient.harTilgangSaksnummer("0123456") }
     }
 
     @Test
@@ -262,7 +262,7 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll("fnr"))
 
-        verify { tilgangClient.sjekkTilgangPerson(fnr) }
+        verify { tilgangClient.harTilgangPerson(fnr) }
     }
 
     @Test
@@ -283,8 +283,8 @@ class TilgangAdviceTest {
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
-        verify(exactly = 0) { tilgangClient.sjekkTilgangPerson(any()) }
-        verify(exactly = 0) { tilgangClient.sjekkTilgangSaksnummer(any()) }
+        verify(exactly = 0) { tilgangClient.harTilgangPerson(any()) }
+        verify(exactly = 0) { tilgangClient.harTilgangSaksnummer(any()) }
     }
 
 }
