@@ -80,14 +80,14 @@ class TilgangAdvice(
     }
 
     private fun sjekkTilgangTilPerson(personIdent: String) {
-        val tilgang = tilgangClient.sjekkTilgangPerson(personIdent)
+        val tilgang = tilgangClient.harTilgangPerson(personIdent)
         if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til denne personen.")
 
 
     }
 
     private fun sjekkTilgangTilSak(saksnummer: String) {
-        val tilgang = tilgangClient.sjekkTilgangSaksnummer(saksnummer)
+        val tilgang = tilgangClient.harTilgangSaksnummer(saksnummer)
         if (!tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til sak: $saksnummer.")
     }
 }
