@@ -35,6 +35,9 @@ class TilgangAdviceTest {
     fun init() {
         mockkObject(ContextService)
         every { ContextService.erMaskinTilMaskinToken() } returns false
+        every { tilgangClient.sjekkTilgangSaksnummer(any()) } returns true
+        every { tilgangClient.sjekkTilgangPerson(any()) } returns true
+
     }
 
     @AfterEach
