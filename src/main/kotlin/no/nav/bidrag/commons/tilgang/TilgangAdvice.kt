@@ -9,9 +9,11 @@ import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.reflect.CodeSignature
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 
 @Aspect
 @Configuration
+@Import(TilgangClient::class)
 class TilgangAdvice(
     private val tilgangClient: TilgangClient
 ) {
