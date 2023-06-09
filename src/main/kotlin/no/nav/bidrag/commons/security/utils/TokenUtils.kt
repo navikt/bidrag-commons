@@ -175,7 +175,7 @@ object TokenUtils {
             } else if (erTokenUtstedtAvTokenX(signedJWT) || erTokenUtstedtAvMaskinporten(signedJWT)) {
                 val application = claims.getStringClaim("client_id")
                 return hentApplikasjonNavnFraAzp(application)
-            }  else {
+            } else {
                 claims.audience[0]
             }
         } catch (var4: ParseException) {
