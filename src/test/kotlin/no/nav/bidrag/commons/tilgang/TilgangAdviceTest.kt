@@ -37,7 +37,6 @@ class TilgangAdviceTest {
         every { ContextService.erMaskinTilMaskinToken() } returns false
         every { tilgangClient.harTilgangSaksnummer(any()) } returns true
         every { tilgangClient.harTilgangPerson(any()) } returns true
-
     }
 
     @AfterEach
@@ -286,5 +285,4 @@ class TilgangAdviceTest {
         verify(exactly = 0) { tilgangClient.harTilgangPerson(any()) }
         verify(exactly = 0) { tilgangClient.harTilgangSaksnummer(any()) }
     }
-
 }

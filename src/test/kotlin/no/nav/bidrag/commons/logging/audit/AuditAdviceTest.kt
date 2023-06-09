@@ -304,5 +304,4 @@ class AuditAdviceTest {
         verify(exactly = 0) { tilgangClient.hentSporingsdataSak(any()) }
         verify(exactly = 0) { auditLogger.log(any(), any()) }
     }
-
 }

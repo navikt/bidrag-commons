@@ -40,6 +40,7 @@
     <javax-activation.version>1.1.1</javax-activation.version>
     <spring-boot.version>3.1.0</spring-boot.version>
     <mockk.version>1.13.5</mockk.version>
+    <httpclient5.version>5.2.1</httpclient5.version>
     <kotest.version>5.6.2</kotest.version>
     <token-support.version>3.1.0</token-support.version>
     <jackson.fasterXml.version>2.15.1</jackson.fasterXml.version>
@@ -123,6 +124,11 @@
       <groupId>no.nav.bidrag</groupId>
       <artifactId>bidrag-transport</artifactId>
       <version>${bidrag-transport.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>${httpclient5.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
