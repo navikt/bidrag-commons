@@ -18,10 +18,10 @@ class TilgangClient(
     @Qualifier("azure") private val restTemplate: RestTemplate
 ) : AbstractRestClient(restTemplate, "tilgang") {
 
-    val sakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("sak").build().toUri()
-    val personUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("person").build().toUri()
-    val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("sak", "sporingsdata").build().toUri()
-    val sporingsdataPersonUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("person", "sporingsdata").build().toUri()
+    val sakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "tilgang", "sak").build().toUri()
+    val personUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "tilgang", "person").build().toUri()
+    val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "sporingsdata", "sak").build().toUri()
+    val sporingsdataPersonUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "sporingsdata", "person").build().toUri()
 
     fun harTilgangSaksnummer(saksnummer: String): Boolean {
         return postForNonNullEntity(sakUri, saksnummer)
