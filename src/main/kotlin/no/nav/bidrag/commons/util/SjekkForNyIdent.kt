@@ -1,4 +1,4 @@
-package no.nav.bidrag.commons.security.utils
+package no.nav.bidrag.commons.util
 
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domain.ident.Ident
