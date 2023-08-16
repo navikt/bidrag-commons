@@ -25,15 +25,7 @@ annotation class SjekkForNyIdent(vararg val parameterNavn: String)
 
 @Aspect
 @Component
-class SjekkForNyIdentAspect(
-    @Value("\${PERSON_URL}") private val personUrl: String,
-    @Qualifier("azure") private val restTemplate: RestOperations
-) : AbstractRestClient(restTemplate, "\${NAIS_APP_NAME}") {
-
-    companion object {
-        const val PERSON_PATH = "/personidenter"
-        private val LOGGER = LoggerFactory.getLogger(SjekkForNyIdentAspect::class.java)
-    }
+class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
 
     /**
      * Denne metoden prosesserer de tilfellene hvor @SjekkForNyIdent brukes på en funksjon.
@@ -54,19 +46,21 @@ class SjekkForNyIdentAspect(
                 is PersonIdent -> {
                     if (ident.gyldig()) {
                         val parameterIndex = parametere.indexOf(ident)
-                        parametere[parameterIndex] = PersonIdent(sjekkIdent(ident.verdi))
+                        parametere[parameterIndex] = PersonIdent(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
+
                 is Ident -> {
                     if (ident.erPersonIdent()) {
                         val parameterIndex = parametere.indexOf(ident)
-                        parametere[parameterIndex] = Ident(sjekkIdent(ident.verdi))
+                        parametere[parameterIndex] = Ident(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
+
                 is String -> {
                     if (PersonIdent(ident).gyldig()) {
                         val parameterIndex = parametere.indexOf(ident)
-                        parametere[parameterIndex] = sjekkIdent(ident)
+                        parametere[parameterIndex] = identConsumer.sjekkIdent(ident)
                     }
                 }
             }
@@ -92,21 +86,23 @@ class SjekkForNyIdentAspect(
                     if (harSjekkForNyIdentAnnotation(methodSignature.method.parameterAnnotations[i]) &&
                         ident.gyldig()
                     ) {
-                        parametere[i] = PersonIdent(sjekkIdent(ident.verdi))
+                        parametere[i] = PersonIdent(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
+
                 is Ident -> {
                     if (harSjekkForNyIdentAnnotation(methodSignature.method.parameterAnnotations[i]) &&
                         ident.erPersonIdent()
                     ) {
-                        parametere[i] = Ident(sjekkIdent(ident.verdi))
+                        parametere[i] = Ident(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
+
                 is String -> {
                     if (harSjekkForNyIdentAnnotation(methodSignature.method.parameterAnnotations[i]) &&
                         PersonIdent(ident).gyldig()
                     ) {
-                        parametere[i] = sjekkIdent(ident)
+                        parametere[i] = identConsumer.sjekkIdent(ident)
                     }
                 }
             }
@@ -117,13 +113,25 @@ class SjekkForNyIdentAspect(
     private fun harSjekkForNyIdentAnnotation(annotations: Array<Annotation>): Boolean {
         return annotations.any { it is SjekkForNyIdent }
     }
+}
+
+@Component
+class IdentConsumer(
+    @Value("\${PERSON_URL}") private val personUrl: String,
+    @Qualifier("azure") private val restTemplate: RestOperations
+) : AbstractRestClient(restTemplate, "\${NAIS_APP_NAME}") {
+
+    companion object {
+        const val PERSON_PATH = "/personidenter"
+        private val LOGGER = LoggerFactory.getLogger(SjekkForNyIdentAspect::class.java)
+    }
 
     @Cacheable(value = ["bidrag-commons_sjekkIdent_cache"], key = "#ident")
     fun sjekkIdent(ident: String): String {
         if (Ident(ident).erPersonIdent()) {
             return try {
                 restTemplate.postForEntity(
-                    "$personUrl$PERSON_PATH",
+                    "$personUrl${PERSON_PATH}",
                     HentePersonidenterRequest(ident, setOf(Identgruppe.FOLKEREGISTERIDENT), false),
                     Array<PersonidentDto>::class.java
                 ).body?.first()?.ident ?: ident
