@@ -131,7 +131,7 @@ class IdentConsumer(
         if (Ident(ident).erPersonIdent()) {
             return try {
                 restTemplate.postForEntity(
-                    "$personUrl${PERSON_PATH}",
+                    "$personUrl$PERSON_PATH",
                     HentePersonidenterRequest(ident, setOf(Identgruppe.FOLKEREGISTERIDENT), false),
                     Array<PersonidentDto>::class.java
                 ).body?.first()?.ident ?: ident

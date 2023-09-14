@@ -120,9 +120,8 @@ object TokenUtils {
 
     private fun erTokenUtstedtAvIdPorten(signedJWT: SignedJWT): Boolean {
         return try {
-            val issuer = signedJWT.jwtClaimsSet.issuer
             val idp = signedJWT.jwtClaimsSet.getStringClaim("idp")
-            erTokenUtstedtAvTokenX(issuer) && erIdPorten(idp)
+            erIdPorten(idp)
         } catch (var2: ParseException) {
             throw IllegalStateException("Kunne ikke hente informasjon om tokenets subject", var2)
         }
