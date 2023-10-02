@@ -66,17 +66,17 @@ abstract class AbstractRestClient(
         }
     }
 
-    protected inline fun <reified T : Any> postForNonNullEntity(uri: URI, payload: Any): T {
+    protected inline fun <reified T : Any> postForNonNullEntity(uri: URI, payload: Any?): T {
         return postForEntity(uri, payload, null) ?: throw HttpServerErrorException(HttpStatus.NOT_FOUND, uri.toString())
     }
 
-    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T? {
+    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any?): T? {
         return postForEntity(uri, payload, null)
     }
 
     protected inline fun <reified T : Any> postForEntity(
         uri: URI,
-        payload: Any,
+        payload: Any?,
         httpHeaders: HttpHeaders?
     ): T? {
         return executeMedMetrics(uri) {
