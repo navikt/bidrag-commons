@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
 import com.nimbusds.jwt.SignedJWT
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.http.HttpClient
@@ -33,7 +34,9 @@ import java.net.http.HttpResponse.BodyHandlers.ofString
  *      maskinporten:
  *          enabled: true
  */
-@Service
+
+@EnableConfigurationProperties(MaskinportenConfig::class)
+@Service("maskinportenClient")
 class MaskinportenClient(
     private val maskinportenConfig: MaskinportenConfig
 ) {
@@ -59,6 +62,15 @@ class MaskinportenClient(
         } ?: error("Feil ved henting eller opprettelse av cached scope for maskinporten-token! Scope: $scope, cache content: $maskinportenTokenCache")
         return cache.run {
             maskinportenToken ?: renew(hentNyttJwtToken(scope))
+        }
+    }
+
+    fun hentMaskinportenToken(): SignedJWT {
+        val cache = maskinportenTokenCache.get(maskinportenConfig.scope) { nyttScope: String ->
+            MaskinportenTokenCache(hentNyttJwtToken(nyttScope))
+        } ?: error("Feil ved henting eller opprettelse av cached scope for maskinporten-token! Scope: ${maskinportenConfig.scope}, cache content: $maskinportenTokenCache")
+        return cache.run {
+            maskinportenToken ?: renew(hentNyttJwtToken(maskinportenConfig.scope))
         }
     }
 
