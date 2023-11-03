@@ -1,9 +1,19 @@
 package no.nav.bidrag.commons.logging.audit
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import no.nav.bidrag.commons.security.ContextService
-import no.nav.bidrag.commons.testdata.*
+import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjekt
+import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjektFørst
+import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjekt
+import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjektFørst
+import no.nav.bidrag.commons.testdata.DummyMedString
+import no.nav.bidrag.commons.testdata.DummyMedStringFørst
 import no.nav.bidrag.commons.tilgang.TilgangClient
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.ident.Personident
@@ -211,7 +221,12 @@ class AuditAdviceTest {
         every { codeSignature.parameterNames } returns arrayOf("dill", "dall", "id")
         every { joinPoint.signature } returns codeSignature
 
-        shouldThrow<IllegalStateException> { auditAdvice.loggTilgang(joinPoint, AuditLog(AuditLoggerEvent.ACCESS, "id")) }
+        shouldThrow<IllegalStateException> {
+            auditAdvice.loggTilgang(
+                joinPoint,
+                AuditLog(AuditLoggerEvent.ACCESS, "id")
+            )
+        }
     }
 
     @Test
@@ -280,7 +295,12 @@ class AuditAdviceTest {
         every { codeSignature.parameterNames } returns arrayOf("dill", "dall", "id")
         every { joinPoint.signature } returns codeSignature
 
-        shouldThrow<IllegalStateException> { auditAdvice.loggTilgang(joinPoint, AuditLog(AuditLoggerEvent.ACCESS, "fnr")) }
+        shouldThrow<IllegalStateException> {
+            auditAdvice.loggTilgang(
+                joinPoint,
+                AuditLog(AuditLoggerEvent.ACCESS, "fnr")
+            )
+        }
     }
 
     @Test

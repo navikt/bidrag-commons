@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @Import(MaskinportenClient::class)
-class MaskinportenBearerTokenClientInterceptor(private val maskinportenClient: MaskinportenClient): ClientHttpRequestInterceptor {
+class MaskinportenBearerTokenClientInterceptor(private val maskinportenClient: MaskinportenClient) : ClientHttpRequestInterceptor {
 
     override fun intercept(
         request: HttpRequest,

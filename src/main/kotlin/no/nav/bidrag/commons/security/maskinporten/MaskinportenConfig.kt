@@ -14,4 +14,3 @@ constructor(
     val privateKey: String,
     val validInSeconds: Int
 )
-

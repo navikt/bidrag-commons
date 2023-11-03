@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
 
 @Configuration
-@Import(RestTemplateBuilderBean::class,
-    MaskinportenBearerTokenClientInterceptor::class)
+@Import(
+    RestTemplateBuilderBean::class,
+    MaskinportenBearerTokenClientInterceptor::class
+)
 class RestOperationsMaskinporten {
 
     @Bean("maskinporten")

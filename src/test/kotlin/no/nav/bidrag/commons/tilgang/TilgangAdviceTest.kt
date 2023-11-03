@@ -1,9 +1,19 @@
 package no.nav.bidrag.commons.tilgang
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkStatic
+import io.mockk.verify
 import no.nav.bidrag.commons.security.ContextService
-import no.nav.bidrag.commons.testdata.*
+import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjekt
+import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjektFørst
+import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjekt
+import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjektFørst
+import no.nav.bidrag.commons.testdata.DummyMedString
+import no.nav.bidrag.commons.testdata.DummyMedStringFørst
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.streng.Saksnummer
