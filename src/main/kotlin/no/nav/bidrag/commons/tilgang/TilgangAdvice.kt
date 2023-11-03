@@ -2,8 +2,8 @@ package no.nav.bidrag.commons.tilgang
 
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.util.Feltekstraherer
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.string.Saksnummer
+import no.nav.bidrag.domene.ident.Personident
+import no.nav.bidrag.domene.streng.Saksnummer
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
@@ -55,7 +55,7 @@ class TilgangAdvice(
     private fun sjekkForParameter(param: Any) {
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param.verdi)
-            is PersonIdent -> sjekkTilgangTilPerson(param.verdi)
+            is Personident -> sjekkTilgangTilPerson(param.verdi)
             is String -> sjekkTilgangForString(param)
             else -> sjekkTilgangForFørsteKonstruktørparameterIRequestBody(param)
         }
@@ -65,7 +65,7 @@ class TilgangAdvice(
         val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param.verdi)
-            is PersonIdent -> sjekkTilgangTilPerson(param.verdi)
+            is Personident -> sjekkTilgangTilPerson(param.verdi)
             is String -> sjekkTilgangForString(param)
             else -> error("Type på konstruktørparameter ikke støttet av audit-log")
         }
@@ -74,7 +74,7 @@ class TilgangAdvice(
     private fun sjekkTilgangForString(s: String) {
         when {
             Saksnummer(s).gyldig() -> sjekkTilgangTilSak(s)
-            PersonIdent(s).gyldig() -> sjekkTilgangTilPerson(s)
+            Personident(s).gyldig() -> sjekkTilgangTilPerson(s)
             else -> error("Type på oppslagsfelt ikke støttet av audit-log")
         }
     }

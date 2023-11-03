@@ -1,7 +1,8 @@
 package no.nav.bidrag.commons.testdata
 
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.string.Saksnummer
+import no.nav.bidrag.domene.ident.Personident
+import no.nav.bidrag.domene.streng.Saksnummer
+
 
 data class DummyMedSaksummerobjektFørst(
     val saksnummer: Saksnummer,
@@ -11,7 +12,7 @@ data class DummyMedSaksummerobjektFørst(
 )
 
 data class DummyMedPersonIdentobjektFørst(
-    val fnr: PersonIdent,
+    val fnr: Personident,
     val dummy1: Int? = null,
     val dummy2: String? = null,
     val dummy3: Boolean? = null
@@ -40,7 +41,7 @@ data class DummyMedSaksummerobjekt(
 
 data class DummyMedPersonIdentobjekt(
     val dummy1: Int? = null,
-    val fnr: PersonIdent,
+    val fnr: Personident,
     val dummy2: String? = null,
     val dummy3: Boolean? = null
 )

@@ -3,8 +3,8 @@ package no.nav.bidrag.commons.logging.audit
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.tilgang.TilgangClient
 import no.nav.bidrag.commons.util.Feltekstraherer
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.string.Saksnummer
+import no.nav.bidrag.domene.ident.Personident
+import no.nav.bidrag.domene.streng.Saksnummer
 import no.nav.bidrag.transport.tilgang.Sporingsdata
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Aspect
@@ -57,7 +57,7 @@ class AuditAdvice(
     private fun auditForParameter(param: Any, auditLoggerEvent: AuditLoggerEvent) {
         val sporingsdata: Sporingsdata = when (param) {
             is Saksnummer -> finnSporingsdataForSaksnummer(param)
-            is PersonIdent -> finnSporingsdataForPersonIdent(param)
+            is Personident -> finnSporingsdataForPersonIdent(param)
             is String -> finnSporingsdataForString(param)
             else -> finnSporingsdataForFørsteKonstruktørparameterIRequestBody(param)
         }
@@ -68,7 +68,7 @@ class AuditAdvice(
         val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         return when (param) {
             is Saksnummer -> finnSporingsdataForSaksnummer(param)
-            is PersonIdent -> finnSporingsdataForPersonIdent(param)
+            is Personident -> finnSporingsdataForPersonIdent(param)
             is String -> finnSporingsdataForString(param)
             else -> error("Type på konstruktørparameter ikke støttet av audit-log")
         }
@@ -77,12 +77,12 @@ class AuditAdvice(
     private fun finnSporingsdataForString(s: String): Sporingsdata {
         return when {
             Saksnummer(s).gyldig() -> tilgangClient.hentSporingsdataSak(s)
-            PersonIdent(s).gyldig() -> tilgangClient.hentSporingsdataPerson(s)
+            Personident(s).gyldig() -> tilgangClient.hentSporingsdataPerson(s)
             else -> error("Type på oppslagsfelt ikke støttet av audit-log")
         }
     }
 
-    private fun finnSporingsdataForPersonIdent(personIdent: PersonIdent): Sporingsdata {
+    private fun finnSporingsdataForPersonIdent(personIdent: Personident): Sporingsdata {
         return tilgangClient.hentSporingsdataPerson(personIdent.verdi)
     }
 

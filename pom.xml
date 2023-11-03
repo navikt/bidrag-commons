@@ -34,7 +34,7 @@
     <changelist>-SNAPSHOT</changelist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <bidrag-transport.version>20230526151013_bb68e09</bidrag-transport.version>
+    <bidrag-transport.version>20231103112350_58df516</bidrag-transport.version>
     <!-- dependencies -->
     <logback-encoder.version>7.4</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
