@@ -1,22 +1,12 @@
 package no.nav.bidrag.commons.tilgang
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkStatic
-import io.mockk.verify
+import io.mockk.*
 import no.nav.bidrag.commons.security.ContextService
-import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjekt
-import no.nav.bidrag.commons.testdata.DummyMedPersonIdentobjektFørst
-import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjekt
-import no.nav.bidrag.commons.testdata.DummyMedSaksummerobjektFørst
-import no.nav.bidrag.commons.testdata.DummyMedString
-import no.nav.bidrag.commons.testdata.DummyMedStringFørst
+import no.nav.bidrag.commons.testdata.*
 import no.nav.bidrag.commons.util.PersonidentGenerator
-import no.nav.bidrag.domain.ident.PersonIdent
-import no.nav.bidrag.domain.string.Saksnummer
+import no.nav.bidrag.domene.ident.Personident
+import no.nav.bidrag.domene.streng.Saksnummer
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.reflect.CodeSignature
 import org.junit.jupiter.api.AfterEach
@@ -59,7 +49,7 @@ class TilgangAdviceTest {
     fun `sjekkTilgang sjekker tilgang for personIdentobjekt`() {
         val joinPoint: JoinPoint = mockk(relaxed = true)
         val fnr = PersonidentGenerator.genererFødselsnummer()
-        every { joinPoint.args } returns arrayOf(PersonIdent(fnr))
+        every { joinPoint.args } returns arrayOf(Personident(fnr))
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
@@ -109,7 +99,7 @@ class TilgangAdviceTest {
     fun `sjekkTilgang sjekker tilgang for requestBody med personIdentobjekt`() {
         val joinPoint: JoinPoint = mockk(relaxed = true)
         val fnr = PersonidentGenerator.genererFødselsnummer()
-        every { joinPoint.args } returns arrayOf(DummyMedPersonIdentobjektFørst(PersonIdent(fnr)))
+        every { joinPoint.args } returns arrayOf(DummyMedPersonIdentobjektFørst(Personident(fnr)))
 
         tilgangAdvice.sjekkTilgang(joinPoint, Tilgangskontroll())
 
@@ -162,7 +152,7 @@ class TilgangAdviceTest {
     fun `sjekkTilgang sjekker tilgang for navngitt personIdentobjekt`() {
         val joinPoint: JoinPoint = mockk(relaxed = true)
         val fnr = PersonidentGenerator.genererFødselsnummer()
-        every { joinPoint.args } returns arrayOf("sdf", 321, PersonIdent(fnr))
+        every { joinPoint.args } returns arrayOf("sdf", 321, Personident(fnr))
         val codeSignature: CodeSignature = mockk()
         every { codeSignature.parameterNames } returns arrayOf("dill", "dall", "id")
         every { joinPoint.signature } returns codeSignature
@@ -227,7 +217,7 @@ class TilgangAdviceTest {
     fun `sjekkTilgang sjekker tilgang for requestBody med navngitt personIdentobjekt`() {
         val joinPoint: JoinPoint = mockk(relaxed = true)
         val fnr = PersonidentGenerator.genererFødselsnummer()
-        every { joinPoint.args } returns arrayOf(DummyMedPersonIdentobjekt(fnr = PersonIdent(fnr)))
+        every { joinPoint.args } returns arrayOf(DummyMedPersonIdentobjekt(fnr = Personident(fnr)))
         val codeSignature: CodeSignature = mockk()
         every { codeSignature.parameterNames } returns arrayOf("dill", "dall", "id")
         every { joinPoint.signature } returns codeSignature

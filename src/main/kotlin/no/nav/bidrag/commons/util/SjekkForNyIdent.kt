@@ -1,8 +1,8 @@
 package no.nav.bidrag.commons.util
 
 import no.nav.bidrag.commons.web.client.AbstractRestClient
-import no.nav.bidrag.domain.ident.Ident
-import no.nav.bidrag.domain.ident.PersonIdent
+import no.nav.bidrag.domene.ident.Ident
+import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.transport.person.HentePersonidenterRequest
 import no.nav.bidrag.transport.person.Identgruppe
 import no.nav.bidrag.transport.person.PersonidentDto
@@ -43,10 +43,10 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
         for (parameterNavn in sjekkForNyIdent.parameterNavn) {
             val ident = parametermap[parameterNavn]
             when (ident) {
-                is PersonIdent -> {
+                is Personident -> {
                     if (ident.gyldig()) {
                         val parameterIndex = parametere.indexOf(ident)
-                        parametere[parameterIndex] = PersonIdent(identConsumer.sjekkIdent(ident.verdi))
+                        parametere[parameterIndex] = Personident(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
 
@@ -58,7 +58,7 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
                 }
 
                 is String -> {
-                    if (PersonIdent(ident).gyldig()) {
+                    if (Personident(ident).gyldig()) {
                         val parameterIndex = parametere.indexOf(ident)
                         parametere[parameterIndex] = identConsumer.sjekkIdent(ident)
                     }
@@ -82,11 +82,11 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
         for (i in parametere.indices) {
             val ident = parametere[i]
             when (ident) {
-                is PersonIdent -> {
+                is Personident -> {
                     if (harSjekkForNyIdentAnnotation(methodSignature.method.parameterAnnotations[i]) &&
                         ident.gyldig()
                     ) {
-                        parametere[i] = PersonIdent(identConsumer.sjekkIdent(ident.verdi))
+                        parametere[i] = Personident(identConsumer.sjekkIdent(ident.verdi))
                     }
                 }
 
@@ -100,7 +100,7 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
 
                 is String -> {
                     if (harSjekkForNyIdentAnnotation(methodSignature.method.parameterAnnotations[i]) &&
-                        PersonIdent(ident).gyldig()
+                        Personident(ident).gyldig()
                     ) {
                         parametere[i] = identConsumer.sjekkIdent(ident)
                     }
