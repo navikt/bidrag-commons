@@ -3,7 +3,6 @@ package no.nav.bidrag.commons.testdata
 import no.nav.bidrag.domene.ident.Personident
 import no.nav.bidrag.domene.streng.Saksnummer
 
-
 data class DummyMedSaksummerobjektFørst(
     val saksnummer: Saksnummer,
     val dummy1: Int? = null,
