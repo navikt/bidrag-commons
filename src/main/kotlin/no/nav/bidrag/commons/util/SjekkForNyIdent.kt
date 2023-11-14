@@ -137,10 +137,10 @@ class IdentConsumer(
                     Array<PersonidentDto>::class.java
                 ).body?.first()?.ident ?: ident
             } catch (e: NoSuchElementException) {
-                LOGGER.warn("Bidrag-person fant ingen person på kalt ident: ${e.message}, callId: ${CorrelationId.fetchCorrelationIdForThread()}.\n${e.printStackTrace()}")
+                LOGGER.warn("Bidrag-person fant ingen person på kalt ident. \nFeilmelding: ${e.message} CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e")
                 ident
             } catch (e: Exception) {
-                LOGGER.error("Noe gikk galt i kall mot bidrag-person: ${e.message}, callId: ${CorrelationId.fetchCorrelationIdForThread()}.\n${e.printStackTrace()}")
+                LOGGER.error("Noe gikk galt i kall mot bidrag-person: ${e.message} CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e")
                 ident
             }
         }
