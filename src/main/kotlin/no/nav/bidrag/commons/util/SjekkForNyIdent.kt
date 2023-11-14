@@ -1,5 +1,6 @@
 package no.nav.bidrag.commons.util
 
+import no.nav.bidrag.commons.CorrelationId
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import no.nav.bidrag.domene.ident.Ident
 import no.nav.bidrag.domene.ident.Personident
@@ -135,8 +136,11 @@ class IdentConsumer(
                     HentePersonidenterRequest(ident, setOf(Identgruppe.FOLKEREGISTERIDENT), false),
                     Array<PersonidentDto>::class.java
                 ).body?.first()?.ident ?: ident
+            } catch (e: NoSuchElementException) {
+                LOGGER.warn("Bidrag-person fant ingen person på kalt ident: ${e.message}, callId: ${CorrelationId.fetchCorrelationIdForThread()}.\n${e.printStackTrace()}")
+                ident
             } catch (e: Exception) {
-                LOGGER.error("Noe gikk galt i kall mot bidrag-person: ${e.message} \n${e.stackTrace}")
+                LOGGER.error("Noe gikk galt i kall mot bidrag-person: ${e.message}, callId: ${CorrelationId.fetchCorrelationIdForThread()}.\n${e.printStackTrace()}")
                 ident
             }
         }
