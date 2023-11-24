@@ -26,7 +26,7 @@ open class HttpHeaderRestTemplate : RestTemplate {
         addHeaderGenerator(X_ENHET_HEADER, EnhetFilter::fetchForThread)
     }
 
-    override fun <T> httpEntityCallback(requestBody: Any?, responseType: Type): RequestCallback {
+    override fun <T : Any> httpEntityCallback(requestBody: Any?, responseType: Type): RequestCallback {
         if (headerGenerators.isEmpty()) {
             return super.httpEntityCallback<Any>(requestBody, responseType)
         }
@@ -38,7 +38,7 @@ open class HttpHeaderRestTemplate : RestTemplate {
         return super.httpEntityCallback<Any>(httpEntity, responseType)
     }
 
-    private fun <T> newEntityWithAdditionalHttpHeaders(o: Any?): HttpEntity<T> {
+    private fun <T : Any> newEntityWithAdditionalHttpHeaders(o: Any?): HttpEntity<T> {
         if (o != null) {
             val httpEntity = mapToHttpEntity<T>(o)
             val headerNames: Set<String> = HashSet(httpEntity.headers.keys)
@@ -50,7 +50,7 @@ open class HttpHeaderRestTemplate : RestTemplate {
         return HttpEntity(null, combineHeaders(HttpHeaders()))
     }
 
-    private fun <T> mapToHttpEntity(o: Any): HttpEntity<T> {
+    private fun <T : Any> mapToHttpEntity(o: Any): HttpEntity<T> {
         return if (o is HttpEntity<*>) {
             o as HttpEntity<T>
         } else {

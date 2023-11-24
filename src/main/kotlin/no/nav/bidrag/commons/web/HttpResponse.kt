@@ -13,7 +13,7 @@ import java.util.*
 </T> */
 class HttpResponse<T>(val responseEntity: ResponseEntity<T>) {
 
-    fun fetchBody(): Optional<T> {
+    fun fetchBody(): Optional<T & Any> {
         return Optional.ofNullable(responseEntity.body)
     }
 
