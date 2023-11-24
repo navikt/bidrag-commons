@@ -3,7 +3,7 @@ package no.nav.bidrag.commons.tilgang
 import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.util.Feltekstraherer
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.domene.streng.Saksnummer
+import no.nav.bidrag.domene.sak.Saksnummer
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before

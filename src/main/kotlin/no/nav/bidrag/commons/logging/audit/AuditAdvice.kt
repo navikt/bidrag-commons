@@ -4,7 +4,7 @@ import no.nav.bidrag.commons.security.ContextService
 import no.nav.bidrag.commons.tilgang.TilgangClient
 import no.nav.bidrag.commons.util.Feltekstraherer
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.domene.streng.Saksnummer
+import no.nav.bidrag.domene.sak.Saksnummer
 import no.nav.bidrag.transport.tilgang.Sporingsdata
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Aspect

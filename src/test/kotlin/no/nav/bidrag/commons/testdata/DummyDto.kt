@@ -1,7 +1,7 @@
 package no.nav.bidrag.commons.testdata
 
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.domene.streng.Saksnummer
+import no.nav.bidrag.domene.sak.Saksnummer
 
 data class DummyMedSaksummerobjektFørst(
     val saksnummer: Saksnummer,

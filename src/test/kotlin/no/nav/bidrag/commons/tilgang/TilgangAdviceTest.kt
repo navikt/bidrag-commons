@@ -16,7 +16,7 @@ import no.nav.bidrag.commons.testdata.DummyMedString
 import no.nav.bidrag.commons.testdata.DummyMedStringFørst
 import no.nav.bidrag.commons.util.PersonidentGenerator
 import no.nav.bidrag.domene.ident.Personident
-import no.nav.bidrag.domene.streng.Saksnummer
+import no.nav.bidrag.domene.sak.Saksnummer
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.reflect.CodeSignature
 import org.junit.jupiter.api.AfterEach
