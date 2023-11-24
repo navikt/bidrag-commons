@@ -47,7 +47,7 @@
     <!-- language -->
     <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     <java.version>17</java.version>
-    <kotlin.version>1.8.21</kotlin.version>
+    <kotlin.version>1.9.10</kotlin.version>
     <kotlin.code.style>official</kotlin.code.style>
 
     <!-- plugins -->
@@ -90,10 +90,16 @@
         <artifactId>snakeyaml</artifactId>
         <version>2.0</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-core-jvm</artifactId>
+      <version>1.7.3</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>

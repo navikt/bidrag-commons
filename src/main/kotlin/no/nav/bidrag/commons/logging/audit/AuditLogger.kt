@@ -20,7 +20,7 @@ class AuditLogger(
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val audit = LoggerFactory.getLogger("auditLogger")
+    private val audit = LoggerFactory.getLogger("secureLogger")
 
     fun log(event: AuditLoggerEvent, data: Sporingsdata) {
         val request = getRequest() ?: throw IllegalArgumentException("Ikke brukt i context av en HTTP request")
