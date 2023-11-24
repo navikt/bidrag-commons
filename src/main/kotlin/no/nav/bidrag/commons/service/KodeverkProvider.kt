@@ -56,20 +56,20 @@ private fun hentKodeverk(kodeverk: String): KodeverkKoderBetydningerResponse {
     return restTemplate.getForEntity<KodeverkKoderBetydningerResponse>(kodeverkContext).body!!
 }
 
-internal class KodeverkKoderBetydningerResponse {
+class KodeverkKoderBetydningerResponse {
     var betydninger: Map<String, List<Betydning>> = emptyMap()
         set(betydninger) {
             field = LinkedHashMap(betydninger)
         }
 }
 
-internal data class Betydning(
+data class Betydning(
     val gyldigFra: LocalDate,
     val gyldigTil: LocalDate,
     val beskrivelser: Map<String, Beskrivelse>
 )
 
-internal data class Beskrivelse(
+data class Beskrivelse(
     val tekst: String,
     val term: String
 )
