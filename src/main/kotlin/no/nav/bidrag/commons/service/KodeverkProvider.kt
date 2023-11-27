@@ -36,13 +36,19 @@ class KodeverkProvider {
             kodeverkCache.get(LOENNSBESKRIVELSE) { hentKodeverk(LOENNSBESKRIVELSE) }
             kodeverkCache.get(POSTNUMMER) { hentKodeverk(POSTNUMMER) }
         }
+
+        fun invaliderKodeverkCache() {
+            kodeverkCache.invalidate(SUMMERT_SKATTEGRUNNLAG)
+            kodeverkCache.invalidate(LOENNSBESKRIVELSE)
+            kodeverkCache.invalidate(POSTNUMMER)
+        }
     }
 }
 
-private fun finnVisningsnavn(fulltNavnInntektspost: String, kodeverk: String): String? {
+private fun finnVisningsnavn(kode: String, kodeverk: String): String? {
     val betydning = kodeverkCache
         .get(kodeverk) { hentKodeverk(kodeverk) }
-        .betydninger[fulltNavnInntektspost]?.firstNotNullOf { betydning -> betydning.beskrivelser["nb"] }
+        .betydninger[kode]?.firstNotNullOf { betydning -> betydning.beskrivelser["nb"] }
     return if (betydning?.tekst.isNullOrEmpty()) betydning?.term else betydning?.tekst
 }
 
@@ -56,20 +62,17 @@ private fun hentKodeverk(kodeverk: String): KodeverkKoderBetydningerResponse {
     return restTemplate.getForEntity<KodeverkKoderBetydningerResponse>(kodeverkContext).body!!
 }
 
-class KodeverkKoderBetydningerResponse {
-    var betydninger: Map<String, List<Betydning>> = emptyMap()
-        set(betydninger) {
-            field = LinkedHashMap(betydninger)
-        }
-}
-
-data class Betydning(
-    val gyldigFra: LocalDate,
-    val gyldigTil: LocalDate,
-    val beskrivelser: Map<String, Beskrivelse>
+data class KodeverkKoderBetydningerResponse(
+    val betydninger: Map<String, List<KodeverkBetydning>>
 )
 
-data class Beskrivelse(
+data class KodeverkBetydning(
+    val gyldigFra: LocalDate,
+    val gyldigTil: LocalDate,
+    val beskrivelser: Map<String, KodeverkBeskrivelse>
+)
+
+data class KodeverkBeskrivelse(
     val tekst: String,
     val term: String
 )
