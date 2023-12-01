@@ -4,12 +4,17 @@ package no.nav.bidrag.commons.service.organisasjon
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.bidrag.commons.service.AppContext
+import no.nav.bidrag.commons.util.LoggingRetryListener
 import no.nav.bidrag.commons.util.secureLogger
 import no.nav.bidrag.commons.web.client.AbstractRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.retry.backoff.FixedBackOffPolicy
+import org.springframework.retry.policy.SimpleRetryPolicy
+import org.springframework.retry.support.RetryTemplate
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -76,12 +81,27 @@ class SaksbehandlernavnProvider {
          */
         fun hentSaksbehandlernavn(saksbehandlerIdent: String): String? {
             return try {
-                AppContext.getBean("CommonsBidragOrganisasjonConsumer", BidragOrganisasjonConsumer::class.java)
-                    .hentSaksbehandlerInfo(saksbehandlerIdent)?.navn
+                retryTemplate("SaksbehandlernavnProvider.hentSaksbehandlernavn for ident $saksbehandlerIdent").execute<String, HttpClientErrorException> {
+                    AppContext.getBean("CommonsBidragOrganisasjonConsumer", BidragOrganisasjonConsumer::class.java)
+                        .hentSaksbehandlerInfo(saksbehandlerIdent)?.navn
+                }
             } catch (e: Exception) {
                 secureLogger.error("Det skjedde en feil ved henting av saksbehandlernavn for saksbehandler $saksbehandlerIdent", e)
                 null
             }
         }
     }
+}
+
+private fun retryTemplate(details: String? = null): RetryTemplate {
+    val retryTemplate = RetryTemplate()
+    val fixedBackOffPolicy = FixedBackOffPolicy()
+    fixedBackOffPolicy.backOffPeriod = 500L
+    retryTemplate.setBackOffPolicy(fixedBackOffPolicy)
+    val retryPolicy = SimpleRetryPolicy()
+    retryPolicy.maxAttempts = 3
+    retryTemplate.setRetryPolicy(retryPolicy)
+    retryTemplate.setThrowLastExceptionOnExhausted(true)
+    retryTemplate.registerListener(LoggingRetryListener(details))
+    return retryTemplate
 }
