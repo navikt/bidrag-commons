@@ -39,12 +39,16 @@ class KodeverkProvider {
         fun initialiserKodeverkCache() {
             kodeverkCache.get(SUMMERT_SKATTEGRUNNLAG) { hentKodeverk(SUMMERT_SKATTEGRUNNLAG) }
             kodeverkCache.get(LOENNSBESKRIVELSE) { hentKodeverk(LOENNSBESKRIVELSE) }
+            kodeverkCache.get(YTELSEFRAOFFENTLIGE) { hentKodeverk(YTELSEFRAOFFENTLIGE) }
+            kodeverkCache.get(PENSJONELLERTRYGDEBESKRIVELSE) { hentKodeverk(PENSJONELLERTRYGDEBESKRIVELSE) }
             kodeverkCache.get(POSTNUMMER) { hentKodeverk(POSTNUMMER) }
         }
 
         fun invaliderKodeverkCache() {
             kodeverkCache.invalidate(SUMMERT_SKATTEGRUNNLAG)
             kodeverkCache.invalidate(LOENNSBESKRIVELSE)
+            kodeverkCache.invalidate(YTELSEFRAOFFENTLIGE)
+            kodeverkCache.invalidate(PENSJONELLERTRYGDEBESKRIVELSE)
             kodeverkCache.invalidate(POSTNUMMER)
         }
     }
