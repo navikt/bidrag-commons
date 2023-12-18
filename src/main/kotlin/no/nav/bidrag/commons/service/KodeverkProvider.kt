@@ -17,6 +17,8 @@ private val kodeverkUrl = AtomicReference("")
 const val SUMMERT_SKATTEGRUNNLAG = "Summert skattegrunnlag"
 const val POSTNUMMER = "Postnummer"
 const val LOENNSBESKRIVELSE = "Loennsbeskrivelse"
+const val YTELSEFRAOFFENTLIGE = "YtelseFraOffentligeBeskrivelse"
+const val PENSJONELLERTRYGDEBESKRIVELSE = "PensjonEllerTrygdeBeskrivelse"
 private val kodeverkCache: Cache<String, KodeverkKoderBetydningerResponse> = Caffeine.newBuilder()
     .maximumSize(1000).expireAfter(InvaliderCacheFørStartenAvArbeidsdag())
     .build()
@@ -24,6 +26,9 @@ private val log = LoggerFactory.getLogger(KodeverkProvider::class.java)
 fun finnVisningsnavnSkattegrunnlag(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG) ?: ""
 fun finnPoststedForPostnummer(postnummer: String): String? = finnVisningsnavn(postnummer, POSTNUMMER)
 fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE) ?: ""
+fun finnVisningsnavnYtelseFraOffentligebeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, YTELSEFRAOFFENTLIGE) ?: ""
+fun finnVisningsnavnPensjonEllerTrygdebeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, PENSJONELLERTRYGDEBESKRIVELSE) ?: ""
+fun finnVisningsnavnYtelse(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
 class KodeverkProvider {
 
     companion object {
