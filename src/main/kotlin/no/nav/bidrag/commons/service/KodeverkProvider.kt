@@ -27,7 +27,7 @@ private val log = LoggerFactory.getLogger(KodeverkProvider::class.java)
 fun finnVisningsnavnSkattegrunnlag(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG) ?: ""
 fun finnPoststedForPostnummer(postnummer: String): String? = finnVisningsnavn(postnummer, POSTNUMMER)
 fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE) ?: ""
-fun finnVisningsnavnYtelse(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
+fun finnVisningsnavnKodeverk(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
 
 fun finnVisningsnavn(fulltNavnInntektspost: String): String {
     return finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE)
