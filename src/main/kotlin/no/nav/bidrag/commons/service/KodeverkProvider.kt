@@ -14,8 +14,8 @@ import java.time.LocalDate
 import java.util.concurrent.atomic.AtomicReference
 
 private val kodeverkUrl = AtomicReference("")
-const val SUMMERT_SKATTEGRUNNLAG = "Summert skattegrunnlag"
 const val POSTNUMMER = "Postnummer"
+const val SUMMERT_SKATTEGRUNNLAG = "Summert skattegrunnlag"
 const val LOENNSBESKRIVELSE = "Loennsbeskrivelse"
 const val YTELSEFRAOFFENTLIGE = "YtelseFraOffentligeBeskrivelse"
 const val PENSJONELLERTRYGDEBESKRIVELSE = "PensjonEllerTrygdeBeskrivelse"
@@ -30,10 +30,12 @@ fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String = f
 fun finnVisningsnavnKodeverk(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
 
 fun finnVisningsnavn(fulltNavnInntektspost: String): String {
-    return finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE)
+    return finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG)
+        ?: finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE)
         ?: finnVisningsnavn(fulltNavnInntektspost, YTELSEFRAOFFENTLIGE)
         ?: finnVisningsnavn(fulltNavnInntektspost, PENSJONELLERTRYGDEBESKRIVELSE)
-        ?: finnVisningsnavn(fulltNavnInntektspost, NAERINGSINNTEKTSBESKRIVELSE) ?: ""
+        ?: finnVisningsnavn(fulltNavnInntektspost, NAERINGSINNTEKTSBESKRIVELSE)
+        ?: ""
 }
 
 class KodeverkProvider {
