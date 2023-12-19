@@ -48,6 +48,7 @@ class KodeverkProvider {
             kodeverkCache.get(LOENNSBESKRIVELSE) { hentKodeverk(LOENNSBESKRIVELSE) }
             kodeverkCache.get(YTELSEFRAOFFENTLIGE) { hentKodeverk(YTELSEFRAOFFENTLIGE) }
             kodeverkCache.get(PENSJONELLERTRYGDEBESKRIVELSE) { hentKodeverk(PENSJONELLERTRYGDEBESKRIVELSE) }
+            kodeverkCache.get(NAERINGSINNTEKTSBESKRIVELSE) { hentKodeverk(NAERINGSINNTEKTSBESKRIVELSE) }
             kodeverkCache.get(POSTNUMMER) { hentKodeverk(POSTNUMMER) }
         }
 
@@ -56,6 +57,7 @@ class KodeverkProvider {
             kodeverkCache.invalidate(LOENNSBESKRIVELSE)
             kodeverkCache.invalidate(YTELSEFRAOFFENTLIGE)
             kodeverkCache.invalidate(PENSJONELLERTRYGDEBESKRIVELSE)
+            kodeverkCache.invalidate(NAERINGSINNTEKTSBESKRIVELSE)
             kodeverkCache.invalidate(POSTNUMMER)
         }
     }
