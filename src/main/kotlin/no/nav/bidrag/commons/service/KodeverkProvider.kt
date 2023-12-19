@@ -19,6 +19,7 @@ const val POSTNUMMER = "Postnummer"
 const val LOENNSBESKRIVELSE = "Loennsbeskrivelse"
 const val YTELSEFRAOFFENTLIGE = "YtelseFraOffentligeBeskrivelse"
 const val PENSJONELLERTRYGDEBESKRIVELSE = "PensjonEllerTrygdeBeskrivelse"
+const val NAERINGSINNTEKTSBESKRIVELSE = "Naeringsinntektsbeskrivelse"
 private val kodeverkCache: Cache<String, KodeverkKoderBetydningerResponse> = Caffeine.newBuilder()
     .maximumSize(1000).expireAfter(InvaliderCacheFørStartenAvArbeidsdag())
     .build()
@@ -26,9 +27,15 @@ private val log = LoggerFactory.getLogger(KodeverkProvider::class.java)
 fun finnVisningsnavnSkattegrunnlag(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG) ?: ""
 fun finnPoststedForPostnummer(postnummer: String): String? = finnVisningsnavn(postnummer, POSTNUMMER)
 fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE) ?: ""
-fun finnVisningsnavnYtelseFraOffentligebeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, YTELSEFRAOFFENTLIGE) ?: ""
-fun finnVisningsnavnPensjonEllerTrygdebeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, PENSJONELLERTRYGDEBESKRIVELSE) ?: ""
-fun finnVisningsnavnYtelse(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
+fun finnVisningsnavnKodeverk(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
+
+fun finnVisningsnavn(fulltNavnInntektspost: String): String {
+    return finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE)
+        ?: finnVisningsnavn(fulltNavnInntektspost, YTELSEFRAOFFENTLIGE)
+        ?: finnVisningsnavn(fulltNavnInntektspost, PENSJONELLERTRYGDEBESKRIVELSE)
+        ?: finnVisningsnavn(fulltNavnInntektspost, NAERINGSINNTEKTSBESKRIVELSE) ?: ""
+}
+
 class KodeverkProvider {
 
     companion object {
@@ -41,6 +48,7 @@ class KodeverkProvider {
             kodeverkCache.get(LOENNSBESKRIVELSE) { hentKodeverk(LOENNSBESKRIVELSE) }
             kodeverkCache.get(YTELSEFRAOFFENTLIGE) { hentKodeverk(YTELSEFRAOFFENTLIGE) }
             kodeverkCache.get(PENSJONELLERTRYGDEBESKRIVELSE) { hentKodeverk(PENSJONELLERTRYGDEBESKRIVELSE) }
+            kodeverkCache.get(NAERINGSINNTEKTSBESKRIVELSE) { hentKodeverk(NAERINGSINNTEKTSBESKRIVELSE) }
             kodeverkCache.get(POSTNUMMER) { hentKodeverk(POSTNUMMER) }
         }
 
@@ -49,6 +57,7 @@ class KodeverkProvider {
             kodeverkCache.invalidate(LOENNSBESKRIVELSE)
             kodeverkCache.invalidate(YTELSEFRAOFFENTLIGE)
             kodeverkCache.invalidate(PENSJONELLERTRYGDEBESKRIVELSE)
+            kodeverkCache.invalidate(NAERINGSINNTEKTSBESKRIVELSE)
             kodeverkCache.invalidate(POSTNUMMER)
         }
     }
