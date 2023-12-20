@@ -13,8 +13,11 @@ import org.springframework.stereotype.Component
  */
 @Component
 class UserMdcFilter : Filter {
-
-    override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    override fun doFilter(
+        servletRequest: ServletRequest,
+        servletResponse: ServletResponse,
+        filterChain: FilterChain,
+    ) {
         val user = TokenUtils.hentBruker()
         val appName = TokenUtils.hentApplikasjonsnavn()
         user?.apply { MDC.put(USER_MDC, user) }

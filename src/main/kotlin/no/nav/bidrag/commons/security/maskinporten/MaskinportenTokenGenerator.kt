@@ -9,9 +9,8 @@ import com.nimbusds.jwt.SignedJWT
 import java.util.Date
 
 class MaskinportenTokenGenerator(
-    val maskinportenConfig: MaskinportenConfig
+    val maskinportenConfig: MaskinportenConfig,
 ) {
-
     internal fun genererJwtToken(scope: String): String {
         return SignedJWT(opprettJwsHeader(), generateJWTClaimSet(scope)).apply {
             sign(RSASSASigner(opprettRsaKey()))

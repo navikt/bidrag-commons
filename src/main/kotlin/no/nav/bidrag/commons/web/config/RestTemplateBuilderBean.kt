@@ -14,9 +14,13 @@ import java.time.temporal.ChronoUnit
 
 @Suppress("SpringFacetCodeInspection")
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, MdcValuesPropagatingClientInterceptor::class, NaisProxyCustomizer::class, ObservationRestTemplateCustomizer::class)
+@Import(
+    ConsumerIdClientInterceptor::class,
+    MdcValuesPropagatingClientInterceptor::class,
+    NaisProxyCustomizer::class,
+    ObservationRestTemplateCustomizer::class,
+)
 class RestTemplateBuilderBean {
-
     @Bean
     @Scope("prototype")
     @ConditionalOnProperty("no.nav.security.jwt.issuer.aad.proxy_url")
@@ -24,7 +28,7 @@ class RestTemplateBuilderBean {
         iNaisProxyCustomizer: INaisProxyCustomizer,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         observationRestTemplateCustomizer: ObservationRestTemplateCustomizer,
-        mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor
+        mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor,
     ) = RestTemplateBuilder()
         .additionalInterceptors(consumerIdClientInterceptor, mdcValuesPropagatingClientInterceptor)
         .additionalCustomizers(observationRestTemplateCustomizer)
@@ -42,15 +46,16 @@ class RestTemplateBuilderBean {
     @ConditionalOnProperty(
         "no.nav.security.jwt.issuer.aad.proxy_url",
         matchIfMissing = true,
-        havingValue = "Umulig verdi"
+        havingValue = "Umulig verdi",
     )
     fun restTemplateBuilderNoProxy(
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         observationRestTemplateCustomizer: ObservationRestTemplateCustomizer,
-        mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor
-    ): RestTemplateBuilder = RestTemplateBuilder()
-        .additionalInterceptors(consumerIdClientInterceptor, mdcValuesPropagatingClientInterceptor)
-        .additionalCustomizers(observationRestTemplateCustomizer)
-        .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
-        .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
+        mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor,
+    ): RestTemplateBuilder =
+        RestTemplateBuilder()
+            .additionalInterceptors(consumerIdClientInterceptor, mdcValuesPropagatingClientInterceptor)
+            .additionalCustomizers(observationRestTemplateCustomizer)
+            .setConnectTimeout(Duration.of(15, ChronoUnit.SECONDS))
+            .setReadTimeout(Duration.of(30, ChronoUnit.SECONDS))
 }

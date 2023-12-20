@@ -20,7 +20,10 @@ class AppContext : ApplicationContextAware {
             return applicationContext!!.getBean(clazz)
         }
 
-        fun <T> getBean(name: String, clazz: Class<T>): T {
+        fun <T> getBean(
+            name: String,
+            clazz: Class<T>,
+        ): T {
             return applicationContext!!.getBean(name, clazz)
         }
     }

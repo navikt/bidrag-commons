@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ConditionalOnDefaultWebSecurity
 @EnableWebSecurity
 class DisableDefaultSpringSecurityConfiguration : WebSecurityConfigurer<WebSecurity> {
-
     override fun init(builder: WebSecurity) {
     }
 

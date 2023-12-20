@@ -4,7 +4,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.util.CollectionUtils
-import java.util.*
+import java.util.Optional
 
 /**
  * Redirecting [ResponseEntity] from one service to another
@@ -12,7 +12,6 @@ import java.util.*
  * @param <T> type of http payload
 </T> */
 class HttpResponse<T>(val responseEntity: ResponseEntity<T>) {
-
     fun fetchBody(): Optional<T & Any> {
         return Optional.ofNullable(responseEntity.body)
     }
@@ -42,17 +41,27 @@ class HttpResponse<T>(val responseEntity: ResponseEntity<T>) {
             return HttpResponse(responseEntity)
         }
 
-        fun <E> from(httpStatus: HttpStatusCode, body: E): HttpResponse<E> {
+        fun <E> from(
+            httpStatus: HttpStatusCode,
+            body: E,
+        ): HttpResponse<E> {
             val responseEntity = ResponseEntity(body, httpStatus)
             return HttpResponse(responseEntity)
         }
 
-        fun <E> from(httpHeaders: HttpHeaders, httpStatus: HttpStatusCode): HttpResponse<E> {
+        fun <E> from(
+            httpHeaders: HttpHeaders,
+            httpStatus: HttpStatusCode,
+        ): HttpResponse<E> {
             val responseEntity = ResponseEntity<E>(httpHeaders, httpStatus)
             return HttpResponse(responseEntity)
         }
 
-        fun <E> from(body: E, httpHeaders: HttpHeaders?, httpStatus: HttpStatusCode): HttpResponse<E> {
+        fun <E> from(
+            body: E,
+            httpHeaders: HttpHeaders?,
+            httpStatus: HttpStatusCode,
+        ): HttpResponse<E> {
             val responseEntity = ResponseEntity(body, httpHeaders, httpStatus)
             return HttpResponse(responseEntity)
         }

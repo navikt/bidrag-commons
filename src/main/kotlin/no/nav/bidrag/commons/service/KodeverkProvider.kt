@@ -20,14 +20,24 @@ const val LOENNSBESKRIVELSE = "Loennsbeskrivelse"
 const val YTELSEFRAOFFENTLIGE = "YtelseFraOffentligeBeskrivelse"
 const val PENSJONELLERTRYGDEBESKRIVELSE = "PensjonEllerTrygdeBeskrivelse"
 const val NAERINGSINNTEKTSBESKRIVELSE = "Naeringsinntektsbeskrivelse"
-private val kodeverkCache: Cache<String, KodeverkKoderBetydningerResponse> = Caffeine.newBuilder()
-    .maximumSize(1000).expireAfter(InvaliderCacheFørStartenAvArbeidsdag())
-    .build()
+private val kodeverkCache: Cache<String, KodeverkKoderBetydningerResponse> =
+    Caffeine.newBuilder()
+        .maximumSize(1000).expireAfter(InvaliderCacheFørStartenAvArbeidsdag())
+        .build()
 private val log = LoggerFactory.getLogger(KodeverkProvider::class.java)
-fun finnVisningsnavnSkattegrunnlag(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG) ?: ""
+
+fun finnVisningsnavnSkattegrunnlag(fulltNavnInntektspost: String): String =
+    finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG) ?: ""
+
 fun finnPoststedForPostnummer(postnummer: String): String? = finnVisningsnavn(postnummer, POSTNUMMER)
-fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String = finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE) ?: ""
-fun finnVisningsnavnKodeverk(fulltNavnInntektspost: String, kodeverk: String): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
+
+fun finnVisningsnavnLønnsbeskrivelse(fulltNavnInntektspost: String): String =
+    finnVisningsnavn(fulltNavnInntektspost, LOENNSBESKRIVELSE) ?: ""
+
+fun finnVisningsnavnKodeverk(
+    fulltNavnInntektspost: String,
+    kodeverk: String,
+): String = finnVisningsnavn(fulltNavnInntektspost, kodeverk) ?: ""
 
 fun finnVisningsnavn(fulltNavnInntektspost: String): String {
     return finnVisningsnavn(fulltNavnInntektspost, SUMMERT_SKATTEGRUNNLAG)
@@ -39,7 +49,6 @@ fun finnVisningsnavn(fulltNavnInntektspost: String): String {
 }
 
 class KodeverkProvider {
-
     companion object {
         fun initialiser(url: String) {
             kodeverkUrl.set(url)
@@ -65,34 +74,39 @@ class KodeverkProvider {
     }
 }
 
-private fun finnVisningsnavn(kode: String, kodeverk: String): String? {
-    val betydning = kodeverkCache
-        .get(kodeverk) { hentKodeverk(kodeverk) }
-        .betydninger[kode]?.firstNotNullOf { betydning -> betydning.beskrivelser["nb"] }
+private fun finnVisningsnavn(
+    kode: String,
+    kodeverk: String,
+): String? {
+    val betydning =
+        kodeverkCache
+            .get(kodeverk) { hentKodeverk(kodeverk) }
+            .betydninger[kode]?.firstNotNullOf { betydning -> betydning.beskrivelser["nb"] }
     return if (betydning?.tekst.isNullOrEmpty()) betydning?.term else betydning?.tekst
 }
 
 private fun hentKodeverk(kodeverk: String): KodeverkKoderBetydningerResponse {
     val kodeverkContext = "${kodeverkUrl.get()}/api/v1/kodeverk/$kodeverk/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
-    val restTemplate: RestTemplate = RestTemplateBuilder()
-        .defaultHeader("Nav-Call-Id", CorrelationId.fetchCorrelationIdForThread())
-        .defaultHeader("Nav-Consumer-Id", System.getenv("NAIS_APP_NAME") ?: "bidrag-commons")
-        .build()
+    val restTemplate: RestTemplate =
+        RestTemplateBuilder()
+            .defaultHeader("Nav-Call-Id", CorrelationId.fetchCorrelationIdForThread())
+            .defaultHeader("Nav-Consumer-Id", System.getenv("NAIS_APP_NAME") ?: "bidrag-commons")
+            .build()
     log.info("Laster kodeverk for $kodeverk")
     return restTemplate.getForEntity<KodeverkKoderBetydningerResponse>(kodeverkContext).body!!
 }
 
 data class KodeverkKoderBetydningerResponse(
-    val betydninger: Map<String, List<KodeverkBetydning>>
+    val betydninger: Map<String, List<KodeverkBetydning>>,
 )
 
 data class KodeverkBetydning(
     val gyldigFra: LocalDate,
     val gyldigTil: LocalDate,
-    val beskrivelser: Map<String, KodeverkBeskrivelse>
+    val beskrivelser: Map<String, KodeverkBeskrivelse>,
 )
 
 data class KodeverkBeskrivelse(
     val tekst: String,
-    val term: String
+    val term: String,
 )

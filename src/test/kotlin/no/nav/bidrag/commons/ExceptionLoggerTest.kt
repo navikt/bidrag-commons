@@ -44,7 +44,7 @@ internal class ExceptionLoggerTest {
     fun `skal logge root exception cause`() {
         exceptionLogger.logException(
             Exception("blew up", IllegalStateException("in common code", IllegalArgumentException("because of stupid arguments"))),
-            "junit test"
+            "junit test",
         )
         verifiserLoggingSamtSamleLoggMeldinger()
         logMeldinger.joinToString { it.formattedMessage } shouldContain "blew up"
@@ -66,16 +66,21 @@ internal class ExceptionLoggerTest {
     fun `skal logge StackTraceElement fra no nav før exception`() {
         exceptionLogger.logException(
             Exception("blew up", IllegalStateException("in common code", IllegalArgumentException("because of stupid arguments"))),
-            "junit test"
+            "junit test",
         )
         verifiserLoggingSamtSamleLoggMeldinger()
         logMeldinger.joinToString { it.formattedMessage }
-            .shouldContain("|> kode i nav: no.nav.bidrag.commons.ExceptionLoggerTest.skal logge StackTraceElement fra no nav før exception(line:")
+            .shouldContain(
+                "|> kode i nav: no.nav.bidrag.commons.ExceptionLoggerTest.skal logge StackTraceElement fra no nav før exception(line:",
+            )
     }
 
     @Test
     fun `skal logge response body til et HttpStatusCodeException`() {
-        exceptionLogger.logException(HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".toByteArray(), null), "junit test")
+        exceptionLogger.logException(
+            HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".toByteArray(), null),
+            "junit test",
+        )
         verifiserLoggingSamtSamleLoggMeldinger()
         logMeldinger.joinToString { it.formattedMessage } shouldContain "|> response body: something is fishy"
     }
@@ -97,13 +102,14 @@ internal class ExceptionLoggerTest {
 
     @Test
     fun `skal returnere det som logges`() {
-        val exceptionStreng = java.lang.String.join(
-            "",
-            exceptionLogger.logException(
-                HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".toByteArray(), null),
-                "junit test"
+        val exceptionStreng =
+            java.lang.String.join(
+                "",
+                exceptionLogger.logException(
+                    HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "something is fishy".toByteArray(), null),
+                    "junit test",
+                ),
             )
-        )
         exceptionStreng shouldContain "|> response body: something is fishy"
     }
 
@@ -115,7 +121,7 @@ internal class ExceptionLoggerTest {
     fun `skal logge en error per exception`() {
         exceptionLogger.logException(
             HttpClientErrorException(HttpStatus.BAD_REQUEST, "oops", "i did it again".toByteArray(), null),
-            "junit test"
+            "junit test",
         )
         fetchNumberOfLoglevelError() shouldBe 1
     }

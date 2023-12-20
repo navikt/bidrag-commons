@@ -6,7 +6,6 @@ import no.nav.bidrag.commons.security.maskinporten.MaskinportenTestUtils.opprett
 import org.junit.jupiter.api.Test
 
 internal class MaskinportenTokenCacheTest {
-
     @Test
     fun `skal ikke returnere token om token utgår om under 20 sekunder`() {
         val tokenCache = MaskinportenTokenCache(opprettMaskinportenToken(19))

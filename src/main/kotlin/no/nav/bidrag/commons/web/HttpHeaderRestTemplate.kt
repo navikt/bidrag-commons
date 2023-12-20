@@ -10,7 +10,7 @@ import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RequestCallback
 import org.springframework.web.client.RestTemplate
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Objects
 
 open class HttpHeaderRestTemplate : RestTemplate {
     private val headerGenerators: MutableMap<String, () -> String> = HashMap()
@@ -26,7 +26,10 @@ open class HttpHeaderRestTemplate : RestTemplate {
         addHeaderGenerator(X_ENHET_HEADER, EnhetFilter::fetchForThread)
     }
 
-    override fun <T : Any> httpEntityCallback(requestBody: Any?, responseType: Type): RequestCallback {
+    override fun <T : Any> httpEntityCallback(
+        requestBody: Any?,
+        responseType: Type,
+    ): RequestCallback {
         if (headerGenerators.isEmpty()) {
             return super.httpEntityCallback<Any>(requestBody, responseType)
         }
@@ -75,15 +78,24 @@ open class HttpHeaderRestTemplate : RestTemplate {
     }
 
     // Prevent duplicate X_ENHET headers. Makes it possible to override the header
-    private fun isXEnhetHeaderAndXEnhetHeaderExists(key: String, allHeaders: HttpHeaders): Boolean {
+    private fun isXEnhetHeaderAndXEnhetHeaderExists(
+        key: String,
+        allHeaders: HttpHeaders,
+    ): Boolean {
         return X_ENHET_HEADER == key && allHeaders[X_ENHET_HEADER] != null
     }
 
-    fun addHeaderGenerator(headerName: String, valueGenerator: () -> String) {
+    fun addHeaderGenerator(
+        headerName: String,
+        valueGenerator: () -> String,
+    ) {
         headerGenerators[headerName] = valueGenerator
     }
 
-    fun addHeaderGenerator(headerName: String, valueGenerator: ValueGenerator) {
+    fun addHeaderGenerator(
+        headerName: String,
+        valueGenerator: ValueGenerator,
+    ) {
         headerGenerators[headerName] = valueGenerator
     }
 
@@ -94,6 +106,7 @@ open class HttpHeaderRestTemplate : RestTemplate {
     @FunctionalInterface
     interface ValueGenerator : () -> String {
         override fun invoke() = generate()
+
         fun generate(): String
     }
 }

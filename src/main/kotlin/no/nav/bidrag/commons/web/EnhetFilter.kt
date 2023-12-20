@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 
 class EnhetFilter : Filter {
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    override fun doFilter(
+        servletRequest: ServletRequest,
+        servletResponse: ServletResponse,
+        filterChain: FilterChain,
+    ) {
         if (servletRequest is HttpServletRequest) {
             val requestURI = servletRequest.requestURI
             if (isNotRequestToActuatorEndpoint(requestURI)) {

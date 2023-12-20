@@ -28,7 +28,6 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuditAdviceTest {
-
     private val tilgangClient: TilgangClient = mockk(relaxed = true)
     private val auditLogger: AuditLogger = mockk(relaxed = true)
     private val auditAdvice = AuditAdvice(auditLogger, tilgangClient)
@@ -224,7 +223,7 @@ class AuditAdviceTest {
         shouldThrow<IllegalStateException> {
             auditAdvice.loggTilgang(
                 joinPoint,
-                AuditLog(AuditLoggerEvent.ACCESS, "id")
+                AuditLog(AuditLoggerEvent.ACCESS, "id"),
             )
         }
     }
@@ -298,7 +297,7 @@ class AuditAdviceTest {
         shouldThrow<IllegalStateException> {
             auditAdvice.loggTilgang(
                 joinPoint,
-                AuditLog(AuditLoggerEvent.ACCESS, "fnr")
+                AuditLog(AuditLoggerEvent.ACCESS, "fnr"),
             )
         }
     }

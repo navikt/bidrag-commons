@@ -58,10 +58,11 @@ import java.net.URI
 @Component("CommonsBidragOrganisasjonConsumer")
 internal class BidragOrganisasjonConsumer(
     @Value("\${BIDRAG_ORGANISASJON_URL}") val url: URI,
-    @Qualifier("azure") private val restTemplate: RestOperations
+    @Qualifier("azure") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "bidrag-organisasjon") {
-    private fun createUri(path: String?) = UriComponentsBuilder.fromUri(url)
-        .path(path ?: "").build().toUri()
+    private fun createUri(path: String?) =
+        UriComponentsBuilder.fromUri(url)
+            .path(path ?: "").build().toUri()
 
     @Cacheable(SaksbehandlernavnProvider.SAKSBEHANDLERINFO_CACHE)
     fun hentSaksbehandlerInfo(saksbehandlerIdent: String): SaksbehandlerInfoResponse? {
@@ -71,8 +72,8 @@ internal class BidragOrganisasjonConsumer(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SaksbehandlerInfoResponse(val ident: String, val navn: String)
-class SaksbehandlernavnProvider {
 
+class SaksbehandlernavnProvider {
     companion object {
         const val SAKSBEHANDLERINFO_CACHE = "SAKSBEHANDLERINFO_CACHE"
 
@@ -81,7 +82,9 @@ class SaksbehandlernavnProvider {
          */
         fun hentSaksbehandlernavn(saksbehandlerIdent: String): String? {
             return try {
-                retryTemplate("SaksbehandlernavnProvider.hentSaksbehandlernavn for ident $saksbehandlerIdent").execute<String, HttpClientErrorException> {
+                retryTemplate(
+                    "SaksbehandlernavnProvider.hentSaksbehandlernavn for ident $saksbehandlerIdent",
+                ).execute<String, HttpClientErrorException> {
                     AppContext.getBean("CommonsBidragOrganisasjonConsumer", BidragOrganisasjonConsumer::class.java)
                         .hentSaksbehandlerInfo(saksbehandlerIdent)?.navn
                 }

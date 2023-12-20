@@ -10,14 +10,13 @@ import org.springframework.context.annotation.Scope
 @Configuration
 @Import(
     RestTemplateBuilderBean::class,
-    MaskinportenBearerTokenClientInterceptor::class
+    MaskinportenBearerTokenClientInterceptor::class,
 )
 class RestOperationsMaskinporten {
-
     @Bean("maskinporten")
     @Scope("prototype")
     fun restOperationsMaskinporten(
         restTemplateBuilder: RestTemplateBuilder,
-        maskinportenBearerTokenClientInterceptor: MaskinportenBearerTokenClientInterceptor
+        maskinportenBearerTokenClientInterceptor: MaskinportenBearerTokenClientInterceptor,
     ) = restTemplateBuilder.additionalInterceptors(maskinportenBearerTokenClientInterceptor).build()
 }

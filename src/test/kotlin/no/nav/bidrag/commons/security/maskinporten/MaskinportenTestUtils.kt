@@ -9,7 +9,6 @@ import com.nimbusds.jwt.SignedJWT
 import java.util.Date
 
 object MaskinportenTestUtils {
-
     fun opprettMaskinportenToken(utgarOm: Int): String {
         val privateKey = RSAKeyGenerator(2048).keyID("123").generate()
 

@@ -4,18 +4,26 @@ import org.slf4j.LoggerFactory
 import org.springframework.web.client.HttpStatusCodeException
 
 class ExceptionLogger(private val application: String, vararg doNotLogClasses: Class<*>) {
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val doNotLogClasses = doNotLogClasses.map { it.name }
 
-    fun logException(throwable: Throwable, defaultLocation: String?): List<String> {
+    fun logException(
+        throwable: Throwable,
+        defaultLocation: String?,
+    ): List<String> {
         val exceptionAndDetails = ArrayList<String>()
         val exceptionClassSimpleName = throwable.javaClass.simpleName
         val exceptionMessage = throwable.message
         val possibleCause = throwable.cause
         val melding =
-            String.format("%s: %s - caught in %s within %s. Details:", exceptionClassSimpleName, exceptionMessage, application, defaultLocation)
+            String.format(
+                "%s: %s - caught in %s within %s. Details:",
+                exceptionClassSimpleName,
+                exceptionMessage,
+                application,
+                defaultLocation,
+            )
         exceptionAndDetails.add(melding)
         if (possibleCause != null) {
             exceptionAndDetails.addAll(logCause(possibleCause))
@@ -56,23 +64,25 @@ class ExceptionLogger(private val application: String, vararg doNotLogClasses: C
     }
 
     private fun logFirstThreeStackFramesFromNavCode(throwable: Throwable): List<String> {
-        val stackFrames = throwable.stackTrace
-            .filter { it.className != ExceptionLogger::class.java.name }
-            .filter { it.className.startsWith(PACKAGE_NO_NAV) }
-            .filter { !doNotLogClasses.contains(it.className) }
-            .filter { "<generated>" != it.fileName } // generated proxy code
-            .take(3)
+        val stackFrames =
+            throwable.stackTrace
+                .filter { it.className != ExceptionLogger::class.java.name }
+                .filter { it.className.startsWith(PACKAGE_NO_NAV) }
+                .filter { !doNotLogClasses.contains(it.className) }
+                .filter { "<generated>" != it.fileName } // generated proxy code
+                .take(3)
         if (stackFrames.isEmpty()) {
             return emptyList()
         }
         val firstStack = stackFrames[0]
-        val exceptionSettFraNav = String.format(
-            "|> kode i nav: %s.%s(line:%s - %s)",
-            firstStack.className,
-            firstStack.methodName,
-            firstStack.lineNumber,
-            firstStack.fileName
-        )
+        val exceptionSettFraNav =
+            String.format(
+                "|> kode i nav: %s.%s(line:%s - %s)",
+                firstStack.className,
+                firstStack.methodName,
+                firstStack.lineNumber,
+                firstStack.fileName,
+            )
         return if (stackFrames.size > 1) {
             listOf(exceptionSettFraNav, fetchFileInfoFromPreviousElements(stackFrames))
         } else {
@@ -91,9 +101,10 @@ class ExceptionLogger(private val application: String, vararg doNotLogClasses: C
 
     companion object {
         private const val CAUSED_BY_MSG = "|> caused by %s: %s."
-        private val PACKAGE_NO_NAV = ExceptionLogger::class.java.packageName.substring(
-            0,
-            ExceptionLogger::class.java.packageName.indexOf(".bidrag")
-        )
+        private val PACKAGE_NO_NAV =
+            ExceptionLogger::class.java.packageName.substring(
+                0,
+                ExceptionLogger::class.java.packageName.indexOf(".bidrag"),
+            )
     }
 }

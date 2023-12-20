@@ -15,9 +15,8 @@ import java.net.URI
 @Import(RestOperationsAzure::class)
 class TilgangClient(
     @Value("\${BIDRAG_TILGANG_URL}") private val tilgangURI: URI,
-    @Qualifier("azure") private val restTemplate: RestTemplate
+    @Qualifier("azure") private val restTemplate: RestTemplate,
 ) : AbstractRestClient(restTemplate, "tilgang") {
-
     val sakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "tilgang", "sak").build().toUri()
     val personUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "tilgang", "person").build().toUri()
     val sporingsdataSakUri = UriComponentsBuilder.fromUri(tilgangURI).pathSegment("api", "sporingsdata", "sak").build().toUri()

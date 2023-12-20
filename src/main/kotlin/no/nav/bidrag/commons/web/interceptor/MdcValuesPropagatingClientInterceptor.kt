@@ -12,16 +12,14 @@ import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 @Import(IdUtils::class)
 class MdcValuesPropagatingClientInterceptor(private val idUtils: IdUtils) : ClientHttpRequestInterceptor {
-
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
-        execution: ClientHttpRequestExecution
+        execution: ClientHttpRequestExecution,
     ): ClientHttpResponse {
         val callId = MDC.get(MdcConstants.MDC_CALL_ID) ?: idUtils.generateId()
         // Propagerer alle alternativer for callId inntil alle applikasjonene våre er samkjørte.

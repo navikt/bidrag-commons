@@ -13,23 +13,27 @@ import org.springframework.stereotype.Component
 
 @Component
 class CorrelationIdFilter : Filter {
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
+    override fun doFilter(
+        servletRequest: ServletRequest,
+        servletResponse: ServletResponse,
+        filterChain: FilterChain,
+    ) {
         val httpServletRequest = servletRequest as HttpServletRequest
         val httpServletResponse = servletResponse as HttpServletResponse
         val method = httpServletRequest.method
         val requestURI: String = httpServletRequest.requestURI
         if (isNotRequestContaining(requestURI, "/actuator/", "/api-docs/", "/swagger-")) {
-            val correlationId: CorrelationId = if (httpServletRequest.getHeader(CORRELATION_ID_HEADER) != null) {
-                CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER))
-            } else {
-                generateCorreleationIdToHttpHeaderOnResponse(
-                    httpServletResponse,
-                    CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI))
-                )
-            }
+            val correlationId: CorrelationId =
+                if (httpServletRequest.getHeader(CORRELATION_ID_HEADER) != null) {
+                    CorrelationId.existing(httpServletRequest.getHeader(CORRELATION_ID_HEADER))
+                } else {
+                    generateCorreleationIdToHttpHeaderOnResponse(
+                        httpServletResponse,
+                        CorrelationId.generateTimestamped(fetchLastPartOfRequestUri(requestURI)),
+                    )
+                }
             MDC.put(CORRELATION_ID_MDC, correlationId.get())
             logger.debug("{} is prosessing {} {}", CorrelationIdFilter::class.java.simpleName, method, requestURI)
         }
@@ -37,11 +41,17 @@ class CorrelationIdFilter : Filter {
         MDC.clear()
     }
 
-    private fun isNotRequestContaining(requestURI: String, vararg uriParts: String): Boolean {
+    private fun isNotRequestContaining(
+        requestURI: String,
+        vararg uriParts: String,
+    ): Boolean {
         return uriParts.none { requestURI.contains(it) }
     }
 
-    private fun generateCorreleationIdToHttpHeaderOnResponse(httpServletResponse: HttpServletResponse, correlationId: CorrelationId): CorrelationId {
+    private fun generateCorreleationIdToHttpHeaderOnResponse(
+        httpServletResponse: HttpServletResponse,
+        correlationId: CorrelationId,
+    ): CorrelationId {
         httpServletResponse.addHeader(CORRELATION_ID_HEADER, correlationId.get())
         return correlationId
     }

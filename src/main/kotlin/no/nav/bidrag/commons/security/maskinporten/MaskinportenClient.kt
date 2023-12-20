@@ -38,9 +38,8 @@ import java.net.http.HttpResponse.BodyHandlers.ofString
 @EnableConfigurationProperties(MaskinportenConfig::class)
 @Service("maskinportenClient")
 class MaskinportenClient(
-    private val maskinportenConfig: MaskinportenConfig
+    private val maskinportenConfig: MaskinportenConfig,
 ) {
-
     companion object {
         internal const val GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer"
         internal const val CONTENT_TYPE = "application/x-www-form-urlencoded"
@@ -57,18 +56,26 @@ class MaskinportenClient(
         }
 
     fun hentMaskinportenToken(scope: String): SignedJWT {
-        val cache = maskinportenTokenCache.get(scope) { nyttScope: String ->
-            MaskinportenTokenCache(hentNyttJwtToken(nyttScope))
-        } ?: error("Feil ved henting eller opprettelse av cached scope for maskinporten-token! Scope: $scope, cache content: $maskinportenTokenCache")
+        val cache =
+            maskinportenTokenCache.get(scope) { nyttScope: String ->
+                MaskinportenTokenCache(hentNyttJwtToken(nyttScope))
+            } ?: error(
+                "Feil ved henting eller opprettelse av cached scope for maskinporten-token! " +
+                    "Scope: $scope, cache content: $maskinportenTokenCache",
+            )
         return cache.run {
             maskinportenToken ?: renew(hentNyttJwtToken(scope))
         }
     }
 
     fun hentMaskinportenToken(): SignedJWT {
-        val cache = maskinportenTokenCache.get(maskinportenConfig.scope) { nyttScope: String ->
-            MaskinportenTokenCache(hentNyttJwtToken(nyttScope))
-        } ?: error("Feil ved henting eller opprettelse av cached scope for maskinporten-token! Scope: ${maskinportenConfig.scope}, cache content: $maskinportenTokenCache")
+        val cache =
+            maskinportenTokenCache.get(maskinportenConfig.scope) { nyttScope: String ->
+                MaskinportenTokenCache(hentNyttJwtToken(nyttScope))
+            } ?: error(
+                "Feil ved henting eller opprettelse av cached scope for maskinporten-token! " +
+                    "Scope: ${maskinportenConfig.scope}, cache content: $maskinportenTokenCache",
+            )
         return cache.run {
             maskinportenToken ?: renew(hentNyttJwtToken(maskinportenConfig.scope))
         }
@@ -76,15 +83,20 @@ class MaskinportenClient(
 
     private fun hentNyttJwtToken(scope: String): String =
         httpClient.send(opprettMaskinportenTokenRequest(scope), ofString()).run {
-            if (statusCode() != 200) throw MaskinportenClientException("Feil ved henting av token: Status: ${statusCode()} , Body: ${body()}")
+            if (statusCode() != 200) {
+                throw MaskinportenClientException(
+                    "Feil ved henting av token: Status: ${statusCode()} , Body: ${body()}",
+                )
+            }
             mapTilMaskinportenResponseBody(body()).access_token
         }
 
-    private fun mapTilMaskinportenResponseBody(body: String): MaskinportenTokenResponse = try {
-        objectMapper.readValue(body)
-    } catch (e: Exception) {
-        throw MaskinportenClientException("Feil ved deserialisering av response fra maskinporten: $e.message")
-    }
+    private fun mapTilMaskinportenResponseBody(body: String): MaskinportenTokenResponse =
+        try {
+            objectMapper.readValue(body)
+        } catch (e: Exception) {
+            throw MaskinportenClientException("Feil ved deserialisering av response fra maskinporten: $e.message")
+        }
 
     private fun opprettMaskinportenTokenRequest(scope: String): HttpRequest =
         HttpRequest.newBuilder().uri(URI.create(maskinportenConfig.tokenUrl)).header("Content-Type", CONTENT_TYPE)
