@@ -7,11 +7,11 @@ import org.springframework.validation.annotation.Validated
 @Validated
 @ConfigurationProperties("no.nav.security.jwt.sts")
 data class StsConfigurationProperties
-@ConstructorBinding
-constructor(val properties: StsProperties)
+    @ConstructorBinding
+    constructor(val properties: StsProperties)
 
 data class StsProperties(
     val url: String,
     val username: String,
-    val password: String
+    val password: String,
 )

@@ -26,7 +26,6 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TilgangAdviceTest {
-
     private val tilgangClient: TilgangClient = mockk(relaxed = true)
 
     private val tilgangAdvice = TilgangAdvice(tilgangClient)

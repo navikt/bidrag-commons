@@ -18,11 +18,13 @@ import org.springframework.context.annotation.Import
 @Import(AuditLogger::class, TilgangClient::class)
 class AuditAdvice(
     private val auditLogger: AuditLogger,
-    private val tilgangClient: TilgangClient
+    private val tilgangClient: TilgangClient,
 ) {
-
     @Before("@annotation(auditLog) ")
-    fun loggTilgang(joinpoint: JoinPoint, auditLog: AuditLog) {
+    fun loggTilgang(
+        joinpoint: JoinPoint,
+        auditLog: AuditLog,
+    ) {
         if (ContextService.erMaskinTilMaskinToken()) {
             return
         }
@@ -34,7 +36,10 @@ class AuditAdvice(
         }
     }
 
-    private fun auditForNavngittParameter(joinpoint: JoinPoint, auditLog: AuditLog) {
+    private fun auditForNavngittParameter(
+        joinpoint: JoinPoint,
+        auditLog: AuditLog,
+    ) {
         val parameternavn: Array<String> = (joinpoint.signature as CodeSignature).parameterNames
         val index = parameternavn.indexOf(auditLog.oppslagsparameter)
         if (index > -1) {
@@ -45,7 +50,10 @@ class AuditAdvice(
         }
     }
 
-    private fun finnSporingsdataForNavngittFeltIRequestBody(requestBody: Any, feltnavn: String): Sporingsdata {
+    private fun finnSporingsdataForNavngittFeltIRequestBody(
+        requestBody: Any,
+        feltnavn: String,
+    ): Sporingsdata {
         return finnSporingsdataForFeltIRequestBody(requestBody, feltnavn)
     }
 
@@ -54,17 +62,24 @@ class AuditAdvice(
         return finnSporingsdataForFeltIRequestBody(requestBody, feltnavn)
     }
 
-    private fun auditForParameter(param: Any, auditLoggerEvent: AuditLoggerEvent) {
-        val sporingsdata: Sporingsdata = when (param) {
-            is Saksnummer -> finnSporingsdataForSaksnummer(param)
-            is Personident -> finnSporingsdataForPersonIdent(param)
-            is String -> finnSporingsdataForString(param)
-            else -> finnSporingsdataForFørsteKonstruktørparameterIRequestBody(param)
-        }
+    private fun auditForParameter(
+        param: Any,
+        auditLoggerEvent: AuditLoggerEvent,
+    ) {
+        val sporingsdata: Sporingsdata =
+            when (param) {
+                is Saksnummer -> finnSporingsdataForSaksnummer(param)
+                is Personident -> finnSporingsdataForPersonIdent(param)
+                is String -> finnSporingsdataForString(param)
+                else -> finnSporingsdataForFørsteKonstruktørparameterIRequestBody(param)
+            }
         auditLogger.log(auditLoggerEvent, sporingsdata)
     }
 
-    private fun finnSporingsdataForFeltIRequestBody(requestBody: Any, feltnavn: String): Sporingsdata {
+    private fun finnSporingsdataForFeltIRequestBody(
+        requestBody: Any,
+        feltnavn: String,
+    ): Sporingsdata {
         val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         return when (param) {
             is Saksnummer -> finnSporingsdataForSaksnummer(param)

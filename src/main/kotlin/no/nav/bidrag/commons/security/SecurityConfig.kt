@@ -17,17 +17,16 @@ import org.springframework.context.annotation.Configuration
 @EnableJwtTokenValidation
 @EnableOAuth2Client(cacheEnabled = true)
 class SecurityConfig {
-
     @Bean
     fun azureTokenService(
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ) = AzureTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
 
     @Bean
     fun tokenxTokenService(
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2AccessTokenService: OAuth2AccessTokenService
+        oAuth2AccessTokenService: OAuth2AccessTokenService,
     ) = TokenXTokenService(clientConfigurationProperties, oAuth2AccessTokenService)
 
     @Bean
@@ -37,6 +36,9 @@ class SecurityConfig {
     fun stsTokenService() = TokenService("STS")
 
     @Bean
-    fun securityTokenService(azureTokenService: TokenService, stsTokenService: TokenService, tokenxTokenService: TokenService) =
-        SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
+    fun securityTokenService(
+        azureTokenService: TokenService,
+        stsTokenService: TokenService,
+        tokenxTokenService: TokenService,
+    ) = SecurityTokenService(azureTokenService, tokenxTokenService, stsTokenService)
 }

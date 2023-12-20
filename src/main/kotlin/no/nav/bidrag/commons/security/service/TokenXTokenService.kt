@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 
 open class TokenXTokenService(
     private val clientConfigurationProperties: ClientConfigurationProperties,
-    private val oAuth2AccessTokenService: OAuth2AccessTokenService
+    private val oAuth2AccessTokenService: OAuth2AccessTokenService,
 ) : TokenService("Azure") {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -26,12 +26,14 @@ open class TokenXTokenService(
     }
 
     private fun createClientPropertiesWithGrantType(clientRegistrationId: String): ClientProperties {
-        val registration = clientConfigurationProperties.registration["${clientRegistrationId}_tokenx"]
-            ?: throw TokenException("Missing registration for client $clientRegistrationId")
-        val tokenExchange = ClientProperties.TokenExchangeProperties(
-            registration.tokenExchange.audience.replace(".", ":"),
-            ""
-        )
+        val registration =
+            clientConfigurationProperties.registration["${clientRegistrationId}_tokenx"]
+                ?: throw TokenException("Missing registration for client $clientRegistrationId")
+        val tokenExchange =
+            ClientProperties.TokenExchangeProperties(
+                registration.tokenExchange.audience.replace(".", ":"),
+                "",
+            )
         return ClientProperties(
             registration.tokenEndpointUrl,
             registration.wellKnownUrl,
@@ -39,7 +41,7 @@ open class TokenXTokenService(
             registration.scope,
             registration.authentication,
             registration.resourceUrl,
-            tokenExchange
+            tokenExchange,
         )
     }
 }

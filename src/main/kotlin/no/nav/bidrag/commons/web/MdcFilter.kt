@@ -16,11 +16,10 @@ import org.springframework.stereotype.Component
 @Component
 @Import(IdUtils::class)
 class MdcFilter(private val idUtils: IdUtils) : HttpFilter() {
-
     override fun doFilter(
         httpServletRequest: HttpServletRequest,
         httpServletResponse: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val enhetsnummer = httpServletRequest.getHeader(EnhetFilter.X_ENHET_HEADER) ?: EnhetFilter.fetchForThread()
         val userId = TokenUtils.hentBruker()
@@ -54,7 +53,7 @@ class MdcFilter(private val idUtils: IdUtils) : HttpFilter() {
                 BidragHttpHeaders.NAV_CALL_ID,
                 "Nav-CallId",
                 "Nav-Callid",
-                "X-Correlation-Id"
+                "X-Correlation-Id",
             )
     }
 }

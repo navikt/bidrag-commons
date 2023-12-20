@@ -15,19 +15,19 @@ import java.net.URI
 
 abstract class AzureTokenClientInterceptor(
     private val oAuth2AccessTokenService: OAuth2AccessTokenService,
-    private val clientConfigurationProperties: ClientConfigurationProperties
+    private val clientConfigurationProperties: ClientConfigurationProperties,
 ) :
     ClientHttpRequestInterceptor {
-
     protected fun genererAccessToken(
         request: HttpRequest,
-        oAuth2GrantType: OAuth2GrantType? = null
+        oAuth2GrantType: OAuth2GrantType? = null,
     ): String {
-        val clientProperties = clientPropertiesFor(
-            request.uri,
-            clientConfigurationProperties,
-            oAuth2GrantType
-        )
+        val clientProperties =
+            clientPropertiesFor(
+                request.uri,
+                clientConfigurationProperties,
+                oAuth2GrantType,
+            )
         return oAuth2AccessTokenService.getAccessToken(clientProperties).accessToken
     }
 
@@ -39,7 +39,7 @@ abstract class AzureTokenClientInterceptor(
     private fun clientPropertiesFor(
         uri: URI,
         clientConfigurationProperties: ClientConfigurationProperties,
-        oAuth2GrantType: OAuth2GrantType? = null
+        oAuth2GrantType: OAuth2GrantType? = null,
     ): ClientProperties {
         val clientProperties = filterClientProperties(clientConfigurationProperties, uri)
 
@@ -50,21 +50,20 @@ abstract class AzureTokenClientInterceptor(
             clientProperties.scope,
             clientProperties.authentication,
             clientProperties.resourceUrl,
-            clientProperties.tokenExchange
+            clientProperties.tokenExchange,
         )
     }
 
     private fun filterClientProperties(
         clientConfigurationProperties: ClientConfigurationProperties,
-        uri: URI
+        uri: URI,
     ) = clientConfigurationProperties
         .registration
         .values
         .firstOrNull { uri.toString().startsWith(it.resourceUrl.toString()) }
         ?: error("could not find oauth2 client config for uri=$uri")
 
-    private fun clientCredentialOrJwtBearer() =
-        if (erSystembruker()) OAuth2GrantType.CLIENT_CREDENTIALS else OAuth2GrantType.JWT_BEARER
+    private fun clientCredentialOrJwtBearer() = if (erSystembruker()) OAuth2GrantType.CLIENT_CREDENTIALS else OAuth2GrantType.JWT_BEARER
 
     private fun erSystembruker(): Boolean {
         return try {
@@ -84,13 +83,12 @@ abstract class AzureTokenClientInterceptor(
 @Component
 class BearerTokenClientInterceptor(
     oAuth2AccessTokenService: OAuth2AccessTokenService,
-    clientConfigurationProperties: ClientConfigurationProperties
+    clientConfigurationProperties: ClientConfigurationProperties,
 ) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
-
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
-        execution: ClientHttpRequestExecution
+        execution: ClientHttpRequestExecution,
     ): ClientHttpResponse {
         request.headers.setBearerAuth(genererAccessToken(request))
         return execution.execute(request, body)
@@ -100,10 +98,13 @@ class BearerTokenClientInterceptor(
 @Component
 class ServiceUserAuthTokenInterceptor(
     oAuth2AccessTokenService: OAuth2AccessTokenService,
-    clientConfigurationProperties: ClientConfigurationProperties
+    clientConfigurationProperties: ClientConfigurationProperties,
 ) : AzureTokenClientInterceptor(oAuth2AccessTokenService, clientConfigurationProperties) {
-
-    override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
+    override fun intercept(
+        request: HttpRequest,
+        body: ByteArray,
+        execution: ClientHttpRequestExecution,
+    ): ClientHttpResponse {
         request.headers.setBearerAuth(genererAccessToken(request, OAuth2GrantType.CLIENT_CREDENTIALS))
         return execution.execute(request, body)
     }

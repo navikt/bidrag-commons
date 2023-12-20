@@ -34,26 +34,42 @@
     <changelist>-SNAPSHOT</changelist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <bidrag-transport.version>20231124132142_09c0e75</bidrag-transport.version>
+    <bidrag-transport.version>20231213135409_bffa681</bidrag-transport.version>
+
     <!-- dependencies -->
     <logback-encoder.version>7.4</logback-encoder.version>
     <javax-activation.version>1.1.1</javax-activation.version>
-    <spring-boot.version>3.1.6</spring-boot.version>
-    <spring-retry.version>2.0.4</spring-retry.version>
-    <mockk.version>1.13.5</mockk.version>
-    <httpclient5.version>5.2.1</httpclient5.version>
-    <kotest.version>5.6.2</kotest.version>
-    <token-support.version>3.1.5</token-support.version>
-    <jackson.fasterXml.version>2.15.2</jackson.fasterXml.version>
+    <spring-boot.version>3.2.0</spring-boot.version>
+    <spring-retry.version>2.0.5</spring-retry.version>
+    <spring-security.version>6.2.1</spring-security.version>
+    <spring-expression.version>6.1.2</spring-expression.version>
+    <mockk.version>1.13.8</mockk.version>
+    <httpclient5.version>5.3</httpclient5.version>
+    <kotest.version>5.8.0</kotest.version>
+    <token-support.version>3.2.0</token-support.version>
+    <jackson.fasterXml.version>2.16.0</jackson.fasterXml.version>
+    <aspectj.version>1.9.21</aspectj.version>
+    <micrometer-registry.version>1.12.1</micrometer-registry.version>
+    <ktlint.version>1.0.1</ktlint.version>
+
     <!-- language -->
-    <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
-    <java.version>17</java.version>
-    <kotlin.version>1.9.20</kotlin.version>
+    <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
+    <java.version>21</java.version>
+    <kotlin.version>1.9.21</kotlin.version>
     <kotlin.code.style>official</kotlin.code.style>
 
     <!-- plugins -->
     <maven-compiler.version>3.11.0</maven-compiler.version>
-    <maven-surefire.version>3.0.0-M8</maven-surefire.version>
+    <maven-surefire.version>3.2.3</maven-surefire.version>
+    <maven-source.version>3.3.0</maven-source.version>
+    <maven-deploy.version>3.1.1</maven-deploy.version>
+    <maven-failsafe.version>3.2.3</maven-failsafe.version>
+    <maven-resources.version>3.3.1</maven-resources.version>
+    <maven-release.version>3.0.1</maven-release.version>
+    <maven-antrun.version>3.1.0</maven-antrun.version>
+    <maven-jar.version>3.3.0</maven-jar.version>
+    <flatten-maven.version>1.5.0</flatten-maven.version>
+    <build-helper-maven.version>3.5.0</build-helper-maven.version>
   </properties>
 
   <distributionManagement>
@@ -86,12 +102,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>2.2</version>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -109,12 +119,12 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>6.1.2</version>
+      <version>${spring-security.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
-      <version>6.0.9</version>
+      <version>${spring-expression.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -156,7 +166,7 @@
     <dependency>
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjrt</artifactId>
-      <version>1.9.19</version>
+      <version>${aspectj.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
@@ -171,7 +181,7 @@
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
-      <version>1.11.0</version>
+      <version>${micrometer-registry.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
@@ -225,7 +235,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.2.1</version>
+            <version>${maven-source.version}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -242,20 +252,20 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jar-plugin</artifactId>
-              <version>3.1.1</version>
+              <version>${maven-jar.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
-              <version>3.8.0</version>
+              <version>${maven-compiler.version}</version>
               <configuration>
-                <release>17</release>
+                <release>${java.version}</release>
               </configuration>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-release-plugin</artifactId>
-              <version>2.5.3</version>
+              <version>${maven-release.version}</version>
               <configuration>
                 <autoVersionSubmodules>true</autoVersionSubmodules>
                 <useReleaseProfile>true</useReleaseProfile>
@@ -266,7 +276,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-source-plugin</artifactId>
-              <version>3.0.1</version>
+              <version>${maven-source.version}</version>
               <executions>
                 <execution>
                   <id>attach-sources</id>
@@ -279,27 +289,27 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-deploy-plugin</artifactId>
-              <version>2.8.2</version>
+              <version>${maven-deploy.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
-              <version>2.22.0</version>
+              <version>${maven-surefire.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-failsafe-plugin</artifactId>
-              <version>2.22.0</version>
+              <version>${maven-failsafe.version}</version>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-resources-plugin</artifactId>
-              <version>3.1.0</version>
+              <version>${maven-resources.version}</version>
             </plugin>
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>flatten-maven-plugin</artifactId>
-              <version>1.0.0</version>
+              <version>${flatten-maven.version}</version>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -323,7 +333,7 @@
           <compilerPlugins>
             <plugin>spring</plugin>
           </compilerPlugins>
-          <jvmTarget>17</jvmTarget>
+          <jvmTarget>${java.version}</jvmTarget>
         </configuration>
         <executions>
           <execution>
@@ -357,12 +367,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>${maven-source.version}</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>${build-helper-maven.version}</version>
 
         <executions>
           <execution>
@@ -386,7 +396,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>${maven-release.version}</version>
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <useReleaseProfile>true</useReleaseProfile>
@@ -399,13 +409,13 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler.version}</version>
         <configuration>
-          <release>11</release>
+          <release>${java.version}</release>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-antrun.version}</version>
         <executions>
           <execution>
             <id>ktlint</id>
@@ -441,9 +451,9 @@
         </executions>
         <dependencies>
           <dependency>
-            <groupId>com.pinterest</groupId>
-            <artifactId>ktlint</artifactId>
-            <version>0.47.1</version>
+            <groupId>com.pinterest.ktlint</groupId>
+            <artifactId>ktlint-cli</artifactId>
+            <version>${ktlint.version}</version>
           </dependency>
           <!-- additional 3rd party ruleset(s) can be specified here -->
         </dependencies>

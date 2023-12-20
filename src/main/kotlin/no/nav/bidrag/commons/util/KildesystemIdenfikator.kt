@@ -3,10 +3,9 @@ package no.nav.bidrag.commons.util
 import org.apache.commons.lang3.builder.ToStringBuilder
 import org.apache.commons.lang3.builder.ToStringStyle
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Locale
 
 class KildesystemIdenfikator(prefiksetJournalpostId: String) {
-
     val logger = LoggerFactory.getLogger(this::class.java)
     val kildesystem: Kildesystem
     val prefiksetJournalpostId: String
@@ -60,7 +59,11 @@ class KildesystemIdenfikator(prefiksetJournalpostId: String) {
     }
 
     enum class Kildesystem(private val prefixMedDelimiter: String) {
-        BIDRAG(PREFIX_BIDRAG_COMPLETE), JOARK(PREFIX_JOARK_COMPLETE), FORSENDELSE(PREFIX_FORSENDELSE_COMPLETE), UKJENT("");
+        BIDRAG(PREFIX_BIDRAG_COMPLETE),
+        JOARK(PREFIX_JOARK_COMPLETE),
+        FORSENDELSE(PREFIX_FORSENDELSE_COMPLETE),
+        UKJENT(""),
+        ;
 
         fun er(kildesystem: Kildesystem): Boolean {
             return kildesystem == this
@@ -104,6 +107,7 @@ class KildesystemIdenfikator(prefiksetJournalpostId: String) {
         companion object {
             private const val NON_DIGITS = "\\D+"
             private val LOGGER = LoggerFactory.getLogger(Kildesystem::class.java)
+
             fun hentKildesystem(prefiksetJournalpostId: String): Kildesystem {
                 return if (prefiksetJournalpostId.startsWith(BIDRAG.prefixMedDelimiter)) {
                     BIDRAG

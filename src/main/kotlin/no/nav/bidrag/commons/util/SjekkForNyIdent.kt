@@ -27,7 +27,6 @@ annotation class SjekkForNyIdent(vararg val parameterNavn: String)
 @Aspect
 @Component
 class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
-
     /**
      * Denne metoden prosesserer de tilfellene hvor @SjekkForNyIdent brukes på en funksjon.
      * @SjekkForNyIdent benyttes i disse tilfellene med parameter tilhørende navnet på verdien som ønskes å sjekkes.
@@ -36,7 +35,10 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
      * fun fus(ident1: String, ident2: String, ident2: String) {}
      */
     @Around("@annotation(sjekkForNyIdent)")
-    fun prosseserNyIdent(joinPoint: ProceedingJoinPoint, sjekkForNyIdent: SjekkForNyIdent): Any? {
+    fun prosseserNyIdent(
+        joinPoint: ProceedingJoinPoint,
+        sjekkForNyIdent: SjekkForNyIdent,
+    ): Any? {
         val parametere = joinPoint.args
         val codeSignature = joinPoint.signature as CodeSignature
         val parametermap: Map<String, Any> = codeSignature.parameterNames.zip(parametere).toMap()
@@ -119,9 +121,8 @@ class SjekkForNyIdentAspect(private val identConsumer: IdentConsumer) {
 @Component
 class IdentConsumer(
     @Value("\${PERSON_URL}") private val personUrl: String,
-    @Qualifier("azure") private val restTemplate: RestOperations
+    @Qualifier("azure") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "\${NAIS_APP_NAME}") {
-
     companion object {
         const val PERSON_PATH = "/personidenter"
         private val LOGGER = LoggerFactory.getLogger(SjekkForNyIdentAspect::class.java)
@@ -134,13 +135,19 @@ class IdentConsumer(
                 restTemplate.postForEntity(
                     "$personUrl$PERSON_PATH",
                     HentePersonidenterRequest(ident, setOf(Identgruppe.FOLKEREGISTERIDENT), false),
-                    Array<PersonidentDto>::class.java
+                    Array<PersonidentDto>::class.java,
                 ).body?.first()?.ident ?: ident
             } catch (e: NoSuchElementException) {
-                LOGGER.warn("Bidrag-person fant ingen person på kalt ident. \nFeilmelding: ${e.message} CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e")
+                LOGGER.warn(
+                    "Bidrag-person fant ingen person på kalt ident. " +
+                        "\nFeilmelding: ${e.message} CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e",
+                )
                 ident
             } catch (e: Exception) {
-                LOGGER.error("Noe gikk galt i kall mot bidrag-person: ${e.message} CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e")
+                LOGGER.error(
+                    "Noe gikk galt i kall mot bidrag-person: ${e.message} " +
+                        "CallId: ${CorrelationId.fetchCorrelationIdForThread()}.\n$e",
+                )
                 ident
             }
         }

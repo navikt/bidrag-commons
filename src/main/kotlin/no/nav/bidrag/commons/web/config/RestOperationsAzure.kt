@@ -12,18 +12,17 @@ import org.springframework.context.annotation.Scope
 @Configuration
 @Import(RestTemplateBuilderBean::class, BearerTokenClientInterceptor::class, ServiceUserAuthTokenInterceptor::class)
 class RestOperationsAzure {
-
     @Bean("azure")
     @Scope("prototype")
     fun restOperationsJwtBearer(
         restTemplateBuilder: RestTemplateBuilder,
-        bearerTokenClientInterceptor: BearerTokenClientInterceptor
+        bearerTokenClientInterceptor: BearerTokenClientInterceptor,
     ) = restTemplateBuilder.additionalInterceptors(bearerTokenClientInterceptor).build()
 
     @Bean("azureService")
     @Scope("prototype")
     fun restOperationsServiceJwtBearer(
         restTemplateBuilder: RestTemplateBuilder,
-        bearerTokenClientInterceptor: ServiceUserAuthTokenInterceptor
+        bearerTokenClientInterceptor: ServiceUserAuthTokenInterceptor,
     ) = restTemplateBuilder.additionalInterceptors(bearerTokenClientInterceptor).build()
 }

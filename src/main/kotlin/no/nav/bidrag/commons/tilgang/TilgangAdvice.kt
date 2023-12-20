@@ -17,11 +17,13 @@ import org.springframework.web.client.HttpClientErrorException
 @Configuration
 @Import(TilgangClient::class)
 class TilgangAdvice(
-    private val tilgangClient: TilgangClient
+    private val tilgangClient: TilgangClient,
 ) {
-
     @Before("@annotation(tilgangskontroll) ")
-    fun sjekkTilgang(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
+    fun sjekkTilgang(
+        joinpoint: JoinPoint,
+        tilgangskontroll: Tilgangskontroll,
+    ) {
         if (ContextService.erMaskinTilMaskinToken()) {
             return
         }
@@ -33,7 +35,10 @@ class TilgangAdvice(
         }
     }
 
-    private fun sjekkForNavngittParameter(joinpoint: JoinPoint, tilgangskontroll: Tilgangskontroll) {
+    private fun sjekkForNavngittParameter(
+        joinpoint: JoinPoint,
+        tilgangskontroll: Tilgangskontroll,
+    ) {
         val parameternavn: Array<String> = (joinpoint.signature as CodeSignature).parameterNames
         val index = parameternavn.indexOf(tilgangskontroll.oppslagsparameter)
         if (index > -1) {
@@ -43,7 +48,10 @@ class TilgangAdvice(
         }
     }
 
-    private fun sjekkTilgangForNavngittFeltIRequestBody(requestBody: Any, feltnavn: String) {
+    private fun sjekkTilgangForNavngittFeltIRequestBody(
+        requestBody: Any,
+        feltnavn: String,
+    ) {
         return sjekkTilgangForFeltIRequestBody(requestBody, feltnavn)
     }
 
@@ -61,7 +69,10 @@ class TilgangAdvice(
         }
     }
 
-    private fun sjekkTilgangForFeltIRequestBody(requestBody: Any, feltnavn: String) {
+    private fun sjekkTilgangForFeltIRequestBody(
+        requestBody: Any,
+        feltnavn: String,
+    ) {
         val param = Feltekstraherer.finnFeltverdiForNavn(requestBody, feltnavn)
         when (param) {
             is Saksnummer -> sjekkTilgangTilSak(param.verdi)

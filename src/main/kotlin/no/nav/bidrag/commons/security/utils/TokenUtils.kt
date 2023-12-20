@@ -11,7 +11,7 @@ enum class TokenUtsteder {
     AZURE,
     TOKENX,
     STS,
-    UKJENT
+    UKJENT,
 }
 
 object TokenUtils {
@@ -220,15 +220,19 @@ object TokenUtils {
         return if (azpName == null) {
             null
         } else {
-            val azpNameSplit = azpName.split(":".toRegex()).dropLastWhile { it.isEmpty() }
-                .toTypedArray()
+            val azpNameSplit =
+                azpName.split(":".toRegex()).dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
             azpNameSplit[azpNameSplit.size - 1]
         }
     }
 
-    private fun hentToken(): String? = try {
-        OidcTokenManager().hentToken()
-    } catch (_: Exception) { null }
+    private fun hentToken(): String? =
+        try {
+            OidcTokenManager().hentToken()
+        } catch (_: Exception) {
+            null
+        }
 
     private fun konverterTokenTilJwt(idToken: String?): SignedJWT? {
         return idToken?.let { JWTParser.parse(idToken) as SignedJWT }

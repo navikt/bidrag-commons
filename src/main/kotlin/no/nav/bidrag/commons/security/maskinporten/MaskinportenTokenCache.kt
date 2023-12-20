@@ -16,9 +16,10 @@ class MaskinportenTokenCache(maskinportenToken: String) {
     private val Date.epochSeconds: Long
         get() = time / 1000
 
-    internal fun renew(newToken: String) = SignedJWT.parse(newToken).also {
-        maskinportenToken = it
-    }
+    internal fun renew(newToken: String) =
+        SignedJWT.parse(newToken).also {
+            maskinportenToken = it
+        }
 
     companion object {
         private const val TWENTY_SECONDS = 20

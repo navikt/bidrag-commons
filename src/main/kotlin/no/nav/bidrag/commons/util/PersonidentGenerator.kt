@@ -9,8 +9,10 @@ private val K1_VEKT = intArrayOf(3, 7, 6, 1, 8, 9, 4, 5, 2)
 private val K2_VEKT = intArrayOf(5, 4, 3, 2, 7, 6, 5, 4, 3, 2)
 
 object PersonidentGenerator {
-
-    fun genererFødselsnummer(innsendtFodselsdato: LocalDate? = null, innsendtKjonn: Kjonn? = null): String {
+    fun genererFødselsnummer(
+        innsendtFodselsdato: LocalDate? = null,
+        innsendtKjonn: Kjonn? = null,
+    ): String {
         val fodselsdato = innsendtFodselsdato ?: opprettTilfeldigFodselsdato()
         val kjonn = innsendtKjonn ?: hentTilfeldigKjonn()
 
@@ -30,7 +32,10 @@ object PersonidentGenerator {
         return fodselsnummer
     }
 
-    private fun opprettIndividnummer(fodselsdato: LocalDate, kjonn: Kjonn): String {
+    private fun opprettIndividnummer(
+        fodselsdato: LocalDate,
+        kjonn: Kjonn,
+    ): String {
         return fodselsdato.format(DateTimeFormatter.ofPattern("ddMMyy")) + genererIndividnummer(fodselsdato.year, kjonn)
     }
 
@@ -38,7 +43,10 @@ object PersonidentGenerator {
         return LocalDate.now().minus(Period.ofDays(Random().nextInt(365 * 120)))
     }
 
-    private fun genererIndividnummer(fodselsAr: Int, kjonn: Kjonn): String {
+    private fun genererIndividnummer(
+        fodselsAr: Int,
+        kjonn: Kjonn,
+    ): String {
         return when (fodselsAr) {
             in 1940..1999 -> opprettTilfeldigIndividnummer(kjonn, 900, 999)
             in 1854..1899 -> opprettTilfeldigIndividnummer(kjonn, 500, 749)
@@ -48,7 +56,11 @@ object PersonidentGenerator {
         }
     }
 
-    private fun opprettTilfeldigIndividnummer(kjonn: Kjonn, fraInklusiv: Int, tilInklusiv: Int): String {
+    private fun opprettTilfeldigIndividnummer(
+        kjonn: Kjonn,
+        fraInklusiv: Int,
+        tilInklusiv: Int,
+    ): String {
         val antall = (tilInklusiv - fraInklusiv + 1) / 2
         var individNr = (Random().nextInt(antall) * 2 + fraInklusiv + if (Kjonn.MANN == kjonn) 1 else 0).toString()
 
@@ -64,7 +76,10 @@ object PersonidentGenerator {
         return alleKjonn[Random().nextInt(alleKjonn.size)]
     }
 
-    private fun opprettKontrollsiffer(vekting: IntArray, fodselsnummer: String): String {
+    private fun opprettKontrollsiffer(
+        vekting: IntArray,
+        fodselsnummer: String,
+    ): String {
         var sum = 0
         for (i in vekting.indices) {
             sum += fodselsnummer.substring(i, i + 1).toInt() * vekting[i]
@@ -80,5 +95,6 @@ object PersonidentGenerator {
 }
 
 enum class Kjonn {
-    MANN, KVINNE
+    MANN,
+    KVINNE,
 }

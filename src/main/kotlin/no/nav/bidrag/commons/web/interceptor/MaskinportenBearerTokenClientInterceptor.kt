@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component
 @Component
 @Import(MaskinportenClient::class)
 class MaskinportenBearerTokenClientInterceptor(private val maskinportenClient: MaskinportenClient) : ClientHttpRequestInterceptor {
-
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
-        execution: ClientHttpRequestExecution
+        execution: ClientHttpRequestExecution,
     ): ClientHttpResponse {
         request.headers.setBearerAuth(maskinportenClient.hentMaskinportenToken().parsedString)
         request.headers.accept = listOf(MediaType.APPLICATION_JSON)

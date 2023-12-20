@@ -153,20 +153,21 @@ internal class CorrelationIdFilterTest {
 
     internal class CorrelationIdThread(private val filterExecutor: FilterExecutor) : Thread() {
         var correlationId: String? = null
+
         override fun run() {
-            correlationId = try {
-                filterExecutor.doFilter()
-                fetchCorrelationIdForThread()
-            } catch (e: IOException) {
-                throw AssertionError(e)
-            } catch (e: ServletException) {
-                throw AssertionError(e)
-            }
+            correlationId =
+                try {
+                    filterExecutor.doFilter()
+                    fetchCorrelationIdForThread()
+                } catch (e: IOException) {
+                    throw AssertionError(e)
+                } catch (e: ServletException) {
+                    throw AssertionError(e)
+                }
         }
     }
 
     internal fun interface FilterExecutor {
-
         fun doFilter()
     }
 

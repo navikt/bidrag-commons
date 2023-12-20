@@ -9,7 +9,11 @@ class BrukerCacheNøkkelGenerator(private val oidcTokenManager: OidcTokenManager
         const val SYSTEMBRUKER_ID = "SYSTEM"
     }
 
-    override fun generate(target: Any, method: Method, vararg params: Any): Any {
+    override fun generate(
+        target: Any,
+        method: Method,
+        vararg params: Any,
+    ): Any {
         return tilBrukerCacheKey(super.generate(target, method, *params))
     }
 

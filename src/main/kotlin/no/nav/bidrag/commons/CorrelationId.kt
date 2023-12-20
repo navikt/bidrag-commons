@@ -12,6 +12,7 @@ class CorrelationId private constructor(private val idValue: String) {
     companion object {
         const val CORRELATION_ID_HEADER = "X-Correlation-ID"
         private val CORRELATION_ID_VALUE = ThreadLocal<String>()
+
         fun fetchCorrelationIdForThread(): String {
             return CORRELATION_ID_VALUE.get() ?: generateTimestamped("UNKNOWN").get()
         }

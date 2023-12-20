@@ -21,12 +21,18 @@ internal class KildesystemIdenfikatorTest {
         assertPrefix("JOARK-123", "joark prefix", PrefixIdent.GYLDIG)
     }
 
-    private fun assertPrefix(identifikator: String, beskrivelse: String, prefixIdent: PrefixIdent) {
+    private fun assertPrefix(
+        identifikator: String,
+        beskrivelse: String,
+        prefixIdent: PrefixIdent,
+    ) {
         KildesystemIdenfikator(identifikator).erUkjentPrefixEllerHarIkkeTallEtterPrefix() shouldBe prefixIdent.erUgyldig()
     }
 
     private enum class PrefixIdent {
-        GYLDIG, UGYLDIG;
+        GYLDIG,
+        UGYLDIG,
+        ;
 
         fun erUgyldig(): Boolean {
             return this == UGYLDIG
@@ -50,8 +56,8 @@ internal class KildesystemIdenfikatorTest {
         strings = [
             "BID-3757282865", // journalpost Id er ikke gyldig Long, men det er et gyldig prefix på et tall - henter integer som null !!!
             "BID-3757282443", // journalpost Id er ikke gyldig Long, men det er et gyldig prefix på et tall - henter integer som null !!!
-            "BID-37576108"
-        ]
+            "BID-37576108",
+        ],
     )
     @DisplayName("skal ikke være ugyldige kildesystemidentifikatorer")
     fun skalIkkeVaereUgyldig(identifikator: String?) {
@@ -64,7 +70,10 @@ internal class KildesystemIdenfikatorTest {
         assertKildesystem(KildesystemIdenfikator("bid-123456789012345"), Kildesystem.BIDRAG)
     }
 
-    private fun assertKildesystem(kildesystemIdenfikator: KildesystemIdenfikator, kildesystem: Kildesystem) {
+    private fun assertKildesystem(
+        kildesystemIdenfikator: KildesystemIdenfikator,
+        kildesystem: Kildesystem,
+    ) {
         kildesystemIdenfikator.kildesystem shouldBe kildesystem
         kildesystemIdenfikator.erFor(kildesystem) shouldBe true
     }
@@ -72,7 +81,10 @@ internal class KildesystemIdenfikatorTest {
     @ParameterizedTest
     @MethodSource("initPrefixsetIdForTest")
     @DisplayName("skal si om kjent kilkdesystem har id som overstiger int som heltall")
-    fun skalSiOmKjentKildesystemHarIdSomOverstigerIntSomHeltall(prefiksetId: String?, kjentPrefixOgIdOverstigerInt: Boolean?) {
+    fun skalSiOmKjentKildesystemHarIdSomOverstigerIntSomHeltall(
+        prefiksetId: String?,
+        kjentPrefixOgIdOverstigerInt: Boolean?,
+    ) {
         KildesystemIdenfikator(prefiksetId!!).erKjentKildesystemMedIdMedIdSomOverstigerInteger() shouldBe kjentPrefixOgIdOverstigerInt
     }
 
@@ -86,7 +98,7 @@ internal class KildesystemIdenfikatorTest {
                 Arguments.of("JOARK-3757282443", true),
                 Arguments.of("JOARK-9999999", false),
                 Arguments.of("UKJENT-3757282443", false),
-                Arguments.of("UKJENT-9999999", false)
+                Arguments.of("UKJENT-9999999", false),
             )
         }
     }

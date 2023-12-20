@@ -20,17 +20,17 @@ import org.springframework.web.context.request.RequestContextHolder
 import java.net.URI
 
 class BearerTokenClientInterceptorTest {
-
     private lateinit var bearerTokenClientInterceptor: BearerTokenClientInterceptor
 
     private val oAuth2AccessTokenService = mockk<OAuth2AccessTokenService>(relaxed = true)
 
     @BeforeEach
     fun setup() {
-        bearerTokenClientInterceptor = BearerTokenClientInterceptor(
-            oAuth2AccessTokenService,
-            clientConfigurationProperties
-        )
+        bearerTokenClientInterceptor =
+            BearerTokenClientInterceptor(
+                oAuth2AccessTokenService,
+                clientConfigurationProperties,
+            )
     }
 
     @AfterEach
@@ -70,8 +70,8 @@ class BearerTokenClientInterceptorTest {
                     clientConfigurationProperties.registration["1"]?.scope,
                     clientConfigurationProperties.registration["1"]?.authentication,
                     clientConfigurationProperties.registration["1"]?.resourceUrl,
-                    clientConfigurationProperties.registration["1"]?.tokenExchange
-                )
+                    clientConfigurationProperties.registration["1"]?.tokenExchange,
+                ),
             )
         }
     }
@@ -84,7 +84,7 @@ class BearerTokenClientInterceptorTest {
         every {
             requestAttributes.getAttribute(
                 SpringTokenValidationContextHolder::class.java.name,
-                RequestAttributes.SCOPE_REQUEST
+                RequestAttributes.SCOPE_REQUEST,
             )
         } returns tokenValidationContext
         every { tokenValidationContext.getClaims("aad") } returns jwtTokenClaims

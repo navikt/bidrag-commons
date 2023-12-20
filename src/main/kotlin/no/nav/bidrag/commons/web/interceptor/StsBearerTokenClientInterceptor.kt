@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component
 @Import(StsTokenService::class)
 class StsBearerTokenClientInterceptor(private val stsRestClient: StsTokenService) :
     ClientHttpRequestInterceptor {
-
     override fun intercept(
         request: HttpRequest,
         body: ByteArray,
-        execution: ClientHttpRequestExecution
+        execution: ClientHttpRequestExecution,
     ): ClientHttpResponse {
         val systembrukerToken = stsRestClient.fetchToken()
         request.headers.setBearerAuth(systembrukerToken)

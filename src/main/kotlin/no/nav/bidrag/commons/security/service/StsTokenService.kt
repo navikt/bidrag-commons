@@ -16,7 +16,6 @@ import org.springframework.util.LinkedMultiValueMap
 @EnableConfigurationProperties(StsConfigurationProperties::class)
 @Service("stsTokenService")
 class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) : TokenService("STS") {
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val stsCache = OAuth2CacheFactory.accessTokenResponseCache<String>(100, 300)
@@ -25,7 +24,7 @@ class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) : 
         RestTemplateBuilder().rootUri(stsConfigurationProperties.properties.url)
             .basicAuthentication(
                 stsConfigurationProperties.properties.username,
-                stsConfigurationProperties.properties.password
+                stsConfigurationProperties.properties.password,
             ).build()
 
     companion object {
@@ -47,12 +46,13 @@ class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) : 
 
     private fun getToken(cacheName: String): OAuth2AccessTokenResponse {
         logger.debug("Fetching STS token")
-        val tokenForBasicAuthenticationResponse = restTemplate!!.exchange(
-            "/",
-            HttpMethod.POST,
-            HttpEntity<Any>(PARAMETERS),
-            TokenForBasicAuthentication::class.java
-        )
+        val tokenForBasicAuthenticationResponse =
+            restTemplate!!.exchange(
+                "/",
+                HttpMethod.POST,
+                HttpEntity<Any>(PARAMETERS),
+                TokenForBasicAuthentication::class.java,
+            )
         val tokenForBasicAuthentication = tokenForBasicAuthenticationResponse.body
         return tokenForBasicAuthentication?.let {
             OAuth2AccessTokenResponse.builder()
@@ -63,8 +63,8 @@ class StsTokenService(stsConfigurationProperties: StsConfigurationProperties) : 
             String.format(
                 "Kunne ikke hente token fra '%s', response: %s",
                 REST_TOKEN_ENDPOINT,
-                tokenForBasicAuthenticationResponse.statusCode
-            )
+                tokenForBasicAuthenticationResponse.statusCode,
+            ),
         )
     }
 }

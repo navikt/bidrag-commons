@@ -36,9 +36,10 @@ internal class HttpResponseTest {
         httpHeaders.add(HttpHeaders.CONTENT_RANGE, "hit og dit...")
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "svada...")
         httpHeaders.add(HttpHeaders.WARNING, "high tide")
-        val responseEntity = HttpResponse(ResponseEntity<Any>(101, httpHeaders, HttpStatus.I_AM_A_TEAPOT))
-            .clearContentHeaders()
-            .responseEntity
+        val responseEntity =
+            HttpResponse(ResponseEntity<Any>(101, httpHeaders, HttpStatus.I_AM_A_TEAPOT))
+                .clearContentHeaders()
+                .responseEntity
         responseEntity.body shouldBe 101
         responseEntity.headers shouldHaveSize 1
         responseEntity.headers.getFirst(HttpHeaders.WARNING) shouldBe "high tide"

@@ -16,20 +16,27 @@ import org.springframework.web.context.request.ServletRequestAttributes
 
 @Component
 class AuditLogger(
-    @Value("\${NAIS_APP_NAME}") private val applicationName: String
+    @Value("\${NAIS_APP_NAME}") private val applicationName: String,
 ) {
-
     private val logger = LoggerFactory.getLogger(javaClass)
     private val audit = LoggerFactory.getLogger("secureLogger")
 
-    fun log(event: AuditLoggerEvent, data: Sporingsdata) {
+    fun log(
+        event: AuditLoggerEvent,
+        data: Sporingsdata,
+    ) {
         val request = getRequest() ?: throw IllegalArgumentException("Ikke brukt i context av en HTTP request")
 
         if (ContextService.erMaskinTilMaskinToken()) {
             logger.debug("Maskin til maskin token i request")
         } else {
             audit.info(createAuditLogString(event, data, request))
-            if (!data.tilgang) throw HttpClientErrorException(HttpStatusCode.valueOf(403), "Bruker har ikke tilgang til denne informasjonen.")
+            if (!data.tilgang) {
+                throw HttpClientErrorException(
+                    HttpStatusCode.valueOf(403),
+                    "Bruker har ikke tilgang til denne informasjonen.",
+                )
+            }
         }
     }
 
@@ -43,7 +50,7 @@ class AuditLogger(
     private fun createAuditLogString(
         event: AuditLoggerEvent,
         data: Sporingsdata,
-        request: HttpServletRequest
+        request: HttpServletRequest,
     ): String {
         val timestamp = System.currentTimeMillis()
         val name = "Saksbehandling"
@@ -61,7 +68,7 @@ class AuditLogger(
         return listOfNotNull(
             data.ekstrafelter.getOrNull(0)?.let { "cs3Label=${it.first} cs3=${it.second}" },
             data.ekstrafelter.getOrNull(1)?.let { "cs5Label=${it.first} cs5=${it.second}" },
-            data.ekstrafelter.getOrNull(2)?.let { "cs6Label=${it.first} cs6=${it.second}" }
+            data.ekstrafelter.getOrNull(2)?.let { "cs6Label=${it.first} cs6=${it.second}" },
         ).joinToString(" ")
     }
 
