@@ -50,7 +50,7 @@
     <jackson.fasterXml.version>2.16.0</jackson.fasterXml.version>
     <aspectj.version>1.9.21</aspectj.version>
     <micrometer-registry.version>1.12.1</micrometer-registry.version>
-    <ktlint.version>1.0.1</ktlint.version>
+    <ktlint.version>1.1.0</ktlint.version>
 
     <!-- language -->
     <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
