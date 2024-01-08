@@ -34,7 +34,7 @@
     <changelist>-SNAPSHOT</changelist>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <bidrag-transport.version>20231213135409_bffa681</bidrag-transport.version>
+    <bidrag-transport.version>20240103144324_9f5809f</bidrag-transport.version>
 
     <!-- dependencies -->
     <logback-encoder.version>7.4</logback-encoder.version>
